@@ -20,6 +20,7 @@ const eslintConfig = [
     files: ["**/*.{ts,tsx}"],
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
+      "no-console": "error",
       "prettier/prettier": "error",
       "@typescript-eslint/no-unused-vars": [
         "error",
