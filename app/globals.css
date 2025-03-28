@@ -26,11 +26,14 @@
 
 @layer base {
   body {
-    @apply font-body bg-bg-primary text-black;
+    @apply flex flex-col min-h-screen font-body bg-bg-primary text-black;
     font-size: 21px;
   }
   header {
     @apply p-4 bg-accent;
+  }
+  footer {
+    @apply flex justify-between mt-auto p-4 bg-bg-secondary text-white;
   }
   h1 {
     @apply font-heading text-xl;
