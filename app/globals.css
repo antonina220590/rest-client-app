@@ -11,6 +11,17 @@
   --color-accent: #f8d57e;
   --color-cta-primary: #009379;
   --color-cta-secondary: #e5f4f2;
+
+  --animate-text-change: colorChange 4s infinite alternate;
+
+  @keyframes colorChange {
+    0% {
+      color: #2d2d2d;
+    }
+    100% {
+      color: #009379;
+    }
+  }
 }
 
 @layer base {
@@ -18,8 +29,11 @@
     @apply font-body bg-bg-primary text-black;
     font-size: 21px;
   }
+  header {
+    @apply p-4 bg-accent;
+  }
   h1 {
-    @apply font-heading text-6xl bg-accent;
+    @apply font-heading text-xl;
   }
   h2 {
     @apply font-heading text-4xl;
