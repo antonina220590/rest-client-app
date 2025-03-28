@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Header from './components/main-route/Header';
-import Footer from './components/main-route/Footer';
+import Footer from './components/main-route/Footer/Footer';
 
 export const metadata: Metadata = {
   title: 'Rest Client App',
