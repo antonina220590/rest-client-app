@@ -1,7 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400&family=Poppins:wght@600;700&display=swap&family=Fira+Code:wght@400');
 @import 'tailwindcss';
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme {
+  --font-heading: Poppins, 'sans-serif';
+  --font-body: Mulish, 'sans-serif';
+  --font-code: Fira Code, 'sans-serif';
+
+  --color-bg-primary: #f8f9ff;
+  --color-bg-secondary: #2d2d2d;
+  --color-accent: #f8d57e;
+  --color-cta-primary: #009379;
+  --color-cta-secondary: #e5f4f2;
+}
+
+@layer base {
+  body {
+    @apply font-body bg-bg-primary text-black;
+    font-size: 21px;
+  }
+  h1 {
+    @apply font-heading text-6xl bg-accent;
+  }
+  h2 {
+    @apply font-heading text-4xl;
+  }
+  h3 {
+    @apply font-heading text-2xl;
+  }
+  code {
+    @apply font-code bg-white px-3 rounded;
+  }
 }
