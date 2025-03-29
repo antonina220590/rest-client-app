@@ -35,6 +35,8 @@
   footer {
     @apply flex justify-between mt-auto p-4 bg-bg-secondary text-white;
   }
+  section {
+  }
   h1 {
     @apply font-heading text-xl;
   }
