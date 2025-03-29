@@ -1,5 +1,5 @@
-import GitHub from '../../../../public/github.svg';
-import RSS from '../../../../public/rss.svg';
+import GitHub from '@/public/github.svg';
+import RSS from '@/public/rss.svg';
 import SocialLink from './SocialLink/SocialLink';
 
 export default function Footer() {
