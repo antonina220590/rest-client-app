@@ -21,6 +21,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
     "@next/eslint-plugin-next": "^15.2.4",
     "@tailwindcss/postcss": "^4.0.17",
     "@testing-library/dom": "^10.4.0",
