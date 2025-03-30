@@ -19,9 +19,9 @@ export default function MethodSelector() {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative ml-9">
-        <ListboxButton className="grid w-[120px] h-full cursor-default grid-cols-1 rounded-md bg-cta-secondary py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-cta-primary sm:text-sm/6">
-          <span className="col-start-1 row-start-1 flex items-center justify-center gap-3 pr-6">
-            <span className="block truncate">{selected}</span>
+        <ListboxButton className="grid w-32 h-full cursor-default grid-cols-1 rounded-md bg-cta-secondary py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-cta-primary sm:text-sm/6">
+          <span className="col-start-1 row-start-1 flex items-center justify-center text-center gap-3 pr-6">
+            <span className="block truncate mt-1">{selected}</span>
           </span>
           <ChevronUpDownIcon
             aria-hidden="true"
@@ -31,7 +31,7 @@ export default function MethodSelector() {
 
         <ListboxOptions
           transition
-          className="absolute z-10 mt-1 w-auto overflow-auto rounded-md bg-cta-secondary py-1 text-base ring-1 shadow-lg ring-black/5 focus:outline-hidden data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm"
+          className="absolute z-10 mt-1 w-32 overflow-auto rounded-md bg-cta-secondary py-1 text-2xl ring-1 shadow-lg ring-black/5 focus:outline-hidden data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm"
         >
           {methods.map((method) => (
             <ListboxOption
