@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import NavBtn from './NavBtn/NavBtn';
+import NavBtn from '../NavBtn/NavBtn';
 import { signOut } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/app/firebase/config';

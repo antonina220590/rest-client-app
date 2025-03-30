@@ -37,6 +37,7 @@
     @apply flex justify-between mt-auto p-4 bg-bg-secondary text-white;
   }
   section {
+    @apply flex flex-col gap-4 p-8 text-center items-center;
   }
   h1 {
     @apply pt-2 font-heading text-2xl;
