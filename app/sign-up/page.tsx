@@ -46,7 +46,7 @@ const SignUp = () => {
         />
         <button
           onClick={handleSignUp}
-          className="w-full p-3 bg-cta-primary rounded text-white hover:bg-cta-hover hover:cursor-pointer"
+          className="w-full p-3 bg-cta-primary rounded text-white hover:bg-cta-hover transition hover:cursor-pointer"
         >
           Sign Up
         </button>
