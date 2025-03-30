@@ -11,6 +11,7 @@
   --color-accent: #f8d57e;
   --color-cta-primary: #009379;
   --color-cta-secondary: #e5f4f2;
+  --color-cta-hover: #00bfa1;
 
   --animate-text-change: colorChange 4s infinite alternate;
 
@@ -26,7 +27,7 @@
 
 @layer base {
   body {
-    @apply flex flex-col min-h-screen font-body bg-bg-primary text-black;
+    @apply flex flex-col min-h-screen font-body bg-bg-primary text-bg-secondary;
     font-size: 21px;
   }
   header {
