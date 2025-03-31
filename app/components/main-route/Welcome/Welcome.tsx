@@ -12,7 +12,6 @@ export default function Welcome() {
       {user || userSession ? (
         <>
           <h2>Welcome Back, User!</h2>
-          <p></p>
           <nav>
             <NavBtn href="/RESTful" text="Rest Client" />
             <NavBtn href="/history" text="History" />
@@ -22,7 +21,6 @@ export default function Welcome() {
       ) : (
         <>
           <h2>Welcome!</h2>
-          <p></p>
           <nav>
             <NavBtn href="/sign-in" text="Sign In" />
             <NavBtn href="/sign-up" text="Sign Up" />
