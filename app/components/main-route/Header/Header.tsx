@@ -5,10 +5,13 @@ import NavBtn from '../NavBtn/NavBtn';
 import { signOut } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/app/firebase/config';
+import { deleteCookie, getCookie } from 'cookies-next';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [user] = useAuthState(auth);
-  const userSession = sessionStorage.getItem('user');
+  const userSession = getCookie('user');
+  const router = useRouter();
 
   return (
     <header>
@@ -24,7 +27,8 @@ export default function Header() {
             text="Sign Out"
             onClick={() => {
               signOut(auth);
-              sessionStorage.removeItem('user');
+              deleteCookie('user');
+              router.push('/sign-in');
             }}
           />
         ) : (

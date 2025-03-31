@@ -3,10 +3,11 @@
 import NavBtn from '../NavBtn/NavBtn';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/app/firebase/config';
+import { getCookie } from 'cookies-next';
 
 export default function Welcome() {
   const [user] = useAuthState(auth);
-  const userSession = sessionStorage.getItem('user');
+  const userSession = getCookie('user');
   return (
     <section>
       {user || userSession ? (

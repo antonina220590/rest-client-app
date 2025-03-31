@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { formSchema } from '@/app/schema/yupShema';
 import Tost from './tost/Tost';
+import { setCookie } from 'cookies-next';
 
 type FormSignIn = {
   email: string;
@@ -37,7 +38,7 @@ const Auth = () => {
         setTimeout(() => setError(null), 5000);
         return;
       }
-      sessionStorage.setItem('user', 'true');
+      setCookie('user', 'true', { path: '/' });
       router.push('/');
     } catch (err) {
       if (err instanceof Error) {
