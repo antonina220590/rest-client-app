@@ -53,6 +53,7 @@ const eslintConfig = [
       'coverage',
       'node_modules',
       '{.,}next/',
+      'components',
     ],
   },
 ];
