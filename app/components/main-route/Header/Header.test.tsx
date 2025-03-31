@@ -11,6 +11,12 @@ vi.mock('react-firebase-hooks/auth', () => ({
   useAuthState: vi.fn(),
 }));
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}));
+
 describe('render Header component', () => {
   it('Sign In and Sign Up when user is not authenticated', async () => {
     (useAuthState as ReturnType<typeof vi.fn>).mockImplementation(() => [null]);
