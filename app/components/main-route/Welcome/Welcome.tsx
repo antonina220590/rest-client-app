@@ -6,8 +6,9 @@ import { auth } from '@/app/firebase/config';
 import { getCookie } from 'cookies-next';
 
 export default function Welcome() {
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const userSession = getCookie('user');
+  if (loading) return null;
   return (
     <section>
       {user || userSession ? (

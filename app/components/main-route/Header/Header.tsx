@@ -9,9 +9,11 @@ import { deleteCookie, getCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
 
 export default function Header() {
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const userSession = getCookie('user');
   const router = useRouter();
+
+  if (loading) return null;
 
   return (
     <header>
