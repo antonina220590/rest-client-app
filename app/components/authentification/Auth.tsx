@@ -33,7 +33,7 @@ const Auth = ({ registration }: AuthProps) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<FormSignUp | FormSignIn>({
     resolver: yupResolver(registration ? formSchemaSignUp : formSchemaSignIn),
     mode: 'onChange',
@@ -128,7 +128,11 @@ const Auth = ({ registration }: AuthProps) => {
               </p>
             )}
           </InputField>
-          <button type="submit" className="w-full btn-primary">
+          <button
+            type="submit"
+            className={`w-full ${isValid ? 'btn-primary' : 'btn-disabled'}`}
+            disabled={!isValid}
+          >
             Submit
           </button>
         </form>

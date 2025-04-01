@@ -54,6 +54,9 @@
   .btn-primary {
     @apply px-4 py-2 bg-cta-primary text-white rounded-lg hover:bg-cta-hover transition hover:cursor-pointer;
   }
+  .btn-disabled {
+    @apply px-4 py-2 bg-cta-secondary text-cta-primary rounded-lg hover:cursor-not-allowed;
+  }
   code {
     @apply font-code bg-white px-3 rounded;
   }
