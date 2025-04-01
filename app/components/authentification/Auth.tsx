@@ -13,6 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { formSchemaSignIn, formSchemaSignUp } from '@/app/schema/yupShema';
 import Tost from './tost/Tost';
 import { setCookie } from 'cookies-next';
+import InputField from './input/InputField';
 
 type FormSignIn = {
   email: string;
@@ -33,7 +34,7 @@ const Auth = ({ registration }: AuthProps) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormSignIn | FormSignUp>({
+  } = useForm<FormSignUp | FormSignIn>({
     resolver: yupResolver(registration ? formSchemaSignUp : formSchemaSignIn),
     mode: 'onChange',
   });
@@ -91,43 +92,45 @@ const Auth = ({ registration }: AuthProps) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           {registration && (
             <>
-              <input
+              <InputField
                 type="text"
                 placeholder="Name*"
-                className="w-full p-3 mb-2 bg-white rounded outline-none placeholder-cta-secondary"
-                {...register('name')}
-              />
-              {'name' in errors && (
-                <p className="text-red-500 text-sm mb-3">
-                  {errors.name?.message}
-                </p>
-              )}
+                register={register('name')}
+              >
+                {'name' in errors && (
+                  <p className="text-red-500 text-sm mb-3">
+                    {errors.name?.message}
+                  </p>
+                )}
+              </InputField>
             </>
           )}
-          <input
+          <InputField
             type="text"
             placeholder="Email*"
-            className="w-full p-3 mb-2 bg-white rounded outline-none placeholder-cta-secondary"
-            {...register('email')}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>
-          )}
-          <input
+            register={register('email')}
+          >
+            {' '}
+            {errors.email && (
+              <p className="text-red-500 text-sm mb-3">
+                {errors.email.message}
+              </p>
+            )}
+          </InputField>
+          <InputField
             type="password"
             placeholder="Password*"
-            className="w-full p-3 mb-2 bg-white rounded outline-none placeholder-cta-secondary"
-            {...register('password')}
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm mb-3">
-              {errors.password.message}
-            </p>
-          )}
-          <button
-            type="submit"
-            className="w-full p-3 bg-cta-primary rounded text-white hover:bg-cta-hover transition hover:cursor-pointer"
-          ></button>
+            register={register('password')}
+          >
+            {errors.password && (
+              <p className="text-red-500 text-sm mb-3">
+                {errors.password.message}
+              </p>
+            )}
+          </InputField>
+          <button type="submit" className="w-full btn-primary">
+            Submit
+          </button>
         </form>
       </div>
     </main>

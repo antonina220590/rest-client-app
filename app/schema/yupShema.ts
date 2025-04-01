@@ -25,6 +25,7 @@ export const formSchemaSignIn = yup.object().shape({
 export const formSchemaSignUp = yup.object().shape({
   name: yup
     .string()
+    .trim()
     .matches(/^[A-Z]/, 'Name should start with an uppercase letter')
     .required('Name is required'),
   email: yup

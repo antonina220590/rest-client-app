@@ -51,6 +51,9 @@
   nav {
     @apply flex gap-4;
   }
+  .btn-primary {
+    @apply px-4 py-2 bg-cta-primary text-white rounded-lg hover:bg-cta-hover transition hover:cursor-pointer;
+  }
   code {
     @apply font-code bg-white px-3 rounded;
   }
