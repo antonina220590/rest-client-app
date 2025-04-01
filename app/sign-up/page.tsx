@@ -1,16 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import {
+  useCreateUserWithEmailAndPassword,
+  useUpdateProfile,
+} from 'react-firebase-hooks/auth';
 import { auth } from '@/app/firebase/config';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { formSchema } from '@/app/schema/yupShema';
+import { formSchemaSignUp } from '@/app/schema/yupShema';
 import Tost from '../components/authentification/tost/Tost';
 import { setCookie } from 'cookies-next';
 
 type FormSignUp = {
+  name: string;
   email: string;
   password: string;
 };
@@ -21,12 +25,13 @@ const SignUp = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormSignUp>({
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(formSchemaSignUp),
     mode: 'onChange',
   });
 
   const [createUserWithEmailAndPassword, loading] =
     useCreateUserWithEmailAndPassword(auth);
+  const [updateProfile] = useUpdateProfile(auth);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -41,7 +46,17 @@ const SignUp = () => {
         setTimeout(() => setError(null), 5000);
         return;
       }
-      setCookie('user', 'true', { path: '/' });
+
+      // Update the user's profile with the name
+      await updateProfile({ displayName: data.name });
+
+      // Store user info in cookies
+      setCookie(
+        'user',
+        JSON.stringify({ name: data.name, email: data.email }),
+        { path: '/' }
+      );
+
       router.push('/');
     } catch (err) {
       if (err instanceof Error) {
@@ -57,6 +72,15 @@ const SignUp = () => {
       <div className="bg-accent p-10 rounded-lg shadow-xl w-96">
         <h3 className="mb-5 text-center">Sign Up</h3>
         <form onSubmit={handleSubmit(onSubmit)}>
+          <input
+            type="text"
+            placeholder="Name*"
+            className="w-full p-3 mb-2 bg-white rounded outline-none placeholder-cta-secondary"
+            {...register('name')}
+          />
+          {errors.name && (
+            <p className="text-red-500 text-sm mb-3">{errors.name.message}</p>
+          )}
           <input
             type="text"
             placeholder="Email*"

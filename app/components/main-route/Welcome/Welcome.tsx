@@ -13,7 +13,7 @@ export default function Welcome() {
     <section>
       {user || userSession ? (
         <>
-          <h2>Welcome Back, User!</h2>
+          <h2>Welcome Back, {user?.displayName || 'User'}!</h2>
           <nav>
             <NavBtn href="/RESTful" text="Rest Client" />
             <NavBtn href="/history" text="History" />
