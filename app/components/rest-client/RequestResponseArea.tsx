@@ -73,20 +73,19 @@ export function RequestResponseArea() {
         minSize={VERTICAL_COLLAPSED_SIZE}
         onCollapse={() => syncRequestPanelState(true)}
         onExpand={() => syncRequestPanelState(false)}
-        className="transition-all duration-300 ease-in-out border-2 border-blue-500 w-[70%] rounded-md mt-10 mx-auto"
+        className="transition-all duration-300 ease-in-out border-2 w-[80%] rounded-md mt-10 mx-auto p-0"
       >
         <div className="relative h-full w-full">
           <Button
             onClick={toggleRequestPanel}
-            variant="ghost"
             size="icon"
             aria-label="Toggle Request Panel"
-            className="absolute top-1 right-2 z-10 border bg-background hover:bg-muted h-5 w-5 p-0"
+            className="absolute top-0 right-0 z-10 bg-transparent hover:bg-cta-secondary h-10 w-10 p-0"
           >
             {isRequestPanelCollapsed ? (
-              <ChevronUp className="h-3 w-3" />
+              <ChevronUp className="h-8 w-6 text-cta-primary" />
             ) : (
-              <ChevronDown className="h-3 w-3" />
+              <ChevronDown className="h-6 w-6 text-cta-primary" />
             )}
           </Button>
 
@@ -101,7 +100,7 @@ export function RequestResponseArea() {
         </div>
       </ResizablePanel>
 
-      <ResizableHandle withHandle />
+      <ResizableHandle withHandle className="bg-transparent" />
 
       <ResizablePanel
         id="response-panel"
@@ -114,7 +113,7 @@ export function RequestResponseArea() {
         }
         minSize={20}
       >
-        <div className="p-4 h-full overflow-auto border-2 border-red-500">
+        <div className="p-4 h-full overflow-auto border-2 border-red-500 mt-5">
           <p>Response</p>
         </div>
       </ResizablePanel>
