@@ -9,13 +9,11 @@ import {
 } from '@/components/ui/resizable';
 import { type ImperativePanelGroupHandle } from 'react-resizable-panels';
 import { Button } from '@/components/ui/button';
-import TabsDemo from './Tabs';
+import TabsComponent from './Tabs';
 
 import { cn } from '@/lib/utils';
-import MethodSelector from './MethodSelector';
-import UrlInput from './UrlInput';
 
-const VERTICAL_COLLAPSED_SIZE = 6;
+const VERTICAL_COLLAPSED_SIZE = 6.5;
 const VERTICAL_OPEN_LAYOUT: number[] = [50, 50];
 const VERTICAL_COLLAPSED_LAYOUT: number[] = [
   VERTICAL_COLLAPSED_SIZE,
@@ -54,12 +52,8 @@ export function RequestResponseArea() {
     <ResizablePanelGroup
       ref={verticalLayoutGroupRef}
       direction="vertical"
-      className="h-full rounded-lg flex m-6"
+      className="h-full rounded-lg flex"
     >
-      <div className="flex w-4xl max-w-[85vw] mx-auto mt-5 justify-center">
-        <MethodSelector />
-        <UrlInput />
-      </div>
       <ResizablePanel
         id="request-panel"
         order={1}
@@ -73,19 +67,19 @@ export function RequestResponseArea() {
         minSize={VERTICAL_COLLAPSED_SIZE}
         onCollapse={() => syncRequestPanelState(true)}
         onExpand={() => syncRequestPanelState(false)}
-        className="transition-all duration-300 ease-in-out border-2 w-[80%] rounded-md mt-10 mx-auto p-0"
+        className="transition-all duration-300 ease-in-out w-[80%] rounded-md mt-10 mx-auto p-0"
       >
         <div className="relative h-full w-full">
           <Button
             onClick={toggleRequestPanel}
             size="icon"
             aria-label="Toggle Request Panel"
-            className="absolute top-0 right-0 z-10 bg-transparent hover:bg-cta-secondary h-10 w-10 p-0"
+            className="absolute top-0 right-2 z-10 bg-transparent hover:bg-accent h-10 w-9 p-0 cursor-pointer"
           >
             {isRequestPanelCollapsed ? (
-              <ChevronUp className="h-8 w-6 text-cta-primary" />
+              <ChevronUp className="h-8 w-8 text-cta-primary" />
             ) : (
-              <ChevronDown className="h-6 w-6 text-cta-primary" />
+              <ChevronDown className="h-6 w-8 text-cta-primary" />
             )}
           </Button>
 
@@ -95,7 +89,7 @@ export function RequestResponseArea() {
               isRequestPanelCollapsed && 'overflow-hidden'
             )}
           >
-            <TabsDemo onTabChange={expandRequestPanel} />
+            <TabsComponent onTabChange={expandRequestPanel} />
           </div>
         </div>
       </ResizablePanel>

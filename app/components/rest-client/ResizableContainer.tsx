@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 
 import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from './RequestResponseArea';
+import MethodSelector from './MethodSelector';
+import UrlInput from './UrlInput';
 
 export default function ResizableContainer() {
   const {
@@ -48,9 +50,17 @@ export default function ResizableContainer() {
           order={1}
           defaultSize={isPanelOpen ? OPEN_LAYOUT[0] : CLOSED_LAYOUT[0]}
           minSize={30}
-          className="flex"
+          className="flex flex-col"
         >
-          <RequestResponseArea />
+          <div className="flex flex-col h-full p-2 md:p-4">
+            <div className="flex w-[90%] max-w-4xl mx-auto mt-5 justify-center">
+              <MethodSelector />
+              <UrlInput />
+            </div>
+            <div className="flex-grow w-[90%] max-w-4xl mx-auto overflow-hidden justify-center">
+              <RequestResponseArea />
+            </div>
+          </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
