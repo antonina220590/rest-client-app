@@ -20,6 +20,12 @@ const VERTICAL_COLLAPSED_LAYOUT: number[] = [
   100 - VERTICAL_COLLAPSED_SIZE,
 ];
 
+interface KeyValueItem {
+  id: string;
+  key?: string;
+  value?: string;
+}
+
 export function RequestResponseArea() {
   const [isRequestPanelCollapsed, setIsRequestPanelCollapsed] = useState(true);
   const verticalLayoutGroupRef = useRef<ImperativePanelGroupHandle>(null);
@@ -48,6 +54,80 @@ export function RequestResponseArea() {
     }
   };
 
+  const [queryParams, setQueryParams] = useState<KeyValueItem[]>([
+    { id: crypto.randomUUID(), key: '', value: '' },
+  ]);
+  const [headers, setHeaders] = useState<KeyValueItem[]>([
+    { id: crypto.randomUUID(), key: '', value: '' },
+  ]);
+
+  const handleAddQueryParam = () => {
+    setQueryParams((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), key: '', value: '' },
+    ]);
+  };
+  const handleQueryParamKeyChange = (id: string | number, newKey: string) => {
+    setQueryParams((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, key: newKey } : p))
+    );
+  };
+  const handleQueryParamValueChange = (
+    id: string | number,
+    newValue: string
+  ) => {
+    setQueryParams((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, value: newValue } : p))
+    );
+  };
+  const handleDeleteQueryParam = (id: string | number) => {
+    if (
+      queryParams.length <= 1 &&
+      queryParams[0]?.key === '' &&
+      queryParams[0]?.value === ''
+    )
+      return;
+    setQueryParams((prev) => prev.filter((p) => p.id !== id));
+    if (queryParams.length === 1) {
+      setTimeout(
+        () => setQueryParams([{ id: crypto.randomUUID(), key: '', value: '' }]),
+        0
+      );
+    }
+  };
+
+  const handleAddHeader = () => {
+    setHeaders((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), key: '', value: '' },
+    ]);
+  };
+  const handleHeaderKeyChange = (id: string | number, newKey: string) => {
+    setHeaders((prev) =>
+      prev.map((h) => (h.id === id ? { ...h, key: newKey } : h))
+    );
+  };
+  const handleHeaderValueChange = (id: string | number, newValue: string) => {
+    setHeaders((prev) =>
+      prev.map((h) => (h.id === id ? { ...h, value: newValue } : h))
+    );
+  };
+  const handleDeleteHeader = (id: string | number) => {
+    if (
+      headers.length <= 1 &&
+      headers[0]?.key === '' &&
+      headers[0]?.value === ''
+    )
+      return;
+    setHeaders((prev) => prev.filter((h) => h.id !== id));
+    if (headers.length === 1) {
+      setTimeout(
+        () => setHeaders([{ id: crypto.randomUUID(), key: '', value: '' }]),
+        0
+      );
+    }
+  };
+
   return (
     <ResizablePanelGroup
       ref={verticalLayoutGroupRef}
@@ -67,14 +147,14 @@ export function RequestResponseArea() {
         minSize={VERTICAL_COLLAPSED_SIZE}
         onCollapse={() => syncRequestPanelState(true)}
         onExpand={() => syncRequestPanelState(false)}
-        className="transition-all duration-300 ease-in-out w-[80%] rounded-md mt-10 mx-auto p-0"
+        className="transition-all duration-300 ease-in-out w-[80%] rounded-md mt-10 mx-auto p-0 bg-cta-secondary"
       >
         <div className="relative h-full w-full">
           <Button
             onClick={toggleRequestPanel}
             size="icon"
             aria-label="Toggle Request Panel"
-            className="absolute top-0 right-2 z-10 bg-transparent hover:bg-accent h-10 w-9 p-0 cursor-pointer"
+            className="absolute top-0 right-1 z-10 bg-transparent hover:bg-cta-secondary h-10 w-9 p-0 cursor-pointer border-none shadow-none"
           >
             {isRequestPanelCollapsed ? (
               <ChevronUp className="h-8 w-8 text-cta-primary" />
@@ -89,7 +169,19 @@ export function RequestResponseArea() {
               isRequestPanelCollapsed && 'overflow-hidden'
             )}
           >
-            <TabsComponent onTabChange={expandRequestPanel} />
+            <TabsComponent
+              onTabChange={expandRequestPanel}
+              queryParams={queryParams}
+              onAddQueryParam={handleAddQueryParam}
+              onQueryParamKeyChange={handleQueryParamKeyChange}
+              onQueryParamValueChange={handleQueryParamValueChange}
+              onDeleteQueryParam={handleDeleteQueryParam}
+              headers={headers}
+              onAddHeader={handleAddHeader}
+              onHeaderKeyChange={handleHeaderKeyChange}
+              onHeaderValueChange={handleHeaderValueChange}
+              onDeleteHeader={handleDeleteHeader}
+            />
           </div>
         </div>
       </ResizablePanel>

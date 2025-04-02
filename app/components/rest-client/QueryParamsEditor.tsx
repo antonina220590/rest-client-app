@@ -1,64 +1,50 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import QueryInputs from './QueryInput';
 
-interface QueryParam {
+interface KeyValueItem {
   id: string;
   key?: string;
   value?: string;
 }
+interface QueryParam {
+  items: KeyValueItem[];
+  onAddItem: () => void;
+  onItemKeyChange: (id: string | number, newKey: string) => void;
+  onItemValueChange: (id: string | number, newValue: string) => void;
+  onDeleteItem: (id: string | number) => void;
+  addButtonLabel?: string;
+  keyInputPlaceholder?: string;
+  valueInputPlaceholder?: string;
+}
 
-export default function QueryParamsEditor() {
-  const [params, setParams] = useState<QueryParam[]>([
-    { id: crypto.randomUUID(), key: '', value: '' },
-  ]);
-
-  const handleAddParam = () => {
-    setParams((prevParams) => [
-      ...prevParams,
-      { id: crypto.randomUUID(), key: '', value: '' },
-    ]);
-  };
-
-  const handleKeyChange = (id: string | number, newKey: string) => {
-    setParams((prevParams) =>
-      prevParams.map((param) =>
-        param.id === id ? { ...param, key: newKey } : param
-      )
-    );
-  };
-
-  const handleValueChange = (id: string | number, newValue: string) => {
-    setParams((prevParams) =>
-      prevParams.map((param) =>
-        param.id === id ? { ...param, value: newValue } : param
-      )
-    );
-  };
-
-  const handleDeleteParam = (id: string | number) => {
-    if (params.length <= 1) return;
-
-    setParams((prevParams) => prevParams.filter((param) => param.id !== id));
-  };
-
+export default function QueryParamsEditor({
+  items,
+  onAddItem,
+  onItemKeyChange,
+  onItemValueChange,
+  onDeleteItem,
+  addButtonLabel = 'Add Item',
+  keyInputPlaceholder = 'Key',
+  valueInputPlaceholder = 'Value',
+}: QueryParam) {
   return (
     <div className="flex flex-col gap-2">
       {' '}
-      {params.map((param) => (
+      {items.map((item) => (
         <QueryInputs
-          key={param.id}
-          id={param.id}
-          itemKey={param.key}
-          itemValue={param.value}
-          onKeyChange={handleKeyChange}
-          onValueChange={handleValueChange}
-          onDelete={handleDeleteParam}
-          keyPlaceholder="key"
-          valuePlaceholder="value"
+          key={item.id}
+          id={item.id}
+          itemKey={item.key}
+          itemValue={item.value}
+          onKeyChange={onItemKeyChange}
+          onValueChange={onItemValueChange}
+          onDelete={onDeleteItem}
+          keyPlaceholder={keyInputPlaceholder}
+          valuePlaceholder={valueInputPlaceholder}
         />
       ))}
       <div className="mt-2">
@@ -66,11 +52,11 @@ export default function QueryParamsEditor() {
         <Button
           variant="outline"
           size="sm"
-          onClick={handleAddParam}
+          onClick={onAddItem}
           className="text-xs"
         >
           <Plus className="h-3 w-3 mr-1" />
-          Add Query Param
+          {addButtonLabel}
         </Button>
       </div>
     </div>
