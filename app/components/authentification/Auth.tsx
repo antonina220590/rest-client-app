@@ -69,22 +69,10 @@ const Auth = ({ registration }: AuthProps) => {
           return;
         }
       }
-      const { expirationTime } = await res.user.getIdTokenResult();
       setCookie('user', 'true', {
         path: '/',
-        expires: new Date(expirationTime),
       });
 
-      setCookie('user-expiration', expirationTime, {
-        path: '/',
-        expires: new Date(expirationTime),
-      });
-      // console.log(
-      //   'Stored Expiration:',
-      //   expirationTime,
-      //   new Date(expirationTime).getTime(),
-      //   Date.now()
-      // );
       router.push('/');
     } catch (err) {
       if (err instanceof Error) {

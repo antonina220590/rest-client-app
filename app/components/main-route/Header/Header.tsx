@@ -30,7 +30,6 @@ export default function Header() {
             onClick={() => {
               signOut(auth);
               deleteCookie('user');
-              deleteCookie('user-expiration');
               router.push('/sign-in');
             }}
           />
