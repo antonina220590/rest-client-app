@@ -53,7 +53,7 @@ const Auth = ({ registration }: AuthProps) => {
       if (registration) {
         res = await createUserWithEmailAndPassword(data.email, data.password);
         if (!res || !res.user) {
-          setError('Failed to sign up');
+          setError('This email is already registered');
           setTimeout(() => setError(null), 5000);
           return;
         }
@@ -64,7 +64,7 @@ const Auth = ({ registration }: AuthProps) => {
         res = await signInWithEmailAndPassword(data.email, data.password);
 
         if (!res || !res.user) {
-          setError('Failed to sign in');
+          setError('Invalid email or password');
           setTimeout(() => setError(null), 5000);
           return;
         }
