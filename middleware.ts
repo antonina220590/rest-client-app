@@ -5,6 +5,19 @@ export function middleware(req: NextRequest) {
   const sessionEnd = req.cookies.get('user-expiration')?.value;
 
   if (
+    userSession &&
+    sessionEnd &&
+    new Date(sessionEnd).getTime() > Date.now()
+  ) {
+    if (
+      req.nextUrl.pathname === '/sign-in' ||
+      req.nextUrl.pathname === '/sign-up'
+    ) {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+  }
+
+  if (
     !userSession ||
     !sessionEnd ||
     new Date(sessionEnd).getTime() < Date.now()
@@ -16,5 +29,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/history', '/RESTful', '/variables'],
+  matcher: ['/history', '/RESTful', '/variables', '/sign-in'],
 };
