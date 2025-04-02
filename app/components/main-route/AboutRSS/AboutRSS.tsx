@@ -1,7 +1,7 @@
 export default function AboutRSS() {
   return (
     <section
-      className="flex flex-col gap-4 pb-60 pt-8 items-center text-center bg-bottom bg-no-repeat bg-accent"
+      className="pb-60 bg-bottom bg-no-repeat bg-accent"
       style={{ backgroundImage: "url('/laptop.png')" }}
     >
       <h2>Built as a final project for The Rolling Scopes School</h2>
