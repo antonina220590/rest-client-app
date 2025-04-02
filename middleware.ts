@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(req: NextRequest) {
   const userSession = req.cookies.get('user');
+  const sessionEnd = req.cookies.get('user-expiration')?.value;
 
   if (
-    !userSession &&
-    ['/history', '/RESTful', '/variables'].includes(req.nextUrl.pathname)
+    !userSession ||
+    !sessionEnd ||
+    new Date(sessionEnd).getTime() < Date.now()
   ) {
     return NextResponse.redirect(new URL('/', req.url));
   }

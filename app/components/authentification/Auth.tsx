@@ -49,11 +49,9 @@ const Auth = ({ registration }: AuthProps) => {
 
   const onSubmit = async (data: FormSignIn | FormSignUp) => {
     try {
+      let res = null;
       if (registration) {
-        const res = await createUserWithEmailAndPassword(
-          data.email,
-          data.password
-        );
+        res = await createUserWithEmailAndPassword(data.email, data.password);
         if (!res || !res.user) {
           setError('Failed to sign up');
           setTimeout(() => setError(null), 5000);
@@ -63,7 +61,7 @@ const Auth = ({ registration }: AuthProps) => {
           await updateProfile({ displayName: data.name });
         }
       } else {
-        const res = await signInWithEmailAndPassword(data.email, data.password);
+        res = await signInWithEmailAndPassword(data.email, data.password);
 
         if (!res || !res.user) {
           setError('Failed to sign in');
@@ -71,8 +69,22 @@ const Auth = ({ registration }: AuthProps) => {
           return;
         }
       }
+      const { expirationTime } = await res.user.getIdTokenResult();
+      setCookie('user', 'true', {
+        path: '/',
+        expires: new Date(expirationTime),
+      });
 
-      setCookie('user', 'true', { path: '/' });
+      setCookie('user-expiration', expirationTime, {
+        path: '/',
+        expires: new Date(expirationTime),
+      });
+      // console.log(
+      //   'Stored Expiration:',
+      //   expirationTime,
+      //   new Date(expirationTime).getTime(),
+      //   Date.now()
+      // );
       router.push('/');
     } catch (err) {
       if (err instanceof Error) {
