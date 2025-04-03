@@ -128,6 +128,17 @@ export function RequestResponseArea() {
     }
   };
 
+  const [requestBody, setRequestBody] = useState<string>(
+    '{\n  "key": "value"\n}'
+  );
+  const [bodyLanguage, setBodyLanguage] = useState<'json' | 'plaintext'>(
+    'json'
+  );
+
+  const handleBodyChange = useCallback((value: string) => {
+    setRequestBody(value);
+  }, []);
+
   return (
     <ResizablePanelGroup
       ref={verticalLayoutGroupRef}
@@ -181,6 +192,12 @@ export function RequestResponseArea() {
               onHeaderKeyChange={handleHeaderKeyChange}
               onHeaderValueChange={handleHeaderValueChange}
               onDeleteHeader={handleDeleteHeader}
+              requestBody={requestBody}
+              onBodyChange={handleBodyChange}
+              bodyLanguage={bodyLanguage}
+              showPrettifyButton={true}
+              showLanguageSelector={true}
+              onBodyLanguageChange={setBodyLanguage}
             />
           </div>
         </div>

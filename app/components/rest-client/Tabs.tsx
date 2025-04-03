@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import QueryParamsEditor from './QueryParamsEditor';
 import { Card } from '@/components/ui/card';
+import RequestBodyEditor from './BodyEditor';
 
 interface KeyValueItem {
   id: string;
@@ -21,6 +22,14 @@ interface TabsComponentProps {
   onHeaderKeyChange: (id: string | number, newKey: string) => void;
   onHeaderValueChange: (id: string | number, newValue: string) => void;
   onDeleteHeader: (id: string | number) => void;
+
+  requestBody: string;
+  onBodyChange: (value: string) => void;
+  bodyLanguage: 'json' | 'plaintext';
+
+  onBodyLanguageChange: (lang: 'json' | 'plaintext') => void;
+  showPrettifyButton: boolean;
+  showLanguageSelector: boolean;
 }
 
 export default function TabsComponent({
@@ -35,6 +44,12 @@ export default function TabsComponent({
   onHeaderKeyChange,
   onHeaderValueChange,
   onDeleteHeader,
+  requestBody,
+  onBodyChange,
+  bodyLanguage,
+  showPrettifyButton,
+  showLanguageSelector,
+  onBodyLanguageChange,
 }: TabsComponentProps) {
   return (
     <Tabs defaultValue="query" className="w-[90%] gap-0">
@@ -86,6 +101,19 @@ export default function TabsComponent({
             addButtonLabel="Add Header"
             keyInputPlaceholder="key"
             valueInputPlaceholder="value"
+          />
+        </Card>
+      </TabsContent>
+      <TabsContent value="body" className="w-[110%] p-2">
+        <Card className="border rounded-sm p-2 min-h-[230px]">
+          <RequestBodyEditor
+            value={requestBody}
+            onChange={onBodyChange}
+            language={bodyLanguage}
+            readOnly={false}
+            showPrettifyButton={showPrettifyButton}
+            showLanguageSelector={showLanguageSelector}
+            onLanguageChange={onBodyLanguageChange}
           />
         </Card>
       </TabsContent>

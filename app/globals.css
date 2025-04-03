@@ -169,3 +169,25 @@
     @apply font-code bg-white px-3 rounded;
   }
 }
+
+.cm-editor {
+  border: none;
+}
+
+.ͼ2 .cm-gutters {
+  border: none;
+  background-color: white;
+}
+
+.cm-editor {
+  @apply text-left;
+}
+
+.cm-gutterElement {
+  color: grey;
+  @apply font-code;
+}
+
+.cm-line {
+  color: #2d2d2d;
+}

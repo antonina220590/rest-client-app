@@ -1,4 +1,5 @@
 import ResizableContainer from '../components/rest-client/ResizableContainer';
+import { Toaster } from '@/components/ui/sonner';
 
 export default function RESTful() {
   return (
@@ -9,6 +10,7 @@ export default function RESTful() {
           <ResizableContainer />
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
