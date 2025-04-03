@@ -31,10 +31,7 @@
     font-size: 21px;
   }
   header {
-    @apply fixed top-0 left-0 w-full flex justify-between p-4 bg-accent;
-  }
-  main {
-    @apply pt-20;
+    @apply sticky top-0 left-0 w-full flex justify-between p-4 bg-accent;
   }
   footer {
     @apply flex justify-between mt-auto p-4 bg-bg-secondary text-white;
