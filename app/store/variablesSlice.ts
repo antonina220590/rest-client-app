@@ -1,50 +1,44 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Variable } from './types';
 
-const loadVariables = (): Variable[] => {
-  if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('variables');
-    return saved ? JSON.parse(saved) : [];
-  }
-  return [];
-};
-
-const initialState: Variable[] = loadVariables();
+const initialState: Variable[] = [];
 
 export const variablesSlice = createSlice({
   name: 'variables',
   initialState,
   reducers: {
-    addVariable: (state, action: PayloadAction<Omit<Variable, 'id'>>) => {
-      const newVar: Variable = {
-        ...action.payload,
-        id: Date.now().toString(),
-        createdAt: Date.now(),
-      };
-      state.push(newVar);
-      localStorage.setItem('variables', JSON.stringify(state));
+    addVariable: {
+      reducer(state, action: PayloadAction<Variable>) {
+        state.push(action.payload);
+      },
+      prepare(payload: Omit<Variable, 'id' | 'createdAt'>) {
+        return {
+          payload: {
+            ...payload,
+            id: Date.now().toString(),
+            createdAt: Date.now(),
+          },
+        };
+      },
     },
-
-    deleteVariable: (state, action: PayloadAction<string>) => {
-      const newState = state.filter((v) => v.id !== action.payload);
-      localStorage.setItem('variables', JSON.stringify(newState));
-      return newState;
+    deleteVariable(state, action: PayloadAction<string>) {
+      return state.filter((v) => v.id !== action.payload);
     },
-
-    updateVariable: (state, action: PayloadAction<Variable>) => {
+    updateVariable(state, action: PayloadAction<Variable>) {
       const index = state.findIndex((v) => v.id === action.payload.id);
       if (index !== -1) {
-        state[index] = action.payload;
-        localStorage.setItem('variables', JSON.stringify(state));
+        state[index] = {
+          ...action.payload,
+          updatedAt: Date.now(),
+        };
       }
+    },
+    setVariables(_state, action: PayloadAction<Variable[]>) {
+      return action.payload;
     },
   },
 });
 
-export const { addVariable, deleteVariable, updateVariable } =
+export const { addVariable, deleteVariable, updateVariable, setVariables } =
   variablesSlice.actions;
-
-export const selectVariables = (state: { variables: Variable[] }) =>
-  state.variables;
-
 export default variablesSlice.reducer;

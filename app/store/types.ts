@@ -2,8 +2,14 @@ export interface Variable {
   id: string;
   key: string;
   value: string;
-  createdAt?: number;
+  createdAt: number;
   updatedAt?: number;
 }
 
-export type VariableFormData = Omit<Variable, 'id' | 'createdAt' | 'updatedAt'>;
+export interface RootState {
+  variables: Variable[];
+}
+
+export interface PreloadedState {
+  variables: Variable[];
+}
