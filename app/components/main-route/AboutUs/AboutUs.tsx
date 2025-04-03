@@ -5,7 +5,7 @@ import MemberCard from './MemberCard/MemberCard';
 
 export default function AboutUs() {
   return (
-    <section className=" flex flex-col gap-4 text-center p-8 items-center">
+    <section>
       <h2>Meet our team</h2>
       <p>
         Get to know the faces behind the screen and their roles in this project.
