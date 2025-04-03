@@ -47,7 +47,7 @@ export default function QueryParamsEditor({
           valuePlaceholder={valueInputPlaceholder}
         />
       ))}
-      <div className="mt-2">
+      <div className="mt-2 mb-5">
         {' '}
         <Button
           variant="outline"

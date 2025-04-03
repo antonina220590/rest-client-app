@@ -52,32 +52,35 @@ export default function TabsComponent({
   onBodyLanguageChange,
 }: TabsComponentProps) {
   return (
-    <Tabs defaultValue="query" className="w-[90%] gap-0">
-      <TabsList className="grid w-full grid-cols-3 h-10 p-0 rounded-t-md rounded-b-none">
+    <Tabs defaultValue="query" className="w-[90%] gap-0 flex flex-col h-full">
+      <TabsList className="grid w-full grid-cols-3 h-10 min-h-10 p-0 rounded-t-md rounded-b-none">
         <TabsTrigger
           value="query"
-          className="rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
+          className=" bottom-0.5 border-cta-primary rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
           Query
         </TabsTrigger>
         <TabsTrigger
           value="headers"
-          className="rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
+          className=" bottom-0.5 border-cta-primary rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
           Headers
         </TabsTrigger>
         <TabsTrigger
           value="body"
-          className="rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
+          className="bottom-0.5 border-cta-primary rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
           Body
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="query" className="w-[110%]">
-        <Card className="h-auto bg-cta-secondary rounded-t-none">
+      <TabsContent
+        value="query"
+        className="w-[110%] overflow-y-auto min-h-0 flex overflow"
+      >
+        <Card className="h-auto bg-cta-secondary rounded-t-none w-[100vw]">
           <QueryParamsEditor
             items={queryParams}
             onAddItem={onAddQueryParam}
@@ -90,8 +93,11 @@ export default function TabsComponent({
           />
         </Card>
       </TabsContent>
-      <TabsContent value="headers" className="w-[110%]">
-        <Card className="h-auto bg-cta-secondary rounded-t-none">
+      <TabsContent
+        value="headers"
+        className="w-[110%] overflow-y-auto min-h-0 flex overflow"
+      >
+        <Card className=" bg-cta-secondary rounded-t-none w-[100vw]">
           <QueryParamsEditor
             items={headers}
             onAddItem={onAddHeader}
@@ -104,10 +110,14 @@ export default function TabsComponent({
           />
         </Card>
       </TabsContent>
-      <TabsContent value="body" className="w-[110%] p-2">
-        <Card className="border rounded-sm p-2 min-h-[230px]">
+      <TabsContent
+        value="body"
+        className="w-[110%] p-2 overflow-y-auto min-h-0 flex overflow"
+      >
+        <Card className="border rounded-sm p-2 h-fit min-h-[230px] w-[100vw]">
           <RequestBodyEditor
             value={requestBody}
+            contentEditable={false}
             onChange={onBodyChange}
             language={bodyLanguage}
             readOnly={false}

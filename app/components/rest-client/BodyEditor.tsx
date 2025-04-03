@@ -5,6 +5,7 @@ import CodeMirror, { EditorState, lineNumbers } from '@uiw/react-codemirror';
 import { materialLight } from '@uiw/codemirror-theme-material';
 import { json } from '@codemirror/lang-json';
 import { Button } from '@/components/ui/button';
+import { WandSparkles } from 'lucide-react';
 import JSON5 from 'json5';
 import { toast } from 'sonner';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -18,13 +19,15 @@ import { closeBrackets } from '@codemirror/autocomplete';
 export type BodyLanguage = 'json' | 'plaintext';
 interface RequestBodyEditorProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   language: BodyLanguage;
   readOnly?: boolean;
 
   onLanguageChange?: (language: BodyLanguage) => void;
   showPrettifyButton?: boolean;
   showLanguageSelector?: boolean;
+
+  contentEditable: boolean;
 }
 
 export default function RequestBodyEditor({
@@ -35,6 +38,7 @@ export default function RequestBodyEditor({
   readOnly = false,
   showPrettifyButton = true,
   showLanguageSelector = true,
+  contentEditable,
 }: RequestBodyEditorProps) {
   const handleEditorChange = useCallback(
     (newValue: string) => {
@@ -107,11 +111,9 @@ export default function RequestBodyEditor({
   };
 
   return (
-    <div className="flex flex-col h-full m-5 w-full">
-      {' '}
+    <div className="flex flex-col h-full w-full">
       {!readOnly && (showLanguageSelector || showPrettifyButton) && (
-        <div className="flex justify-end items-center p-2 gap-2 border-b min-h-[40px] w-[90%]">
-          {' '}
+        <div className="flex justify-end items-center p-2 gap-2 border-b h-fit min-h-[30px] w-[90%]">
           {showLanguageSelector && onLanguageChange && (
             <ToggleGroup
               type="single"
@@ -136,7 +138,6 @@ export default function RequestBodyEditor({
               </ToggleGroupItem>
             </ToggleGroup>
           )}
-          {/* Кнопка Prettify */}
           {showPrettifyButton && (
             <Button
               variant="ghost"
@@ -145,7 +146,7 @@ export default function RequestBodyEditor({
               disabled={language !== 'json'}
               className="text-xs h-6 px-2"
             >
-              Prettify JSON
+              <WandSparkles className="h-4 w-4" />
             </Button>
           )}
         </div>
@@ -156,6 +157,7 @@ export default function RequestBodyEditor({
           onChange={handleEditorChange}
           extensions={extensions}
           readOnly={readOnly}
+          contentEditable={contentEditable}
           height="100%"
           basicSetup={{
             foldGutter: false,

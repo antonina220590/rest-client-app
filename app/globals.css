@@ -154,8 +154,7 @@
   footer {
     @apply flex justify-between mt-auto p-4 bg-bg-secondary text-white;
   }
-  section {
-  }
+
   h1 {
     @apply font-heading text-xl;
   }
@@ -181,6 +180,7 @@
 
 .cm-editor {
   @apply text-left;
+  background: transparent;
 }
 
 .cm-gutterElement {
@@ -190,4 +190,19 @@
 
 .cm-line {
   color: #2d2d2d;
+  border: none;
+}
+
+.ͼ2 .cm-gutters {
+  background: transparent;
+}
+
+.cm-editor.cm-focused {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.cm-theme-light {
+  outline: none !important;
+  box-shadow: none !important;
 }
