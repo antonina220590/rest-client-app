@@ -1,7 +1,5 @@
+import Auth from '../components/authentification/Auth';
+
 export default function SignUp() {
-  return (
-    <div className="text-center">
-      <h1>Sign Up page</h1>
-    </div>
-  );
+  return <Auth registration={true} />;
 }

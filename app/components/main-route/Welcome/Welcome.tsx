@@ -1,0 +1,34 @@
+'use client';
+
+import NavBtn from '../NavBtn/NavBtn';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/app/firebase/config';
+import { getCookie } from 'cookies-next';
+
+export default function Welcome() {
+  const [user, loading] = useAuthState(auth);
+  const userSession = getCookie('user');
+  if (loading) return null;
+  return (
+    <section>
+      {user || userSession ? (
+        <>
+          <h2>Welcome Back, {user?.displayName || 'User'}!</h2>
+          <nav>
+            <NavBtn href="/RESTful" text="Rest Client" />
+            <NavBtn href="/history" text="History" />
+            <NavBtn href="/variables" text="Variables" />
+          </nav>
+        </>
+      ) : (
+        <>
+          <h2>Welcome!</h2>
+          <nav>
+            <NavBtn href="/sign-in" text="Sign In" />
+            <NavBtn href="/sign-up" text="Sign Up" />
+          </nav>
+        </>
+      )}
+    </section>
+  );
+}

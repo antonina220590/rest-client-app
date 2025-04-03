@@ -129,7 +129,8 @@
   --color-bg-secondary: #2d2d2d;
   --color-accent: #f8d57e;
   --color-cta-primary: #009379;
-  --color-cta-secondary: #e5f4f2;
+  --color-cta-secondary: #c0dad6;
+  --color-cta-hover: #00bfa1;
 
   --animate-text-change: colorChange 4s infinite alternate;
 
@@ -145,24 +146,37 @@
 
 @layer base {
   body {
-    @apply flex flex-col min-h-screen font-body bg-bg-primary text-black;
+    @apply flex flex-col min-h-screen font-body bg-bg-primary text-bg-secondary;
     font-size: 21px;
   }
   header {
-    @apply p-4 bg-accent;
+    @apply flex justify-between p-4 bg-accent;
   }
   footer {
     @apply flex justify-between mt-auto p-4 bg-bg-secondary text-white;
   }
 
+  section {
+    @apply flex flex-col gap-4 p-8 text-center items-center;
+  }
+
   h1 {
-    @apply font-heading text-xl;
+    @apply pt-2 font-heading text-2xl;
   }
   h2 {
     @apply font-heading text-4xl;
   }
   h3 {
     @apply font-heading text-2xl;
+  }
+  nav {
+    @apply flex gap-4;
+  }
+  .btn-primary {
+    @apply px-4 py-2 bg-cta-primary text-white rounded-lg hover:bg-cta-hover transition hover:cursor-pointer;
+  }
+  .btn-disabled {
+    @apply px-4 py-2 bg-cta-secondary text-cta-primary rounded-lg hover:cursor-not-allowed;
   }
   code {
     @apply font-code bg-white px-3 rounded;
