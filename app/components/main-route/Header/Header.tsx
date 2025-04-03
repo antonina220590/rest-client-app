@@ -8,8 +8,12 @@ import { auth } from '@/app/firebase/config';
 import { deleteCookie, getCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from './LgSwitcher/LgSwitcher';
 
 export default function Header() {
+  const t = useTranslations('Header');
+
   const [user, loading] = useAuthState(auth);
   const userSession = getCookie('user');
   const router = useRouter();
@@ -33,11 +37,13 @@ export default function Header() {
           {'{REST}'}
         </Link>
       </h1>
+
       <nav>
+        <LanguageSwitcher />
         {user || userSession ? (
           <NavBtn
             href="/"
-            text="Sign Out"
+            text={t('signOut')}
             onClick={() => {
               signOut(auth);
               deleteCookie('user');
@@ -46,8 +52,8 @@ export default function Header() {
           />
         ) : (
           <>
-            <NavBtn href="/sign-in" text="Sign In" />
-            <NavBtn href="/sign-up" text="Sign Up" />
+            <NavBtn href="/sign-in" text={t('signIn')} />
+            <NavBtn href="/sign-up" text={t('signUp')} />
           </>
         )}
       </nav>

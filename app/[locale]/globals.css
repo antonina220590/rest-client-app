@@ -57,6 +57,9 @@
   .btn-disabled {
     @apply px-4 py-2 bg-cta-secondary text-cta-primary rounded-lg hover:cursor-not-allowed;
   }
+  .language-switcher {
+    @apply border p-2 border-cta-primary bg-cta-secondary text-cta-primary rounded-md;
+  }
   code {
     @apply font-code bg-white px-3 rounded;
   }
