@@ -226,3 +226,7 @@ section[aria-label^='Notifications'] {
   padding: 0 !important;
   margin: 0 !important;
 }
+
+[data-sonner-toast] [data-description] {
+  color: hsl(var(--foreground)) !important;
+}
