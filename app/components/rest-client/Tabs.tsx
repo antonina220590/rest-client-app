@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import QueryParamsEditor from './QueryParamsEditor';
 import { Card } from '@/components/ui/card';
 import RequestBodyEditor from './BodyEditor';
+import { useTranslations } from 'next-intl';
 
 interface KeyValueItem {
   id: string;
@@ -51,6 +52,7 @@ export default function TabsComponent({
   showLanguageSelector,
   onBodyLanguageChange,
 }: TabsComponentProps) {
+  const t = useTranslations('RESTful');
   return (
     <Tabs defaultValue="query" className="w-[90%] gap-0 flex flex-col h-full">
       <TabsList className="grid w-full grid-cols-3 h-10 min-h-10 p-0 rounded-t-md rounded-b-none">
@@ -59,21 +61,21 @@ export default function TabsComponent({
           className=" bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
-          Query
+          {t('query')}
         </TabsTrigger>
         <TabsTrigger
           value="headers"
           className=" bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
-          Headers
+          {t('headers')}
         </TabsTrigger>
         <TabsTrigger
           value="body"
           className="bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
-          Body
+          {t('body')}
         </TabsTrigger>
       </TabsList>
       <TabsContent
@@ -87,9 +89,9 @@ export default function TabsComponent({
             onItemKeyChange={onQueryParamKeyChange}
             onItemValueChange={onQueryParamValueChange}
             onDeleteItem={onDeleteQueryParam}
-            addButtonLabel="Add"
-            keyInputPlaceholder="key"
-            valueInputPlaceholder="value"
+            addButtonLabel={t('add')}
+            keyInputPlaceholder={t('key')}
+            valueInputPlaceholder={t('value')}
           />
         </Card>
       </TabsContent>
@@ -104,9 +106,9 @@ export default function TabsComponent({
             onItemKeyChange={onHeaderKeyChange}
             onItemValueChange={onHeaderValueChange}
             onDeleteItem={onDeleteHeader}
-            addButtonLabel="Add"
-            keyInputPlaceholder="key"
-            valueInputPlaceholder="value"
+            addButtonLabel={t('add')}
+            keyInputPlaceholder={t('key')}
+            valueInputPlaceholder={t('value')}
           />
         </Card>
       </TabsContent>

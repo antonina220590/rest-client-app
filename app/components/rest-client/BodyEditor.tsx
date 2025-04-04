@@ -21,6 +21,7 @@ import {
   syntaxHighlighting,
 } from '@codemirror/language';
 import { closeBrackets } from '@codemirror/autocomplete';
+import { useTranslations } from 'next-intl';
 
 export type BodyLanguage = 'json' | 'plaintext';
 interface RequestBodyEditorProps {
@@ -55,6 +56,8 @@ export default function RequestBodyEditor({
     [onChange]
   );
 
+  const t = useTranslations('RESTful');
+
   const handlePrettify = () => {
     if (language !== 'json' || readOnly) return;
     let parsedData: unknown = null;
@@ -65,7 +68,7 @@ export default function RequestBodyEditor({
       try {
         parsedData = JSON5.parse(value);
       } catch (errorJson5) {
-        toast.error('Invalid Syntax', {
+        toast.error(t('Invalid Syntax'), {
           description:
             errorJson5 instanceof Error
               ? errorJson5.message
@@ -79,9 +82,9 @@ export default function RequestBodyEditor({
         const pretty = JSON.stringify(parsedData, null, 2);
         if (pretty !== value && onChange) {
           onChange(pretty);
-          toast.success('JSON prettified successfully.');
+          toast.success(t('JSON prettified successfully'));
         } else if (pretty === value) {
-          toast.info('JSON is already prettified or no changes were made.');
+          toast.info(t('JSON is already prettified'));
         }
       } catch (stringifyError) {
         toast.error('Error formatting data', {
@@ -157,7 +160,7 @@ export default function RequestBodyEditor({
                   </TooltipTrigger>
                   <TooltipContent>
                     {' '}
-                    <p>Plain Text</p>{' '}
+                    <p>{t('text')}</p>{' '}
                   </TooltipContent>
                 </Tooltip>
               </ToggleGroup>
@@ -179,7 +182,7 @@ export default function RequestBodyEditor({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Prettify JSON</p>
+                  <p>{t('prettify')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

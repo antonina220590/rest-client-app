@@ -68,6 +68,13 @@
     "query": "Параметры",
     "headers": "Заголовки",
     "body": "Тело",
-    "add": "Добавить"
+    "add": "Добавить",
+    "text": "Текст",
+    "prettify": "Форматировать",
+    "key": "ключ",
+    "value": "значение",
+    "Invalid Syntax": "Ошибка форматирования",
+    "JSON prettified successfully": "JSON успешно отформатирован",
+    "JSON is already prettified": "JSON уже отформатирован"
   }
 }
