@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400&family=Poppins:wght@600;700&display=swap&family=Fira+Code:wght@400');
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400&family=Roboto:wght@600;700&display=swap&family=Fira+Code:wght@400');
 @import 'tailwindcss';
 
 @theme {
-  --font-heading: Poppins, 'sans-serif';
+  --font-heading: Roboto, 'sans-serif';
   --font-body: Mulish, 'sans-serif';
   --font-code: Fira Code, 'sans-serif';
 
