@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400&family=Poppins:wght@600;700&display=swap&family=Fira+Code:wght@400');
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400&family=Roboto:wght@600;700&display=swap&family=Fira+Code:wght@400');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
@@ -121,7 +121,7 @@
 }
 
 @theme {
-  --font-heading: Poppins, 'sans-serif';
+  --font-heading: Roboto, 'sans-serif';
   --font-body: Mulish, 'sans-serif';
   --font-code: Fira Code, 'sans-serif';
 
@@ -150,7 +150,7 @@
     font-size: 21px;
   }
   header {
-    @apply flex justify-between p-4 bg-accent;
+    @apply sticky top-0 left-0 w-full flex justify-between p-4 bg-accent;
   }
   footer {
     @apply flex justify-between mt-auto p-4 bg-bg-secondary text-white;
@@ -177,6 +177,9 @@
   }
   .btn-disabled {
     @apply px-4 py-2 bg-cta-secondary text-cta-primary rounded-lg hover:cursor-not-allowed;
+  }
+  .language-switcher {
+    @apply border p-2 border-cta-primary bg-cta-secondary text-cta-primary rounded-md;
   }
   code {
     @apply font-code bg-white px-3 rounded;

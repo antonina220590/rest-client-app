@@ -1,4 +1,4 @@
-import ResizableContainer from '../components/rest-client/ResizableContainer';
+import ResizableContainer from '@/app/components/rest-client/ResizableContainer';
 import { Toaster } from '@/components/ui/sonner';
 
 export default function RESTful() {

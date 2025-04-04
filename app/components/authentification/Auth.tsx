@@ -14,6 +14,7 @@ import { formSchemaSignIn, formSchemaSignUp } from '@/app/schema/yupShema';
 import Tost from './tost/Tost';
 import { setCookie } from 'cookies-next';
 import InputField from './input/InputField';
+import { useTranslations } from 'next-intl';
 
 type FormSignIn = {
   email: string;
@@ -30,12 +31,16 @@ interface AuthProps {
   registration: boolean;
 }
 const Auth = ({ registration }: AuthProps) => {
+  const t = useTranslations('Auth');
+
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<FormSignUp | FormSignIn>({
-    resolver: yupResolver(registration ? formSchemaSignUp : formSchemaSignIn),
+    resolver: yupResolver(
+      registration ? formSchemaSignUp(t) : formSchemaSignIn(t)
+    ),
     mode: 'onChange',
   });
 
@@ -53,7 +58,7 @@ const Auth = ({ registration }: AuthProps) => {
       if (registration) {
         res = await createUserWithEmailAndPassword(data.email, data.password);
         if (!res || !res.user) {
-          setError('This email is already registered');
+          setError(t('errors.emailAlreadyRegistered'));
           setTimeout(() => setError(null), 5000);
           return;
         }
@@ -64,7 +69,7 @@ const Auth = ({ registration }: AuthProps) => {
         res = await signInWithEmailAndPassword(data.email, data.password);
 
         if (!res || !res.user) {
-          setError('Invalid email or password');
+          setError(t('errors.invalidCredentials'));
           setTimeout(() => setError(null), 5000);
           return;
         }
@@ -76,7 +81,7 @@ const Auth = ({ registration }: AuthProps) => {
       router.push('/');
     } catch (err) {
       if (err instanceof Error) {
-        setError('An unknown error occurred during authentication');
+        setError(t('errors.unknown'));
       }
       setTimeout(() => setError(null), 5000);
     }
@@ -87,14 +92,14 @@ const Auth = ({ registration }: AuthProps) => {
       {error && <Tost error={error} />}
       <div className="bg-accent p-10 rounded-lg shadow-xl w-96">
         <h3 className="mb-5 text-center">
-          {registration ? 'Sign Up' : 'Sign In'}
+          {registration ? t('signUp') : t('signIn')}
         </h3>
         <form onSubmit={handleSubmit(onSubmit)}>
           {registration && (
             <>
               <InputField
                 type="text"
-                placeholder="Name*"
+                placeholder={t('namePlaceholder')}
                 register={register('name')}
               >
                 {'name' in errors && (
@@ -107,7 +112,7 @@ const Auth = ({ registration }: AuthProps) => {
           )}
           <InputField
             type="text"
-            placeholder="Email*"
+            placeholder={t('emailPlaceholder')}
             register={register('email')}
           >
             {' '}
@@ -119,7 +124,7 @@ const Auth = ({ registration }: AuthProps) => {
           </InputField>
           <InputField
             type="password"
-            placeholder="Password*"
+            placeholder={t('passwordPlaceholder')}
             register={register('password')}
           >
             {errors.password && (
@@ -133,7 +138,7 @@ const Auth = ({ registration }: AuthProps) => {
             className={`w-full ${isValid ? 'btn-primary' : 'btn-disabled'}`}
             disabled={!isValid}
           >
-            Submit
+            {t('submit')}
           </button>
         </form>
       </div>

@@ -87,7 +87,7 @@ export default function TabsComponent({
             onItemKeyChange={onQueryParamKeyChange}
             onItemValueChange={onQueryParamValueChange}
             onDeleteItem={onDeleteQueryParam}
-            addButtonLabel="Add Query"
+            addButtonLabel="Add"
             keyInputPlaceholder="key"
             valueInputPlaceholder="value"
           />
@@ -104,7 +104,7 @@ export default function TabsComponent({
             onItemKeyChange={onHeaderKeyChange}
             onItemValueChange={onHeaderValueChange}
             onDeleteItem={onDeleteHeader}
-            addButtonLabel="Add Header"
+            addButtonLabel="Add"
             keyInputPlaceholder="key"
             valueInputPlaceholder="value"
           />
