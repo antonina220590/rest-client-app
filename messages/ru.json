@@ -39,5 +39,28 @@
         "description": "Разработчик, ответственный за маршруты Истории и Переменные, обеспечивший возможность пользователям просматривать и восстанавливать предыдущие запросы, управлять переменными и обновлять локальное хранилище для бесшовного клиентского опыта RESTful."
       }
     }
+  },
+  "Auth": {
+    "signUp": "Зарегистрироваться",
+    "signIn": "Войти",
+    "namePlaceholder": "Имя*",
+    "emailPlaceholder": "Электронная почта*",
+    "passwordPlaceholder": "Пароль*",
+    "submit": "Отправить",
+    "errors": {
+      "emailAlreadyRegistered": "Этот email уже зарегистрирован",
+      "invalidCredentials": "Неверный email или пароль",
+      "unknown": "Произошла неизвестная ошибка при аутентификации",
+      "invalidEmailFormat": "Неверный формат электронной почты",
+      "emailRequired": "Email обязателен",
+      "passwordMinLength": "Не менее 8 символов",
+      "passwordAtLeastOneNumber": "Хотя бы одну цифру",
+      "passwordAtLeastOneUppercaseLetter": "Хотя бы одну заглавную букву",
+      "passwordAtLeastOneLowercaseLetter": "Хотя бы одну строчную букву",
+      "passwordAtLeastOneSpecialCharacter": "Хотя бы один специальный символ",
+      "passwordRequired": "Пароль обязателен",
+      "nameStartsWithUppercase": "Имя должно начинаться с заглавной буквы",
+      "nameRequired": "Имя обязательно"
+    }
   }
 }

@@ -39,5 +39,28 @@
         "description": "The developer responsible for the History and Variables routes enabled users to view and restore previous requests, manage variables, and update local storage for a seamless RESTful client experience."
       }
     }
+  },
+  "Auth": {
+    "signUp": "Sign Up",
+    "signIn": "Sign In",
+    "namePlaceholder": "Name*",
+    "emailPlaceholder": "Email*",
+    "passwordPlaceholder": "Password*",
+    "submit": "Submit",
+    "errors": {
+      "emailAlreadyRegistered": "This email is already registered",
+      "invalidCredentials": "Invalid email or password",
+      "unknown": "An unknown error occurred during authentication",
+      "invalidEmailFormat": "Invalid email format",
+      "emailRequired": "Email is required",
+      "passwordMinLength": "At least 8 characters",
+      "passwordAtLeastOneNumber": "At least one number",
+      "passwordAtLeastOneUppercaseLetter": "At least one uppercase letter",
+      "passwordAtLeastOneLowercaseLetter": "At least one lowercase letter",
+      "passwordAtLeastOneSpecialCharacter": "At least one special character",
+      "passwordRequired": "Password is required",
+      "nameStartsWithUppercase": "Name should start with an uppercase letter",
+      "nameRequired": "Name is required"
+    }
   }
 }
