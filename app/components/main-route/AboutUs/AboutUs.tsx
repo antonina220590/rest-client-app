@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
-import Galya from '@/public/galya.jpg';
+import Galya from '@/public/galya.png';
 import Tonya from '@/public/tonya.png';
-import Tatiana from '@/public/tatiana.jpeg';
+import Tatiana from '@/public/tatiana.png';
 import MemberCard from './MemberCard/MemberCard';
 
 export default function AboutUs() {
