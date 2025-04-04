@@ -3,5 +3,14 @@
     "signIn": "Войти",
     "signUp": "Зарегистрироваться",
     "signOut": "Выйти"
+  },
+  "Welcome": {
+    "welcome": "Добро пожаловать!",
+    "welcomeBack": "Добро пожаловать, {name}!",
+    "user": "Пользователь",
+    "restClient": "REST Клиент",
+    "history": "История",
+    "variables": "Переменные"
   }
 }
+

@@ -3,5 +3,13 @@
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "signOut": "Sign Out"
+  },
+  "Welcome": {
+    "welcome": "Welcome!",
+    "welcomeBack": "Welcome back, {name}!",
+    "user": "User",
+    "restClient": "REST Client",
+    "history": "History",
+    "variables": "Variables"
   }
 }

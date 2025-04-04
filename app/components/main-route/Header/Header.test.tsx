@@ -15,6 +15,11 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
   }),
+  usePathname: vi.fn(() => '/en'),
+}));
+
+vi.mock('next-intl', () => ({
+  useTranslations: vi.fn(() => (key: string) => key),
 }));
 
 describe('render Header component', () => {
@@ -25,8 +30,8 @@ describe('render Header component', () => {
       render(<Header />);
     });
 
-    expect(screen.getByText(/Sign In/i)).toBeInTheDocument();
-    expect(screen.getByText(/Sign Up/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /signIn/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /signUp/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   });
 
@@ -39,7 +44,9 @@ describe('render Header component', () => {
       render(<Header />);
     });
 
-    expect(screen.getByText(/Sign Out/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /signOut/i })
+    ).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   });
 });
