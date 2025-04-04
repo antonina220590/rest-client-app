@@ -121,28 +121,6 @@ export default function RequestBodyEditor({
       {!readOnly && (showLanguageSelector || showPrettifyButton) && (
         <div className="flex justify-end items-center p-2 gap-2 border-b h-fit min-h-[30px] w-[90%]">
           {showLanguageSelector && onLanguageChange && (
-            // <ToggleGroup
-            //   type="single"
-            //   size="sm"
-            //   value={language}
-            //   onValueChange={handleLangChange}
-            //   aria-label="Select Body Language"
-            // >
-            //   <ToggleGroupItem
-            //     value="json"
-            //     aria-label="JSON"
-            //     className="text-xs h-6 px-2"
-            //   >
-            //     JSON
-            //   </ToggleGroupItem>
-            //   <ToggleGroupItem
-            //     value="plaintext"
-            //     aria-label="Plain Text"
-            //     className="text-xs h-6 px-2"
-            //   >
-            //     Text
-            //   </ToggleGroupItem>
-            // </ToggleGroup>
             <TooltipProvider delayDuration={100}>
               <ToggleGroup
                 type="single"
