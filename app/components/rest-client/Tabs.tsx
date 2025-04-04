@@ -56,21 +56,21 @@ export default function TabsComponent({
       <TabsList className="grid w-full grid-cols-3 h-10 min-h-10 p-0 rounded-t-md rounded-b-none">
         <TabsTrigger
           value="query"
-          className=" bottom-0.5 border-cta-primary rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
+          className=" bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
           Query
         </TabsTrigger>
         <TabsTrigger
           value="headers"
-          className=" bottom-0.5 border-cta-primary rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
+          className=" bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
           Headers
         </TabsTrigger>
         <TabsTrigger
           value="body"
-          className="bottom-0.5 border-cta-primary rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
+          className="bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
           Body
@@ -114,7 +114,7 @@ export default function TabsComponent({
         value="body"
         className="w-[110%] p-2 overflow-y-auto min-h-0 flex overflow"
       >
-        <Card className="border rounded-sm p-2 h-fit min-h-[230px] w-[100vw]">
+        <Card className="border rounded-sm p-2 h-fit min-h-[100%] w-[100vw]">
           <RequestBodyEditor
             value={requestBody}
             contentEditable={false}

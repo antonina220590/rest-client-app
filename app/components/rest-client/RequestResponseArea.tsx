@@ -15,8 +15,8 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 
-const VERTICAL_COLLAPSED_SIZE = 7;
-const VERTICAL_OPEN_LAYOUT: number[] = [50, 50];
+const VERTICAL_COLLAPSED_SIZE = 2;
+const VERTICAL_OPEN_LAYOUT: number[] = [40, 60];
 const VERTICAL_COLLAPSED_LAYOUT: number[] = [
   VERTICAL_COLLAPSED_SIZE,
   100 - VERTICAL_COLLAPSED_SIZE,
@@ -156,7 +156,7 @@ export function RequestResponseArea({
         onCollapse={() => syncRequestPanelState(true)}
         onExpand={() => syncRequestPanelState(false)}
         className={cn(
-          'transition-all duration-300 ease-in-out rounded-md bg-cta-secondary w-[70%] mt-10 mx-auto'
+          `transition-all duration-300 ease-in-out rounded-md bg-cta-secondary w-[70%] mx-auto max-w-4xl min-h-[40px]`
         )}
       >
         <div className="relative h-full w-full">
@@ -165,7 +165,7 @@ export function RequestResponseArea({
             variant="ghost"
             size="icon"
             aria-label="Toggle Request Panel"
-            className="absolute top-0 right-1 z-10 hover:bg-accent h-8 w-8 p-0 cursor-pointer border-none shadow-none"
+            className="absolute top-1 right-2 z-10 h-8 w-8 p-0 cursor-pointer border-none shadow-none"
           >
             {isRequestPanelCollapsed ? (
               <ChevronUp className="h-5 w-5 text-cta-primary" />
@@ -175,7 +175,7 @@ export function RequestResponseArea({
           </Button>
           <div
             className={cn(
-              'h-full',
+              'h-full overflow-auto',
               isRequestPanelCollapsed && 'overflow-hidden'
             )}
           >
