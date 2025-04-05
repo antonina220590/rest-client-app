@@ -62,5 +62,19 @@
       "nameStartsWithUppercase": "Name should start with an uppercase letter",
       "nameRequired": "Name is required"
     }
+  },
+  "RESTful": {
+    "send": "Send",
+    "query": "Query",
+    "headers": "Headers",
+    "body": "Body",
+    "add": "Add",
+    "text": "Plain Text",
+    "prettify": "Prettify",
+    "key": "key",
+    "value": "value",
+    "Invalid Syntax": "Invalid Syntax",
+    "JSON prettified successfully": "JSON prettified successfully",
+    "JSON is already prettified": "JSON is already prettified"
   }
 }
