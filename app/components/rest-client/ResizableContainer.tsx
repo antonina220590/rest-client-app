@@ -14,6 +14,8 @@ import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
 import { BodyLanguage, KeyValueItem, methods } from '@/app/interfaces';
+import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 export default function ResizableContainer() {
   const {
@@ -24,7 +26,7 @@ export default function ResizableContainer() {
     OPEN_LAYOUT,
     CLOSED_LAYOUT,
   } = useResizableLayout(false);
-
+  const t = useTranslations('RESTful');
   const [queryParams, setQueryParams] = useState<KeyValueItem[]>([
     { id: crypto.randomUUID(), key: '', value: '' },
   ]);
@@ -36,12 +38,12 @@ export default function ResizableContainer() {
   const [url, setUrl] = useState<string>('');
   const [method, setMethod] = useState<string>(methods[0] || 'GET');
 
-  const [responseData, _setResponseData] = useState<string | null>(null);
-  const [responseContentType, _setResponseContentType] = useState<
-    string | null
-  >(null);
-  const [responseStatus, _setResponseStatus] = useState<number | null>(null);
-  const [isLoading, _setIsLoading] = useState<boolean>(false);
+  const [responseData, setResponseData] = useState<string | null>(null);
+  const [responseContentType, setResponseContentType] = useState<string | null>(
+    null
+  );
+  const [responseStatus, setResponseStatus] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleAddQueryParam = () =>
     setQueryParams((prev) => [
@@ -114,9 +116,87 @@ export default function ResizableContainer() {
     []
   );
 
-  const handleSendRequest = () => {
-    // console.log(method, url, headers, queryParams);
-  };
+  const handleSendRequest = useCallback(async () => {
+    setIsLoading(true);
+    setResponseData(null);
+    setResponseStatus(null);
+    setResponseContentType(null);
+    try {
+      let headersToSend = headers.filter((h) => h.key);
+      if (
+        (method === 'POST' || method === 'PUT' || method === 'PATCH') &&
+        requestBody &&
+        bodyLanguage === 'json'
+      ) {
+        const hasContentType = headersToSend.some(
+          (h) => h.key.toLowerCase() === 'content-type'
+        );
+        if (!hasContentType) {
+          headersToSend = [
+            ...headersToSend,
+            {
+              id: 'content-type-auto',
+              key: 'Content-Type',
+              value: 'application/json',
+            },
+          ];
+        }
+      }
+
+      const proxyPayload = {
+        method: method,
+        targetUrl: url,
+        headers: headersToSend,
+        queryParams: queryParams.filter((p) => p.key),
+        body: requestBody,
+      };
+
+      const response = await fetch('/api/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(proxyPayload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: 'Proxy error response' }));
+        throw new Error(
+          `Proxy error: ${response.status} ${response.statusText}. ${errorData?.message || ''}`
+        );
+      }
+
+      const proxyResponse = await response.json();
+
+      if (proxyResponse.error) {
+        toast.error('API Request Failed', { description: proxyResponse.error });
+        setResponseData(proxyResponse.body || proxyResponse.error);
+        setResponseStatus(proxyResponse.status || 500);
+      } else {
+        setResponseData(proxyResponse.body);
+        setResponseStatus(proxyResponse.status);
+        const contentTypeHeader = proxyResponse.headers
+          ? Object.entries(proxyResponse.headers).find(
+              ([key]) => key.toLowerCase() === 'content-type'
+            )
+          : undefined;
+        setResponseContentType(
+          contentTypeHeader ? String(contentTypeHeader[1]) : null
+        );
+        toast.success('Request successful!');
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'An unknown error occurred';
+      toast.error(t('Request Failed'), { description: errorMessage });
+      setResponseData(errorMessage);
+      setResponseStatus(500);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [method, url, headers, queryParams, requestBody, bodyLanguage, t]);
 
   return (
     <div className="relative w-full h-full">

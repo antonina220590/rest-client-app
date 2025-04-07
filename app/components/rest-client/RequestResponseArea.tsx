@@ -13,8 +13,8 @@ import TabsComponent from './TabsComponent';
 import RequestBodyEditor from './BodyEditor';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { Card } from '@/components/ui/card';
 import { BodyLanguage, RequestResponseAreaProps } from '@/app/interfaces';
+import Spinner from '../Spinner';
 
 const VERTICAL_COLLAPSED_SIZE = 2;
 const VERTICAL_OPEN_LAYOUT: number[] = [40, 60];
@@ -72,12 +72,6 @@ export function RequestResponseArea({
   };
 
   const { displayValue, displayLanguage } = useMemo(() => {
-    if (isLoading) {
-      return {
-        displayValue: 'Loading response...',
-        displayLanguage: 'plaintext' as BodyLanguage,
-      };
-    }
     if (responseData === null || responseData === undefined) {
       return {
         displayValue: '',
@@ -108,7 +102,7 @@ export function RequestResponseArea({
         displayLanguage: 'plaintext' as BodyLanguage,
       };
     }
-  }, [responseData, responseContentType, isLoading]);
+  }, [responseData, responseContentType]);
 
   return (
     <ResizablePanelGroup
@@ -209,12 +203,13 @@ export function RequestResponseArea({
                 </span>
               )}
             </span>
-            {isLoading && (
-              <span className="animate-pulse font-semibold">Loading...</span>
-            )}
           </div>
-          <div className="flex-grow overflow-hidden border rounded-md">
-            <Card className="h-full p-4 bg-accent">
+          <div className="flex-grow overflow-auto border rounded-md bg-accent h-full">
+            {isLoading ? (
+              <div className="flex items-center justify-center h-full bg-accent">
+                <Spinner />
+              </div>
+            ) : (
               <RequestBodyEditor
                 contentEditable={true}
                 value={displayValue}
@@ -223,7 +218,7 @@ export function RequestResponseArea({
                 showPrettifyButton={false}
                 showLanguageSelector={false}
               />
-            </Card>
+            )}
           </div>
         </div>
       </ResizablePanel>

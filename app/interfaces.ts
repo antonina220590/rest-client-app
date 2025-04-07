@@ -1,6 +1,6 @@
 export interface KeyValueItem {
   id: string;
-  key?: string;
+  key: string;
   value?: string;
 }
 
