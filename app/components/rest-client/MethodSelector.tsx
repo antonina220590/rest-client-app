@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Listbox,
   ListboxButton,
@@ -10,17 +9,15 @@ import {
 import { ChevronUpDownIcon } from '@heroicons/react/16/solid';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import React from 'react';
-import { methods } from '@/app/interfaces';
+import { MethodProps, methods } from '@/app/interfaces';
 
-export default function MethodSelector() {
-  const [selected, setSelected] = useState(methods[0]);
-
+export default function MethodSelector({ value, onChange }: MethodProps) {
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={value} onChange={onChange}>
       <div className="relative ml-9">
         <ListboxButton className="grid w-32 h-full cursor-default grid-cols-1 rounded-l-md bg-cta-secondary py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-cta-primary sm:text-sm/6">
           <span className="col-start-1 row-start-1 flex items-center justify-center text-center gap-3 pr-6">
-            <span className="block truncate mt-1">{selected}</span>
+            <span className="block truncate mt-1">{value}</span>
           </span>
           <ChevronUpDownIcon
             aria-hidden="true"

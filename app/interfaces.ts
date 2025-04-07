@@ -110,3 +110,14 @@ export interface PrettifyJsonInputOptions {
   toast: ToastFunction;
   t: TranslateFunction;
 }
+
+export interface URLInputProps {
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSend: () => void;
+}
+
+export interface MethodProps {
+  value: string;
+  onChange: (value: string) => void;
+}

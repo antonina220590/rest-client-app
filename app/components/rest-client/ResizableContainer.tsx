@@ -13,7 +13,7 @@ import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
-import { BodyLanguage, KeyValueItem } from '@/app/interfaces';
+import { BodyLanguage, KeyValueItem, methods } from '@/app/interfaces';
 
 export default function ResizableContainer() {
   const {
@@ -33,8 +33,8 @@ export default function ResizableContainer() {
   ]);
   const [requestBody, setRequestBody] = useState<string>('');
   const [bodyLanguage, setBodyLanguage] = useState<BodyLanguage>('json');
-  const [_url, _setUrl] = useState<string>('');
-  const [_method, _setMethod] = useState<string>('');
+  const [url, setUrl] = useState<string>('');
+  const [method, setMethod] = useState<string>(methods[0] || 'GET');
 
   const [responseData, _setResponseData] = useState<string | null>(null);
   const [responseContentType, _setResponseContentType] = useState<
@@ -98,9 +98,25 @@ export default function ResizableContainer() {
   const handleBodyChange = useCallback((value: string) => {
     setRequestBody(value);
   }, []);
+
   const handleBodyLanguageChange = useCallback((lang: BodyLanguage) => {
     setBodyLanguage(lang);
   }, []);
+
+  const handleMethodChange = useCallback((newMethod: string) => {
+    setMethod(newMethod);
+  }, []);
+
+  const handleUrlChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setUrl(event.target.value);
+    },
+    []
+  );
+
+  const handleSendRequest = () => {
+    // console.log(method, url, headers, queryParams);
+  };
 
   return (
     <div className="relative w-full h-full">
@@ -132,8 +148,12 @@ export default function ResizableContainer() {
         >
           <div className="flex flex-col h-full p-2 md:p-4">
             <div className="flex w-[90%] max-w-4xl mx-auto mt-5 justify-center">
-              <MethodSelector />
-              <UrlInput />
+              <MethodSelector value={method} onChange={handleMethodChange} />
+              <UrlInput
+                value={url}
+                onChange={handleUrlChange}
+                onSend={handleSendRequest}
+              />
             </div>
             <div className="flex-grow overflow-hidden mt-5 max-w-8xl mx-auto w-[90%]">
               <RequestResponseArea
