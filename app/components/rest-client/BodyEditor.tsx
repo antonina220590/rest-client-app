@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
-import CodeMirror, { EditorState, lineNumbers } from '@uiw/react-codemirror';
-import { materialLight } from '@uiw/codemirror-theme-material';
-import { json } from '@codemirror/lang-json';
+import React, { useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+
 import { Button } from '@/components/ui/button';
 import { WandSparkles, Braces, Type } from 'lucide-react';
 import { toast } from 'sonner';
@@ -14,15 +13,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import {
-  defaultHighlightStyle,
-  indentUnit,
-  syntaxHighlighting,
-} from '@codemirror/language';
-import { closeBrackets } from '@codemirror/autocomplete';
 import { useTranslations } from 'next-intl';
 import { BodyLanguage, RequestBodyEditorProps } from '@/app/interfaces';
 import { prettifyJsonInput } from './helpers/prettifier';
+import { useCodeMirrorExtensions } from '@/app/hooks/useCodeMirrorExtensions';
 
 export default function RequestBodyEditor({
   value,
@@ -34,6 +28,8 @@ export default function RequestBodyEditor({
   showLanguageSelector = true,
   contentEditable,
 }: RequestBodyEditorProps) {
+  const extensions = useCodeMirrorExtensions(language);
+
   const handleEditorChange = useCallback(
     (newValue: string) => {
       if (onChange) {
@@ -44,45 +40,6 @@ export default function RequestBodyEditor({
   );
 
   const t = useTranslations('RESTful');
-
-  // const handlePrettify = () => {
-  //   if (language !== 'json' || readOnly) return;
-  //   let parsedData: unknown = null;
-
-  //   try {
-  //     parsedData = JSON.parse(value);
-  //   } catch {
-  //     try {
-  //       parsedData = JSON5.parse(value);
-  //     } catch (errorJson5) {
-  //       toast.error(t('Invalid Syntax'), {
-  //         description:
-  //           errorJson5 instanceof Error
-  //             ? errorJson5.message
-  //             : 'Cannot parse JSON/JSON5.',
-  //       });
-  //       return;
-  //     }
-  //   }
-  //   if (parsedData !== null) {
-  //     try {
-  //       const pretty = JSON.stringify(parsedData, null, 2);
-  //       if (pretty !== value && onChange) {
-  //         onChange(pretty);
-  //         toast.success(t('JSON prettified successfully'));
-  //       } else if (pretty === value) {
-  //         toast.info(t('JSON is already prettified'));
-  //       }
-  //     } catch (stringifyError) {
-  //       toast.error('Error formatting data', {
-  //         description:
-  //           stringifyError instanceof Error
-  //             ? stringifyError.message
-  //             : undefined,
-  //       });
-  //     }
-  //   }
-  // };
 
   const handlePrettify = useCallback(() => {
     if (!onChange) {
@@ -97,22 +54,6 @@ export default function RequestBodyEditor({
       t,
     });
   }, [value, language, readOnly, onChange, t]);
-
-  const extensions = useMemo(() => {
-    const base = [
-      materialLight,
-      EditorState.tabSize.of(1),
-      indentUnit.of(' '),
-      lineNumbers(),
-      closeBrackets(),
-      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-    ];
-
-    if (language === 'json') {
-      return [...base, json()];
-    }
-    return base;
-  }, [language]);
 
   const handleLangChange = (value: BodyLanguage) => {
     if (value && onLanguageChange) {
