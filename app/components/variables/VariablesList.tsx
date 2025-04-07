@@ -1,21 +1,18 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { addVariable, deleteVariable } from '../../../store/variablesSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { addVariable, deleteVariable } from '../../store/variablesSlice';
 
 export default function VariablesList() {
   const variables = useAppSelector((state) => state.variables);
   const dispatch = useAppDispatch();
   const [newVar, setNewVar] = useState({ key: '', value: '' });
   const [isClient, setIsClient] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  if (!isClient) {
-    return null;
-  }
 
   const handleAdd = () => {
     if (newVar.key && newVar.value) {
@@ -23,6 +20,16 @@ export default function VariablesList() {
       setNewVar({ key: '', value: '' });
     }
   };
+
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
@@ -39,7 +46,6 @@ export default function VariablesList() {
             <input
               value={newVar.key}
               onChange={(e) => setNewVar({ ...newVar, key: e.target.value })}
-              placeholder="API_URL"
               className="w-full p-2 border rounded font-body focus:outline-none focus:ring-2 focus:ring-cta-primary"
             />
           </div>
@@ -50,7 +56,6 @@ export default function VariablesList() {
             <input
               value={newVar.value}
               onChange={(e) => setNewVar({ ...newVar, value: e.target.value })}
-              placeholder="https://api.example.com"
               className="w-full p-2 border rounded font-body focus:outline-none focus:ring-2 focus:ring-cta-primary"
             />
           </div>
@@ -70,11 +75,26 @@ export default function VariablesList() {
             key={variable.id}
             className="bg-white p-4 rounded-lg shadow flex justify-between items-center"
           >
-            <div className="flex items-center">
-              <span className="font-code bg-gray-100 px-2 py-1 rounded mr-3 text-bg-secondary">
+            <div className="flex items-center space-x-3">
+              <span
+                onClick={() =>
+                  copyToClipboard(`{{${variable.key}}}`, variable.id)
+                }
+                className="font-code bg-gray-100 px-2 py-1 rounded cursor-pointer hover:bg-gray-200 transition-colors text-bg-secondary relative"
+                title="Click to copy"
+              >
                 {`{{${variable.key}}}`}
+                {copiedId === variable.id && (
+                  <span className="absolute -top-8 -right-2 bg-black text-white text-xs px-2 py-1 rounded">
+                    Copied!
+                  </span>
+                )}
               </span>
-              <span className="font-body text-bg-secondary">
+              <span
+                onClick={() => copyToClipboard(variable.value, variable.id)}
+                className="font-body text-bg-secondary cursor-pointer hover:underline"
+                title="Click to copy"
+              >
                 {variable.value}
               </span>
             </div>
