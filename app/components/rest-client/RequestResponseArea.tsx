@@ -9,11 +9,12 @@ import {
 } from '@/components/ui/resizable';
 import { type ImperativePanelGroupHandle } from 'react-resizable-panels';
 import { Button } from '@/components/ui/button';
-import TabsComponent from './Tabs';
-import RequestBodyEditor, { BodyLanguage } from './BodyEditor';
+import TabsComponent from './TabsComponent';
+import RequestBodyEditor from './BodyEditor';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
+import { BodyLanguage, RequestResponseAreaProps } from '@/app/interfaces';
 
 const VERTICAL_COLLAPSED_SIZE = 2;
 const VERTICAL_OPEN_LAYOUT: number[] = [40, 60];
@@ -21,33 +22,6 @@ const VERTICAL_COLLAPSED_LAYOUT: number[] = [
   VERTICAL_COLLAPSED_SIZE,
   100 - VERTICAL_COLLAPSED_SIZE,
 ];
-
-interface KeyValueItem {
-  id: string;
-  key?: string;
-  value?: string;
-}
-
-interface RequestResponseAreaProps {
-  queryParams: KeyValueItem[];
-  onAddQueryParam: () => void;
-  onQueryParamKeyChange: (id: string | number, newKey: string) => void;
-  onQueryParamValueChange: (id: string | number, newValue: string) => void;
-  onDeleteQueryParam: (id: string | number) => void;
-  headers: KeyValueItem[];
-  onAddHeader: () => void;
-  onHeaderKeyChange: (id: string | number, newKey: string) => void;
-  onHeaderValueChange: (id: string | number, newValue: string) => void;
-  onDeleteHeader: (id: string | number) => void;
-  requestBody: string;
-  onBodyChange: (value: string) => void;
-  bodyLanguage: BodyLanguage;
-  onBodyLanguageChange: (lang: BodyLanguage) => void;
-  responseData: string | null;
-  responseContentType: string | null;
-  responseStatus: number | null;
-  isLoading: boolean;
-}
 
 export function RequestResponseArea({
   queryParams,

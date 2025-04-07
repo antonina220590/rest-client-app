@@ -4,22 +4,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import QueryInputs from './QueryInput';
-
-interface KeyValueItem {
-  id: string;
-  key?: string;
-  value?: string;
-}
-interface QueryParam {
-  items: KeyValueItem[];
-  onAddItem: () => void;
-  onItemKeyChange: (id: string | number, newKey: string) => void;
-  onItemValueChange: (id: string | number, newValue: string) => void;
-  onDeleteItem: (id: string | number) => void;
-  addButtonLabel?: string;
-  keyInputPlaceholder?: string;
-  valueInputPlaceholder?: string;
-}
+import { QueryParam } from '@/app/interfaces';
 
 export default function QueryParamsEditor({
   items,

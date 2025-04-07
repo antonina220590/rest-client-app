@@ -6,7 +6,6 @@ import { materialLight } from '@uiw/codemirror-theme-material';
 import { json } from '@codemirror/lang-json';
 import { Button } from '@/components/ui/button';
 import { WandSparkles, Braces, Type } from 'lucide-react';
-import JSON5 from 'json5';
 import { toast } from 'sonner';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import {
@@ -22,20 +21,8 @@ import {
 } from '@codemirror/language';
 import { closeBrackets } from '@codemirror/autocomplete';
 import { useTranslations } from 'next-intl';
-
-export type BodyLanguage = 'json' | 'plaintext';
-interface RequestBodyEditorProps {
-  value: string;
-  onChange?: (value: string) => void;
-  language: BodyLanguage;
-  readOnly?: boolean;
-
-  onLanguageChange?: (language: BodyLanguage) => void;
-  showPrettifyButton?: boolean;
-  showLanguageSelector?: boolean;
-
-  contentEditable: boolean;
-}
+import { BodyLanguage, RequestBodyEditorProps } from '@/app/interfaces';
+import { prettifyJsonInput } from './helpers/prettifier';
 
 export default function RequestBodyEditor({
   value,
@@ -58,44 +45,58 @@ export default function RequestBodyEditor({
 
   const t = useTranslations('RESTful');
 
-  const handlePrettify = () => {
-    if (language !== 'json' || readOnly) return;
-    let parsedData: unknown = null;
+  // const handlePrettify = () => {
+  //   if (language !== 'json' || readOnly) return;
+  //   let parsedData: unknown = null;
 
-    try {
-      parsedData = JSON.parse(value);
-    } catch {
-      try {
-        parsedData = JSON5.parse(value);
-      } catch (errorJson5) {
-        toast.error(t('Invalid Syntax'), {
-          description:
-            errorJson5 instanceof Error
-              ? errorJson5.message
-              : 'Cannot parse JSON/JSON5.',
-        });
-        return;
-      }
+  //   try {
+  //     parsedData = JSON.parse(value);
+  //   } catch {
+  //     try {
+  //       parsedData = JSON5.parse(value);
+  //     } catch (errorJson5) {
+  //       toast.error(t('Invalid Syntax'), {
+  //         description:
+  //           errorJson5 instanceof Error
+  //             ? errorJson5.message
+  //             : 'Cannot parse JSON/JSON5.',
+  //       });
+  //       return;
+  //     }
+  //   }
+  //   if (parsedData !== null) {
+  //     try {
+  //       const pretty = JSON.stringify(parsedData, null, 2);
+  //       if (pretty !== value && onChange) {
+  //         onChange(pretty);
+  //         toast.success(t('JSON prettified successfully'));
+  //       } else if (pretty === value) {
+  //         toast.info(t('JSON is already prettified'));
+  //       }
+  //     } catch (stringifyError) {
+  //       toast.error('Error formatting data', {
+  //         description:
+  //           stringifyError instanceof Error
+  //             ? stringifyError.message
+  //             : undefined,
+  //       });
+  //     }
+  //   }
+  // };
+
+  const handlePrettify = useCallback(() => {
+    if (!onChange) {
+      return;
     }
-    if (parsedData !== null) {
-      try {
-        const pretty = JSON.stringify(parsedData, null, 2);
-        if (pretty !== value && onChange) {
-          onChange(pretty);
-          toast.success(t('JSON prettified successfully'));
-        } else if (pretty === value) {
-          toast.info(t('JSON is already prettified'));
-        }
-      } catch (stringifyError) {
-        toast.error('Error formatting data', {
-          description:
-            stringifyError instanceof Error
-              ? stringifyError.message
-              : undefined,
-        });
-      }
-    }
-  };
+    prettifyJsonInput({
+      value,
+      language,
+      readOnly,
+      onChange,
+      toast,
+      t,
+    });
+  }, [value, language, readOnly, onChange, t]);
 
   const extensions = useMemo(() => {
     const base = [

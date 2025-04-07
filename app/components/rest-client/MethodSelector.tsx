@@ -10,8 +10,7 @@ import {
 import { ChevronUpDownIcon } from '@heroicons/react/16/solid';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import React from 'react';
-
-const methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'];
+import { methods } from '@/app/interfaces';
 
 export default function MethodSelector() {
   const [selected, setSelected] = useState(methods[0]);

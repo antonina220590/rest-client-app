@@ -75,6 +75,7 @@
     "value": "value",
     "Invalid Syntax": "Invalid Syntax",
     "JSON prettified successfully": "JSON prettified successfully",
-    "JSON is already prettified": "JSON is already prettified"
+    "JSON is already prettified": "JSON is already prettified",
+    "Prettify is only available for JSON": "Prettify is only available for JSON"
   }
 }

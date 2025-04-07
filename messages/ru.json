@@ -75,6 +75,7 @@
     "value": "значение",
     "Invalid Syntax": "Ошибка форматирования",
     "JSON prettified successfully": "JSON успешно отформатирован",
-    "JSON is already prettified": "JSON уже отформатирован"
+    "JSON is already prettified": "JSON уже отформатирован",
+    "Prettify is only available for JSON": "Форматирование доступно только для JSON"
   }
 }

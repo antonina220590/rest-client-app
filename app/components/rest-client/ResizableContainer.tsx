@@ -13,13 +13,7 @@ import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
-import { BodyLanguage } from './BodyEditor';
-
-interface KeyValueItem {
-  id: string;
-  key?: string;
-  value?: string;
-}
+import { BodyLanguage, KeyValueItem } from '@/app/interfaces';
 
 export default function ResizableContainer() {
   const {
@@ -90,6 +84,7 @@ export default function ResizableContainer() {
     setHeaders((prev) =>
       prev.map((h) => (h.id === id ? { ...h, value: newValue } : h))
     );
+
   const handleDeleteHeader = (id: string | number) => {
     if (headers.length <= 1 && !headers[0]?.key && !headers[0]?.value) return;
     const newHeaders = headers.filter((h) => h.id !== id);

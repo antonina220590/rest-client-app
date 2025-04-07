@@ -4,40 +4,32 @@ import React from 'react';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
-interface KeyValueRowProps {
-  id: string | number;
-  itemKey?: string;
-  itemValue?: string;
-
-  onKeyChange?: (id: string | number, newKey: string) => void;
-  onValueChange?: (id: string | number, newValue: string) => void;
-  onDelete: (id: string | number) => void;
-
-  keyPlaceholder?: string;
-  valuePlaceholder?: string;
-}
+import { KeyValueRowProps } from '@/app/interfaces';
 
 export default function QueryInputs({
   keyPlaceholder = 'Key',
   valuePlaceholder = 'Value',
   onDelete,
   id,
+  itemValue,
+  itemKey,
+  onKeyChange,
+  onValueChange,
 }: KeyValueRowProps) {
   return (
     <div className="flex items-center gap-2 w-full mb-2 ">
       <Input
         type="text"
         placeholder={keyPlaceholder}
-        // value={itemKey}
-        // onChange={(e) => onKeyChange(id, e.target.value)}
+        value={itemKey}
+        onChange={(e) => onKeyChange(id, e.target.value)}
         className="w-1/3 ml-5 bg-accent"
       />
       <Input
         type="text"
         placeholder={valuePlaceholder}
-        // value={itemValue}
-        // onChange={(e) => onValueChange(id, e.target.value)}
+        value={itemValue}
+        onChange={(e) => onValueChange(id, e.target.value)}
         className="flex-grow bg-accent"
       />
       <Button
