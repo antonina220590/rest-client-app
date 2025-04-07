@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { addVariable, deleteVariable } from '../../store/variablesSlice';
+import { useTranslations } from 'next-intl';
 
 export default function VariablesList() {
+  const t = useTranslations('VariablesList');
   const variables = useAppSelector((state) => state.variables);
   const dispatch = useAppDispatch();
   const [newVar, setNewVar] = useState({ key: '', value: '' });
@@ -34,14 +36,14 @@ export default function VariablesList() {
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="font-heading text-2xl font-bold mb-6 text-bg-secondary">
-        Variables Management
+        {t('title')}
       </h1>
 
       <div className="bg-white p-4 rounded-lg shadow mb-6">
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium mb-1 text-bg-secondary">
-              Key
+              {t('keyLabel')}
             </label>
             <input
               value={newVar.key}
@@ -51,7 +53,7 @@ export default function VariablesList() {
           </div>
           <div>
             <label className="block text-sm font-medium mb-1 text-bg-secondary">
-              Value
+              {t('valueLabel')}
             </label>
             <input
               value={newVar.value}
@@ -65,7 +67,7 @@ export default function VariablesList() {
           className="btn-primary"
           disabled={!newVar.key || !newVar.value}
         >
-          Add Variable
+          {t('addButton')}
         </button>
       </div>
 
@@ -81,27 +83,23 @@ export default function VariablesList() {
                   copyToClipboard(`{{${variable.key}}}`, variable.id)
                 }
                 className="font-code bg-gray-100 px-2 py-1 rounded cursor-pointer hover:bg-gray-200 transition-colors text-bg-secondary relative"
-                title="Click to copy"
+                title={t('copyTooltip')}
               >
                 {`{{${variable.key}}}`}
                 {copiedId === variable.id && (
                   <span className="absolute -top-8 -right-2 bg-black text-white text-xs px-2 py-1 rounded">
-                    Copied!
+                    {t('copiedText')}
                   </span>
                 )}
               </span>
-              <span
-                onClick={() => copyToClipboard(variable.value, variable.id)}
-                className="font-body text-bg-secondary cursor-pointer hover:underline"
-                title="Click to copy"
-              >
+              <span className="font-body text-bg-secondary">
                 {variable.value}
               </span>
             </div>
             <button
               onClick={() => dispatch(deleteVariable(variable.id))}
               className="text-red-700 hover:text-red-800 transition-all cursor-pointer duration-200 transform hover:scale-110"
-              aria-label="Delete variable"
+              aria-label={t('deleteAriaLabel')}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

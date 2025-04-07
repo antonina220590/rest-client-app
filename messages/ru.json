@@ -76,5 +76,16 @@
     "Invalid Syntax": "Ошибка форматирования",
     "JSON prettified successfully": "JSON успешно отформатирован",
     "JSON is already prettified": "JSON уже отформатирован"
-  }
+  },
+  "VariablesList": {
+  "title": "Переменные",
+  "keyLabel": "Ключ",
+  "valueLabel": "Значение",
+  "keyPlaceholder": "Введите ключ",
+  "valuePlaceholder": "Введите значение",
+  "addButton": "Добавить переменную",
+  "copyTooltip": "Нажмите чтобы скопировать",
+  "copiedText": "Скопировано!",
+  "deleteAriaLabel": "Удалить переменную"
+}
 }

@@ -1,6 +1,6 @@
 'use client';
-import { ReduxProvider } from '../../store/providers';
-import VariablesList from '../../components/variables/VariablesList';
+import { ReduxProvider } from '@/app/store/providers';
+import VariablesList from '@/app/components/variables/VariablesList';
 
 export default function VariablesPage() {
   return (
