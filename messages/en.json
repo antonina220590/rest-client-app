@@ -76,5 +76,16 @@
     "Invalid Syntax": "Invalid Syntax",
     "JSON prettified successfully": "JSON prettified successfully",
     "JSON is already prettified": "JSON is already prettified"
-  }
+  },
+  "VariablesList": {
+  "title": "Variables",
+  "keyLabel": "Key",
+  "valueLabel": "Value",
+  "keyPlaceholder": "Enter key",
+  "valuePlaceholder": "Enter value",
+  "addButton": "Add Variable",
+  "copyTooltip": "Click to copy",
+  "copiedText": "Copied!",
+  "deleteAriaLabel": "Delete variable"
+}
 }
