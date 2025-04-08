@@ -1,25 +1,52 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { addVariable, deleteVariable } from '../../store/variablesSlice';
+import {
+  addVariable,
+  deleteVariable,
+  updateVariable,
+} from '../../store/variablesSlice';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/app/firebase/config';
+import dynamic from 'next/dynamic';
+import { VariableItem } from './VariableItem';
+import { AddVariableForm } from './AddVariableForm';
+import { Variable } from '@/app/store/types';
 
-export default function VariablesList() {
+const VariablesListContent = () => {
   const t = useTranslations('VariablesList');
   const variables = useAppSelector((state) => state.variables);
   const dispatch = useAppDispatch();
-  const [newVar, setNewVar] = useState({ key: '', value: '' });
-  const [isClient, setIsClient] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingField, setEditingField] = useState<'key' | 'value' | null>(
+    null
+  );
+  const [user, loading] = useAuthState(auth);
+  const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    if (!loading && !user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
 
-  const handleAdd = () => {
-    if (newVar.key && newVar.value) {
-      dispatch(addVariable(newVar));
-      setNewVar({ key: '', value: '' });
+  const handleAdd = (key: string, value: string) => {
+    dispatch(addVariable({ key, value }));
+  };
+
+  const handleEditStart = (variable: Variable, field: 'key' | 'value') => {
+    setEditingId(variable.id);
+    setEditingField(field);
+  };
+
+  const handleEditSave = (variable: Variable) => {
+    if (editingField) {
+      dispatch(updateVariable(variable));
+      setEditingId(null);
+      setEditingField(null);
     }
   };
 
@@ -29,96 +56,46 @@ export default function VariablesList() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  if (!isClient) {
-    return null;
+  if (loading) {
+    return (
+      <div className="p-4 md:p-6 w-full max-w-4xl mx-auto">Loading...</div>
+    );
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="font-heading text-2xl font-bold mb-6 text-bg-secondary">
-        {t('title')}
-      </h1>
+    <div className="p-4 md:p-6 w-full max-w-3xl mx-auto">
+      <div className="flex flex-col space-y-4 md:space-y-6">
+        <h1 className="font-heading text-xl md:text-2xl font-bold text-bg-secondary">
+          {t('title')}
+        </h1>
 
-      <div className="bg-white p-4 rounded-lg shadow mb-6">
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium mb-1 text-bg-secondary">
-              {t('keyLabel')}
-            </label>
-            <input
-              value={newVar.key}
-              onChange={(e) => setNewVar({ ...newVar, key: e.target.value })}
-              className="w-full p-2 border rounded font-body focus:outline-none focus:ring-2 focus:ring-cta-primary"
+        <AddVariableForm onAdd={handleAdd} />
+
+        <div className="space-y-2 md:space-y-3">
+          {variables.map((variable) => (
+            <VariableItem
+              key={variable.id}
+              variable={variable}
+              onEdit={handleEditStart}
+              onSave={handleEditSave}
+              onDelete={(id) => dispatch(deleteVariable(id))}
+              onCopy={copyToClipboard}
+              copiedId={copiedId}
+              editingId={editingId}
+              editingField={editingField}
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-bg-secondary">
-              {t('valueLabel')}
-            </label>
-            <input
-              value={newVar.value}
-              onChange={(e) => setNewVar({ ...newVar, value: e.target.value })}
-              className="w-full p-2 border rounded font-body focus:outline-none focus:ring-2 focus:ring-cta-primary"
-            />
-          </div>
+          ))}
         </div>
-        <button
-          onClick={handleAdd}
-          className="btn-primary"
-          disabled={!newVar.key || !newVar.value}
-        >
-          {t('addButton')}
-        </button>
-      </div>
-
-      <div className="space-y-3">
-        {variables.map((variable) => (
-          <div
-            key={variable.id}
-            className="bg-white p-4 rounded-lg shadow flex justify-between items-center"
-          >
-            <div className="flex items-center space-x-3">
-              <span
-                onClick={() =>
-                  copyToClipboard(`{{${variable.key}}}`, variable.id)
-                }
-                className="font-code bg-gray-100 px-2 py-1 rounded cursor-pointer hover:bg-gray-200 transition-colors text-bg-secondary relative"
-                title={t('copyTooltip')}
-              >
-                {`{{${variable.key}}}`}
-                {copiedId === variable.id && (
-                  <span className="absolute -top-8 -right-2 bg-black text-white text-xs px-2 py-1 rounded">
-                    {t('copiedText')}
-                  </span>
-                )}
-              </span>
-              <span className="font-body text-bg-secondary">
-                {variable.value}
-              </span>
-            </div>
-            <button
-              onClick={() => dispatch(deleteVariable(variable.id))}
-              className="text-red-700 hover:text-red-800 transition-all cursor-pointer duration-200 transform hover:scale-110"
-              aria-label={t('deleteAriaLabel')}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
-            </button>
-          </div>
-        ))}
       </div>
     </div>
   );
-}
+};
+
+export default dynamic(() => Promise.resolve(VariablesListContent), {
+  loading: () => (
+    <div className="p-4 md:p-6 w-full max-w-4xl mx-auto">
+      Loading variables...
+    </div>
+  ),
+  ssr: false,
+});
