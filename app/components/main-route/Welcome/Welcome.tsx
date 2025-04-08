@@ -21,7 +21,7 @@ export default function Welcome() {
         <>
           <h2>{t('welcomeBack', { name: user?.displayName || t('user') })}</h2>
           <nav>
-            <NavBtn href="/RESTful" text={t('restClient')} />
+            <NavBtn href="/GET" text={t('restClient')} />
             <NavBtn href="/history" text={t('history')} />
             <NavBtn href="/variables" text={t('variables')} />
           </nav>

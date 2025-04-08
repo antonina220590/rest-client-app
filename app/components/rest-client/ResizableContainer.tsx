@@ -13,11 +13,18 @@ import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
-import { BodyLanguage, KeyValueItem, methods } from '@/app/interfaces';
+import { BodyLanguage, KeyValueItem } from '@/app/interfaces';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import { useRouter, usePathname } from 'next/navigation';
 
-export default function ResizableContainer() {
+interface ResizableContainerProps {
+  initialMethod?: string;
+}
+
+export default function ResizableContainer({
+  initialMethod = 'GET',
+}: ResizableContainerProps) {
   const {
     isPanelOpen: isCodePanelOpen,
     layoutGroupRef,
@@ -27,6 +34,8 @@ export default function ResizableContainer() {
     CLOSED_LAYOUT,
   } = useResizableLayout(false);
   const t = useTranslations('RESTful');
+  const router = useRouter();
+  const pathname = usePathname();
   const [queryParams, setQueryParams] = useState<KeyValueItem[]>([
     { id: crypto.randomUUID(), key: '', value: '' },
   ]);
@@ -36,7 +45,7 @@ export default function ResizableContainer() {
   const [requestBody, setRequestBody] = useState<string>('');
   const [bodyLanguage, setBodyLanguage] = useState<BodyLanguage>('json');
   const [url, setUrl] = useState<string>('');
-  const [method, setMethod] = useState<string>(methods[0] || 'GET');
+  const [method, setMethod] = useState<string>(initialMethod);
 
   const [responseData, setResponseData] = useState<string | null>(null);
   const [responseContentType, setResponseContentType] = useState<string | null>(
@@ -105,9 +114,20 @@ export default function ResizableContainer() {
     setBodyLanguage(lang);
   }, []);
 
-  const handleMethodChange = useCallback((newMethod: string) => {
-    setMethod(newMethod);
-  }, []);
+  const handleMethodChange = useCallback(
+    (newMethod: string) => {
+      setMethod(newMethod);
+      if (pathname) {
+        const pathParts = pathname.split('/');
+        if (pathParts.length >= 3) {
+          pathParts[2] = newMethod;
+          const newPathname = pathParts.join('/');
+          router.replace(newPathname);
+        }
+      }
+    },
+    [pathname, router]
+  );
 
   const handleUrlChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
