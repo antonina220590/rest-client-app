@@ -17,6 +17,7 @@ import { BodyLanguage, KeyValueItem } from '@/app/interfaces';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
+import { buildUrlWithParams } from './helpers/urlBuilder';
 
 interface ResizableContainerProps {
   initialMethod?: string;
@@ -54,19 +55,37 @@ export default function ResizableContainer({
   const [responseStatus, setResponseStatus] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleAddQueryParam = () =>
-    setQueryParams((prev) => [
-      ...prev,
+  const handleAddQueryParam = () => {
+    const newParams = [
+      ...queryParams,
       { id: crypto.randomUUID(), key: '', value: '' },
-    ]);
-  const handleQueryParamKeyChange = (id: string | number, newKey: string) =>
-    setQueryParams((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, key: newKey } : p))
-    );
-  const handleQueryParamValueChange = (id: string | number, newValue: string) =>
-    setQueryParams((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, value: newValue } : p))
-    );
+    ];
+    setQueryParams(newParams);
+  };
+
+  const handleQueryParamKeyChange = (id: string | number, newKey: string) => {
+    let newParams = queryParams;
+    setQueryParams((prev) => {
+      newParams = prev.map((p) => (p.id === id ? { ...p, key: newKey } : p));
+      setUrl(buildUrlWithParams(url, newParams));
+      return newParams;
+    });
+  };
+
+  const handleQueryParamValueChange = (
+    id: string | number,
+    newValue: string
+  ) => {
+    let newParams = queryParams;
+    setQueryParams((prev) => {
+      newParams = prev.map((p) =>
+        p.id === id ? { ...p, value: newValue } : p
+      );
+      setUrl(buildUrlWithParams(url, newParams));
+      return newParams;
+    });
+  };
+
   const handleDeleteQueryParam = (id: string | number) => {
     if (
       queryParams.length <= 1 &&
@@ -74,12 +93,17 @@ export default function ResizableContainer({
       !queryParams[0]?.value
     )
       return;
-    const newParams = queryParams.filter((p) => p.id !== id);
-    setQueryParams(
-      newParams.length > 0
-        ? newParams
-        : [{ id: crypto.randomUUID(), key: '', value: '' }]
-    );
+
+    let newParams = queryParams;
+    const filteredParams = queryParams.filter((p) => p.id !== id);
+    setQueryParams(() => {
+      newParams =
+        filteredParams.length > 0
+          ? filteredParams
+          : [{ id: crypto.randomUUID(), key: '', value: '' }];
+      setUrl(buildUrlWithParams(url, newParams));
+      return newParams;
+    });
   };
 
   const handleAddHeader = () =>
@@ -131,17 +155,53 @@ export default function ResizableContainer({
 
   const handleUrlChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setUrl(event.target.value);
+      const newUrl = event.target.value;
+      setUrl(newUrl);
+      const parsedParams: KeyValueItem[] = [];
+      try {
+        const urlObject = new URL(newUrl);
+        urlObject.searchParams.forEach((value, key) => {
+          parsedParams.push({ id: crypto.randomUUID(), key, value });
+        });
+      } catch {
+        const qIndex = newUrl.indexOf('?');
+        if (qIndex !== -1) {
+          const queryString = newUrl.substring(qIndex + 1);
+          try {
+            const params = new URLSearchParams(queryString);
+            params.forEach((value, key) => {
+              parsedParams.push({ id: crypto.randomUUID(), key, value });
+            });
+          } catch (searchParamError) {
+            toast.error(`Error parsing query string:${searchParamError}`);
+          }
+        }
+      }
+
+      if (parsedParams.length > 0) {
+        const uniqueKeys = new Set<string>();
+        const uniqueParsedParams = parsedParams.filter((p) => {
+          if (!uniqueKeys.has(p.key)) {
+            uniqueKeys.add(p.key);
+            return true;
+          }
+          return false;
+        });
+        setQueryParams(uniqueParsedParams);
+      } else {
+        setQueryParams([{ id: crypto.randomUUID(), key: '', value: '' }]);
+      }
     },
     []
   );
-
   const handleSendRequest = useCallback(async () => {
     setIsLoading(true);
     setResponseData(null);
     setResponseStatus(null);
     setResponseContentType(null);
     try {
+      const validQueryParams = queryParams.filter((p) => p.key);
+
       let headersToSend = headers.filter((h) => h.key);
       if (
         (method === 'POST' || method === 'PUT' || method === 'PATCH') &&
@@ -163,11 +223,22 @@ export default function ResizableContainer({
         }
       }
 
+      let targetUrl = url;
+      try {
+        const urlObject = new URL(url);
+        targetUrl = `${urlObject.protocol}//${urlObject.host}${urlObject.pathname}`;
+      } catch {
+        const qIndex = url.indexOf('?');
+        if (qIndex !== -1) {
+          targetUrl = url.substring(0, qIndex);
+        }
+      }
+
       const proxyPayload = {
         method: method,
-        targetUrl: url,
+        targetUrl: targetUrl,
         headers: headersToSend,
-        queryParams: queryParams.filter((p) => p.key),
+        queryParams: validQueryParams,
         body: requestBody,
       };
 
@@ -217,7 +288,6 @@ export default function ResizableContainer({
       setIsLoading(false);
     }
   }, [method, url, headers, queryParams, requestBody, bodyLanguage, t]);
-
   return (
     <div className="relative w-full h-full">
       <Button

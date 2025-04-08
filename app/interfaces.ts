@@ -1,7 +1,7 @@
 export interface KeyValueItem {
   id: string;
   key: string;
-  value?: string;
+  value: string;
 }
 
 export interface TabsComponentProps {
