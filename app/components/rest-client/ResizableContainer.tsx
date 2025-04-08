@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { PanelLeftClose, PanelRightClose } from 'lucide-react';
 import {
   ResizableHandle,
@@ -16,15 +16,23 @@ import UrlInput from './UrlInput';
 import { BodyLanguage, KeyValueItem } from '@/app/interfaces';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { buildUrlWithParams } from './helpers/urlBuilder';
+import { encodeToBase64Url } from './helpers/encoding';
+import { useDebounce } from '@/app/hooks/useDebounce';
 
 interface ResizableContainerProps {
   initialMethod?: string;
+  initialUrl?: string;
+  initialBody?: string;
+  initialHeaders?: KeyValueItem[];
 }
 
 export default function ResizableContainer({
   initialMethod = 'GET',
+  initialUrl = '',
+  initialBody = '',
+  initialHeaders = [{ id: crypto.randomUUID(), key: '', value: '' }],
 }: ResizableContainerProps) {
   const {
     isPanelOpen: isCodePanelOpen,
@@ -35,17 +43,17 @@ export default function ResizableContainer({
     CLOSED_LAYOUT,
   } = useResizableLayout(false);
   const t = useTranslations('RESTful');
-  const router = useRouter();
+
   const pathname = usePathname();
+  const currentSearchParams = useSearchParams();
+
   const [queryParams, setQueryParams] = useState<KeyValueItem[]>([
     { id: crypto.randomUUID(), key: '', value: '' },
   ]);
-  const [headers, setHeaders] = useState<KeyValueItem[]>([
-    { id: crypto.randomUUID(), key: '', value: '' },
-  ]);
-  const [requestBody, setRequestBody] = useState<string>('');
+  const [headers, setHeaders] = useState<KeyValueItem[]>(initialHeaders);
+  const [requestBody, setRequestBody] = useState<string>(initialBody);
   const [bodyLanguage, setBodyLanguage] = useState<BodyLanguage>('json');
-  const [url, setUrl] = useState<string>('');
+  const [url, setUrl] = useState<string>(initialUrl);
   const [method, setMethod] = useState<string>(initialMethod);
 
   const [responseData, setResponseData] = useState<string | null>(null);
@@ -54,6 +62,92 @@ export default function ResizableContainer({
   );
   const [responseStatus, setResponseStatus] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const debouncedUrl = useDebounce(url, 500);
+  const debouncedRequestBody = useDebounce(requestBody, 500);
+
+  useEffect(() => {
+    const encodedUrl = debouncedUrl
+      ? encodeToBase64Url(debouncedUrl)
+      : undefined;
+    const encodedBody = debouncedRequestBody
+      ? encodeToBase64Url(debouncedRequestBody)
+      : undefined;
+
+    const locale = pathname.split('/')[1];
+    const pathSegments = [`/${locale}`, method];
+    if (encodedUrl) {
+      pathSegments.push(encodedUrl);
+      if (encodedBody) {
+        pathSegments.push(encodedBody);
+      }
+    }
+    const newPathname = pathSegments.join('/');
+
+    const headerParams = new URLSearchParams();
+    headers.forEach((header) => {
+      if (header.key) {
+        headerParams.set(header.key, header.value);
+      }
+    });
+    const newSearchString = headerParams.toString();
+    const newFullAppUrl =
+      newPathname + (newSearchString ? `?${newSearchString}` : '');
+    const currentFullAppUrl = window.location.pathname + window.location.search;
+
+    if (newFullAppUrl !== currentFullAppUrl) {
+      if (typeof window !== 'undefined') {
+        window.history.replaceState(null, '', newFullAppUrl);
+      }
+    }
+  }, [
+    method,
+    debouncedUrl,
+    debouncedRequestBody,
+    headers,
+    pathname,
+    currentSearchParams,
+  ]);
+
+  useEffect(() => {
+    if (initialUrl) {
+      const parsedParams: KeyValueItem[] = [];
+      try {
+        const urlObject = new URL(initialUrl);
+        urlObject.searchParams.forEach((value, key) => {
+          parsedParams.push({ id: crypto.randomUUID(), key, value });
+        });
+      } catch {
+        const qIndex = initialUrl.indexOf('?');
+        if (qIndex !== -1) {
+          const queryString = initialUrl.substring(qIndex + 1);
+          try {
+            const params = new URLSearchParams(queryString);
+            params.forEach((value, key) => {
+              parsedParams.push({ id: crypto.randomUUID(), key, value });
+            });
+          } catch (searchParamError) {
+            toast.error(
+              `Initial URL QueryString parse error: ${searchParamError}`
+            );
+          }
+        }
+      }
+      if (parsedParams.length > 0) {
+        const uniqueKeys = new Set<string>();
+        const uniqueParsedParams = parsedParams.filter((p) => {
+          if (!uniqueKeys.has(p.key)) {
+            uniqueKeys.add(p.key);
+            return true;
+          }
+          return false;
+        });
+        setQueryParams(uniqueParsedParams);
+      } else {
+        setQueryParams([{ id: crypto.randomUUID(), key: '', value: '' }]);
+      }
+    }
+  }, [initialUrl]);
 
   const handleAddQueryParam = () => {
     const newParams = [
@@ -93,7 +187,6 @@ export default function ResizableContainer({
       !queryParams[0]?.value
     )
       return;
-
     let newParams = queryParams;
     const filteredParams = queryParams.filter((p) => p.id !== id);
     setQueryParams(() => {
@@ -111,10 +204,12 @@ export default function ResizableContainer({
       ...prev,
       { id: crypto.randomUUID(), key: '', value: '' },
     ]);
+
   const handleHeaderKeyChange = (id: string | number, newKey: string) =>
     setHeaders((prev) =>
       prev.map((h) => (h.id === id ? { ...h, key: newKey } : h))
     );
+
   const handleHeaderValueChange = (id: string | number, newValue: string) =>
     setHeaders((prev) =>
       prev.map((h) => (h.id === id ? { ...h, value: newValue } : h))
@@ -138,20 +233,9 @@ export default function ResizableContainer({
     setBodyLanguage(lang);
   }, []);
 
-  const handleMethodChange = useCallback(
-    (newMethod: string) => {
-      setMethod(newMethod);
-      if (pathname) {
-        const pathParts = pathname.split('/');
-        if (pathParts.length >= 3) {
-          pathParts[2] = newMethod;
-          const newPathname = pathParts.join('/');
-          router.replace(newPathname);
-        }
-      }
-    },
-    [pathname, router]
-  );
+  const handleMethodChange = useCallback((newMethod: string) => {
+    setMethod(newMethod);
+  }, []);
 
   const handleUrlChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,7 +257,9 @@ export default function ResizableContainer({
               parsedParams.push({ id: crypto.randomUUID(), key, value });
             });
           } catch (searchParamError) {
-            toast.error(`Error parsing query string:${searchParamError}`);
+            toast.error(
+              `URL Input QueryString parse error: ${searchParamError}`
+            );
           }
         }
       }
@@ -194,6 +280,7 @@ export default function ResizableContainer({
     },
     []
   );
+
   const handleSendRequest = useCallback(async () => {
     setIsLoading(true);
     setResponseData(null);
@@ -288,6 +375,7 @@ export default function ResizableContainer({
       setIsLoading(false);
     }
   }, [method, url, headers, queryParams, requestBody, bodyLanguage, t]);
+
   return (
     <div className="relative w-full h-full">
       <Button
