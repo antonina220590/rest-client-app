@@ -1,7 +1,11 @@
-export default function Variables() {
+'use client';
+import { ReduxProvider } from '@/app/store/providers';
+import VariablesList from '@/app/components/variables/VariablesList';
+
+export default function VariablesPage() {
   return (
-    <div className="text-center">
-      <h1>Variables page</h1>
-    </div>
+    <ReduxProvider>
+      <VariablesList />
+    </ReduxProvider>
   );
 }

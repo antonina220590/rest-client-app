@@ -79,5 +79,16 @@
     "Prettify is only available for JSON": "Форматирование доступно только для JSON",
     "Request Failed": "Запрос не выполнен",
     "Request successful!": "Запрос выполнен успешно!"
+  },
+  "VariablesList": {
+    "title": "Переменные",
+    "keyLabel": "Ключ",
+    "valueLabel": "Значение",
+    "keyPlaceholder": "Введите ключ",
+    "valuePlaceholder": "Введите значение",
+    "addButton": "Добавить переменную",
+    "copyTooltip": "Нажмите чтобы скопировать",
+    "copiedText": "Скопировано!",
+    "deleteAriaLabel": "Удалить переменную"
   }
 }
