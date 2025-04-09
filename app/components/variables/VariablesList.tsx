@@ -6,14 +6,12 @@ import {
   deleteVariable,
   updateVariable,
 } from '../../store/variablesSlice';
-import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { VariableItem } from './VariableItem';
 import { AddVariableForm } from './AddVariableForm';
 import { Variable } from '@/app/store/types';
 
 const VariablesListContent = () => {
-  const t = useTranslations('VariablesList');
   const variables = useAppSelector((state) => state.variables);
   const dispatch = useAppDispatch();
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -46,14 +44,9 @@ const VariablesListContent = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 w-[100%] max-w-3xl mx-auto ">
+    <div className="p-4 md:p-6 w-full max-w-3xl mx-auto ">
       <div className="flex flex-col space-y-4 md:space-y-6">
-        <h1 className="font-heading text-xl md:text-2xl font-bold text-bg-secondary">
-          {t('title')}
-        </h1>
-
         <AddVariableForm onAdd={handleAdd} />
-
         <div className="space-y-2 md:space-y-3">
           {variables.map((variable) => (
             <VariableItem

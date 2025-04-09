@@ -8,7 +8,8 @@ import type {
   RestClientState,
 } from '@/app/interfaces';
 import { RootState } from './store';
-import { buildUrlWithParams } from '../components/rest-client/helpers/urlBuilder';
+import { buildUrlWithParams } from '@/app/components/rest-client/helpers/urlBuilder';
+import { interpolateVariables } from '@/app/components/variables/helpers/interpolate';
 
 const initialState: RestClientState = {
   method: 'GET',
@@ -27,20 +28,42 @@ const initialState: RestClientState = {
 export const sendRequest = createAsyncThunk<
   SendRequestSuccessPayload,
   SendRequestPayload,
-  { rejectValue: RejectPayload }
->('restClient/sendRequest', async (requestData, thunkAPI) => {
-  let cleanTargetUrl = requestData.targetUrl;
+  { rejectValue: RejectPayload; state: RootState }
+>('restClient/sendRequest', async (payload, { getState }) => {
+  const { variables } = getState();
+
+  const processedHeaders = payload.headers
+    .map((header) => ({
+      ...header,
+      key: interpolateVariables(header.key, variables),
+      value: interpolateVariables(header.value, variables),
+    }))
+    .filter((h) => h.key);
+
+  const preparedRequest: SendRequestPayload = {
+    ...payload,
+    targetUrl: interpolateVariables(payload.targetUrl, variables),
+    headers: processedHeaders,
+    queryParams: payload.queryParams.map((p) => ({
+      ...p,
+      key: interpolateVariables(p.key, variables),
+      value: interpolateVariables(p.value, variables),
+    })),
+    body: payload.body ? interpolateVariables(payload.body, variables) : null,
+  };
+
+  let cleanTargetUrl = preparedRequest.targetUrl;
   try {
-    const urlObject = new URL(requestData.targetUrl);
+    const urlObject = new URL(cleanTargetUrl);
     cleanTargetUrl = `${urlObject.protocol}//${urlObject.host}${urlObject.pathname}`;
   } catch {}
 
   const proxyPayload = {
-    method: requestData.method,
+    method: preparedRequest.method,
     targetUrl: cleanTargetUrl,
-    headers: requestData.headers.filter((h) => h.key),
-    queryParams: requestData.queryParams.filter((p) => p.key),
-    body: requestData.body,
+    headers: preparedRequest.headers,
+    queryParams: preparedRequest.queryParams,
+    body: preparedRequest.body,
   };
 
   try {
@@ -49,60 +72,27 @@ export const sendRequest = createAsyncThunk<
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(proxyPayload),
     });
-    const responseStatus = response.status;
 
     if (!response.ok) {
-      let errorBody: string | null = null;
-      let errorData = null;
-      try {
-        errorBody = await response.text();
-        try {
-          errorData = JSON.parse(errorBody);
-        } catch {
-          errorData = null;
-        }
-      } catch {
-        errorBody = null;
-        errorData = null;
-      }
-
-      const errorMessage = `Proxy Error ${responseStatus}: ${typeof errorData === 'object' && errorData?.message ? errorData.message : response.statusText || 'Unknown error'}`;
-      return thunkAPI.rejectWithValue({
-        message: errorMessage,
-        status: responseStatus,
+      const errorBody = await response.text().catch(() => null);
+      return Promise.reject({
+        message: `Error ${response.status}: ${response.statusText}`,
+        status: response.status,
         body: errorBody,
       });
     }
+
     const proxyResponse = await response.json();
-
-    if (proxyResponse.error) {
-      return thunkAPI.rejectWithValue({
-        message: proxyResponse.error,
-        status: proxyResponse.status || 500,
-        body: proxyResponse.body ?? null,
-      });
-    }
-
-    const contentTypeHeader = proxyResponse.headers
-      ? (Object.entries(proxyResponse.headers).find(
-          ([key]) => key.toLowerCase() === 'content-type'
-        ) as [string, string] | undefined)
-      : undefined;
-    const contentType = contentTypeHeader ? contentTypeHeader[1] : null;
-
     return {
       body: proxyResponse.body ?? null,
       status: proxyResponse.status,
       headers: proxyResponse.headers || {},
-      contentType: contentType,
+      contentType: proxyResponse.headers?.['content-type'] ?? null,
     };
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : 'An unknown network error occurred';
-    return thunkAPI.rejectWithValue({
-      message: message,
+    const message = error instanceof Error ? error.message : 'Request failed';
+    return Promise.reject({
+      message,
       status: 500,
       body: null,
     });
@@ -113,14 +103,20 @@ const parseQueryParamsFromUrl = (url: string): KeyValueItem[] => {
   const params: KeyValueItem[] = [];
   try {
     const urlObject = new URL(url);
-    const uniqueKeys = new Set<string>();
     urlObject.searchParams.forEach((value, key) => {
-      if (!uniqueKeys.has(key)) {
-        params.push({ id: crypto.randomUUID(), key, value });
-        uniqueKeys.add(key);
-      }
+      const decodedKey = key.replace(/%7B%7B/g, '{{').replace(/%7D%7D/g, '}}');
+      const decodedValue = value
+        .replace(/%7B%7B/g, '{{')
+        .replace(/%7D%7D/g, '}}');
+
+      params.push({
+        id: crypto.randomUUID(),
+        key: decodedKey,
+        value: decodedValue,
+      });
     });
   } catch {}
+
   return params.length > 0
     ? params
     : [{ id: crypto.randomUUID(), key: '', value: '' }];
@@ -130,73 +126,73 @@ const restClientSlice = createSlice({
   name: 'restClient',
   initialState,
   reducers: {
-    setMethod(state, action: PayloadAction<string>) {
+    setMethod: (state, action: PayloadAction<string>) => {
       state.method = action.payload;
     },
-    setUrl(state, action: PayloadAction<string>) {
+    setUrl: (state, action: PayloadAction<string>) => {
       state.url = action.payload;
       state.queryParams = parseQueryParamsFromUrl(action.payload);
     },
-    setRequestBody(state, action: PayloadAction<string>) {
+    setRequestBody: (state, action: PayloadAction<string>) => {
       state.requestBody = action.payload;
     },
-    setBodyLanguage(state, action: PayloadAction<BodyLanguage>) {
+    setBodyLanguage: (state, action: PayloadAction<BodyLanguage>) => {
       state.bodyLanguage = action.payload;
     },
-    setHeaders(state, action: PayloadAction<KeyValueItem[]>) {
+    setHeaders: (state, action: PayloadAction<KeyValueItem[]>) => {
       state.headers =
         action.payload.length > 0
           ? action.payload
           : [{ id: crypto.randomUUID(), key: '', value: '' }];
     },
-    addHeader(state) {
+    addHeader: (state) => {
       state.headers.push({ id: crypto.randomUUID(), key: '', value: '' });
     },
-    updateHeaderKey(
+    updateHeaderKey: (
       state,
       action: PayloadAction<{ id: string | number; key: string }>
-    ) {
+    ) => {
       const header = state.headers.find((h) => h.id === action.payload.id);
       if (header) header.key = action.payload.key;
     },
-    updateHeaderValue(
+    updateHeaderValue: (
       state,
       action: PayloadAction<{ id: string | number; value: string }>
-    ) {
+    ) => {
       const header = state.headers.find((h) => h.id === action.payload.id);
       if (header) header.value = action.payload.value;
     },
-    deleteHeader(state, action: PayloadAction<string | number>) {
+    deleteHeader: (state, action: PayloadAction<string | number>) => {
       state.headers = state.headers.filter((h) => h.id !== action.payload);
       if (state.headers.length === 0) {
         state.headers.push({ id: crypto.randomUUID(), key: '', value: '' });
       }
     },
-    addQueryParam(state) {
+    addQueryParam: (state) => {
       state.queryParams.push({ id: crypto.randomUUID(), key: '', value: '' });
       state.url = buildUrlWithParams(state.url, state.queryParams);
     },
-    updateQueryParamKey(
+    updateQueryParamKey: (
       state,
       action: PayloadAction<{ id: string | number; key: string }>
-    ) {
+    ) => {
       const param = state.queryParams.find((p) => p.id === action.payload.id);
       if (param) {
         param.key = action.payload.key;
         state.url = buildUrlWithParams(state.url, state.queryParams);
       }
     },
-    updateQueryParamValue(
+    updateQueryParamValue: (
       state,
       action: PayloadAction<{ id: string | number; value: string }>
-    ) {
+    ) => {
       const param = state.queryParams.find((p) => p.id === action.payload.id);
       if (param) {
         param.value = action.payload.value;
         state.url = buildUrlWithParams(state.url, state.queryParams);
       }
     },
-    deleteQueryParam(state, action: PayloadAction<string | number>) {
+    deleteQueryParam: (state, action: PayloadAction<string | number>) => {
       state.queryParams = state.queryParams.filter(
         (p) => p.id !== action.payload
       );
@@ -205,32 +201,22 @@ const restClientSlice = createSlice({
       }
       state.url = buildUrlWithParams(state.url, state.queryParams);
     },
-    setQueryParams(state, action: PayloadAction<KeyValueItem[]>) {
+    setQueryParams: (state, action: PayloadAction<KeyValueItem[]>) => {
       state.queryParams =
         action.payload.length > 0
           ? action.payload
           : [{ id: crypto.randomUUID(), key: '', value: '' }];
       state.url = buildUrlWithParams(state.url, state.queryParams);
     },
-    clearResponse(state) {
+    clearResponse: (state) => {
       state.isLoading = false;
       state.error = null;
       state.responseData = null;
       state.responseStatus = null;
       state.responseContentType = null;
     },
-    clearAllRequestState(state) {
-      state.method = initialState.method;
-      state.url = initialState.url;
-      state.requestBody = initialState.requestBody;
-      state.bodyLanguage = initialState.bodyLanguage;
-      state.headers = initialState.headers;
-      state.queryParams = initialState.queryParams;
-      state.isLoading = false;
-      state.error = null;
-      state.responseData = null;
-      state.responseStatus = null;
-      state.responseContentType = null;
+    clearAllRequestState: (state) => {
+      Object.assign(state, initialState);
     },
   },
   extraReducers: (builder) => {
@@ -242,16 +228,12 @@ const restClientSlice = createSlice({
         state.responseStatus = null;
         state.responseContentType = null;
       })
-      .addCase(
-        sendRequest.fulfilled,
-        (state, action: PayloadAction<SendRequestSuccessPayload>) => {
-          state.isLoading = false;
-          state.responseData = action.payload.body;
-          state.responseStatus = action.payload.status;
-          state.responseContentType = action.payload.contentType;
-          state.error = null;
-        }
-      )
+      .addCase(sendRequest.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.responseData = action.payload.body;
+        state.responseStatus = action.payload.status;
+        state.responseContentType = action.payload.contentType;
+      })
       .addCase(sendRequest.rejected, (state, action) => {
         state.isLoading = false;
         if (action.payload) {
@@ -260,10 +242,7 @@ const restClientSlice = createSlice({
           state.responseData = action.payload.body;
         } else {
           state.error = action.error.message ?? 'Request failed';
-          state.responseStatus = null;
-          state.responseData = null;
         }
-        state.responseContentType = null;
       });
   },
 });
@@ -289,7 +268,13 @@ export const {
 
 export default restClientSlice.reducer;
 
-export type { RestClientState };
+export const selectRestClient = (state: RootState) => state.restClient;
 export const selectRestClientUrl = (state: RootState) => state.restClient.url;
 export const selectRestClientIsLoading = (state: RootState) =>
   state.restClient.isLoading;
+export const selectRestClientResponse = (state: RootState) => ({
+  data: state.restClient.responseData,
+  status: state.restClient.responseStatus,
+  contentType: state.restClient.responseContentType,
+  error: state.restClient.error,
+});
