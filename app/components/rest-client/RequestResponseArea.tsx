@@ -19,8 +19,22 @@ import TabsComponent from './TabsComponent';
 import RequestBodyEditor from './BodyEditor';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { BodyLanguage, RequestResponseAreaProps } from '@/app/interfaces';
+import { BodyLanguage } from '@/app/interfaces';
 import Spinner from '../Spinner';
+import { useSelector, useDispatch } from 'react-redux';
+import type { AppDispatch, RootState } from '@/app/store/store';
+import {
+  addQueryParam,
+  updateQueryParamKey,
+  updateQueryParamValue,
+  deleteQueryParam,
+  addHeader,
+  updateHeaderKey,
+  updateHeaderValue,
+  deleteHeader,
+  setRequestBody,
+  setBodyLanguage,
+} from '@/app/store/restClientSlice';
 
 const VERTICAL_COLLAPSED_SIZE = 2;
 const VERTICAL_OPEN_LAYOUT: number[] = [40, 60];
@@ -29,33 +43,38 @@ const VERTICAL_COLLAPSED_LAYOUT: number[] = [
   100 - VERTICAL_COLLAPSED_SIZE,
 ];
 
-export function RequestResponseArea({
-  queryParams,
-  onAddQueryParam,
-  onQueryParamKeyChange,
-  onQueryParamValueChange,
-  onDeleteQueryParam,
-  headers,
-  onAddHeader,
-  onHeaderKeyChange,
-  onHeaderValueChange,
-  onDeleteHeader,
-  requestBody,
-  onBodyChange,
-  bodyLanguage,
-  onBodyLanguageChange,
-  responseData,
-  responseContentType,
-  responseStatus,
-  isLoading,
-}: RequestResponseAreaProps) {
+export function RequestResponseArea() {
   const [isRequestPanelCollapsed, setIsRequestPanelCollapsed] = useState(true);
   const verticalLayoutGroupRef = useRef<ImperativePanelGroupHandle>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const dispatch: AppDispatch = useDispatch();
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const queryParams = useSelector(
+    (state: RootState) => state.restClient.queryParams
+  );
+  const headers = useSelector((state: RootState) => state.restClient.headers);
+  const requestBody = useSelector(
+    (state: RootState) => state.restClient.requestBody
+  );
+  const bodyLanguage = useSelector(
+    (state: RootState) => state.restClient.bodyLanguage
+  );
+  const responseData = useSelector(
+    (state: RootState) => state.restClient.responseData
+  );
+  const responseContentType = useSelector(
+    (state: RootState) => state.restClient.responseContentType
+  );
+  const responseStatus = useSelector(
+    (state: RootState) => state.restClient.responseStatus
+  );
+  const isLoading = useSelector(
+    (state: RootState) => state.restClient.isLoading
+  );
 
   const expandRequestPanel = useCallback(() => {
     const panelGroup = verticalLayoutGroupRef.current;
@@ -141,6 +160,61 @@ export function RequestResponseArea({
     return { displayValue: '', displayLanguage: 'plaintext' as BodyLanguage };
   }, [responseData, responseContentType, responseStatus, isLoading]);
 
+  const handleAddQueryParam = useCallback(
+    () => dispatch(addQueryParam()),
+    [dispatch]
+  );
+  const handleQueryParamKeyChange = useCallback(
+    (id: string | number, newKey: string) =>
+      dispatch(updateQueryParamKey({ id, key: newKey })),
+    [dispatch]
+  );
+  const handleQueryParamValueChange = useCallback(
+    (id: string | number, newValue: string) =>
+      dispatch(updateQueryParamValue({ id, value: newValue })),
+    [dispatch]
+  );
+  const handleDeleteQueryParam = useCallback(
+    (id: string | number) => {
+      if (
+        queryParams.length <= 1 &&
+        !queryParams[0]?.key &&
+        !queryParams[0]?.value
+      )
+        return;
+      dispatch(deleteQueryParam(id));
+    },
+    [dispatch, queryParams]
+  );
+
+  const handleAddHeader = useCallback(() => dispatch(addHeader()), [dispatch]);
+  const handleHeaderKeyChange = useCallback(
+    (id: string | number, newKey: string) =>
+      dispatch(updateHeaderKey({ id, key: newKey })),
+    [dispatch]
+  );
+  const handleHeaderValueChange = useCallback(
+    (id: string | number, newValue: string) =>
+      dispatch(updateHeaderValue({ id, value: newValue })),
+    [dispatch]
+  );
+  const handleDeleteHeader = useCallback(
+    (id: string | number) => {
+      if (headers.length <= 1 && !headers[0]?.key && !headers[0]?.value) return;
+      dispatch(deleteHeader(id));
+    },
+    [dispatch, headers]
+  );
+
+  const handleBodyChange = useCallback(
+    (value: string) => dispatch(setRequestBody(value)),
+    [dispatch]
+  );
+  const handleBodyLanguageChange = useCallback(
+    (lang: BodyLanguage) => dispatch(setBodyLanguage(lang)),
+    [dispatch]
+  );
+
   return (
     <ResizablePanelGroup
       ref={verticalLayoutGroupRef}
@@ -187,19 +261,19 @@ export function RequestResponseArea({
             <TabsComponent
               onTabChange={expandRequestPanel}
               queryParams={queryParams}
-              onAddQueryParam={onAddQueryParam}
-              onQueryParamKeyChange={onQueryParamKeyChange}
-              onQueryParamValueChange={onQueryParamValueChange}
-              onDeleteQueryParam={onDeleteQueryParam}
+              onAddQueryParam={handleAddQueryParam}
+              onQueryParamKeyChange={handleQueryParamKeyChange}
+              onQueryParamValueChange={handleQueryParamValueChange}
+              onDeleteQueryParam={handleDeleteQueryParam}
               headers={headers}
-              onAddHeader={onAddHeader}
-              onHeaderKeyChange={onHeaderKeyChange}
-              onHeaderValueChange={onHeaderValueChange}
-              onDeleteHeader={onDeleteHeader}
+              onAddHeader={handleAddHeader}
+              onHeaderKeyChange={handleHeaderKeyChange}
+              onHeaderValueChange={handleHeaderValueChange}
+              onDeleteHeader={handleDeleteHeader}
               requestBody={requestBody}
-              onBodyChange={onBodyChange}
+              onBodyChange={handleBodyChange}
               bodyLanguage={bodyLanguage}
-              onBodyLanguageChange={onBodyLanguageChange}
+              onBodyLanguageChange={handleBodyLanguageChange}
               showPrettifyButton={true}
               showLanguageSelector={true}
             />

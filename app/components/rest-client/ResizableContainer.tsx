@@ -13,7 +13,7 @@ import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
-import { BodyLanguage, KeyValueItem } from '@/app/interfaces';
+import { KeyValueItem } from '@/app/interfaces';
 import { useSyncUrlWithReduxState } from '@/app/hooks/useSyncUrlWithReduxState';
 import { useRequestNotifications } from '@/app/hooks/useRequestNotifications';
 
@@ -25,14 +25,6 @@ import {
   setRequestBody,
   setBodyLanguage,
   setHeaders,
-  addHeader,
-  updateHeaderKey,
-  updateHeaderValue,
-  deleteHeader,
-  addQueryParam,
-  updateQueryParamKey,
-  updateQueryParamValue,
-  deleteQueryParam,
   sendRequest,
   clearResponse,
 } from '@/app/store/restClientSlice';
@@ -42,7 +34,6 @@ interface ResizableContainerProps {
   initialBody?: string;
   initialHeaders?: KeyValueItem[];
 }
-
 export default function ResizableContainer({
   initialMethod = 'GET',
   initialUrl = '',
@@ -62,7 +53,6 @@ export default function ResizableContainer({
 
   const [isClient, setIsClient] = useState(false);
 
-  // const method = useSelector((state: RootState) => state.restClient.method);
   const methodFromRedux = useSelector(
     (state: RootState) => state.restClient.method
   );
@@ -71,24 +61,9 @@ export default function ResizableContainer({
   const requestBody = useSelector(
     (state: RootState) => state.restClient.requestBody
   );
-  const bodyLanguage = useSelector(
-    (state: RootState) => state.restClient.bodyLanguage
-  );
   const headers = useSelector((state: RootState) => state.restClient.headers);
   const queryParams = useSelector(
     (state: RootState) => state.restClient.queryParams
-  );
-  const responseData = useSelector(
-    (state: RootState) => state.restClient.responseData
-  );
-  const responseStatus = useSelector(
-    (state: RootState) => state.restClient.responseStatus
-  );
-  const responseContentType = useSelector(
-    (state: RootState) => state.restClient.responseContentType
-  );
-  const isLoading = useSelector(
-    (state: RootState) => state.restClient.isLoading
   );
 
   useEffect(() => {
@@ -103,81 +78,6 @@ export default function ResizableContainer({
 
   useSyncUrlWithReduxState();
   useRequestNotifications();
-
-  const handleAddQueryParam = useCallback(() => {
-    dispatch(addQueryParam());
-  }, [dispatch]);
-
-  const handleQueryParamKeyChange = useCallback(
-    (id: string | number, newKey: string) => {
-      dispatch(updateQueryParamKey({ id, key: newKey }));
-    },
-    [dispatch]
-  );
-
-  const handleQueryParamValueChange = useCallback(
-    (id: string | number, newValue: string) => {
-      dispatch(updateQueryParamValue({ id, value: newValue }));
-    },
-    [dispatch]
-  );
-
-  const handleDeleteQueryParam = useCallback(
-    (id: string | number) => {
-      if (
-        queryParams.length <= 1 &&
-        !queryParams[0]?.key &&
-        !queryParams[0]?.value
-      ) {
-        return;
-      }
-
-      dispatch(deleteQueryParam(id));
-    },
-    [dispatch, queryParams]
-  );
-  const handleAddHeader = useCallback(() => {
-    dispatch(addHeader());
-  }, [dispatch]);
-
-  const handleHeaderKeyChange = useCallback(
-    (id: string | number, newKey: string) => {
-      dispatch(updateHeaderKey({ id, key: newKey }));
-    },
-    [dispatch]
-  );
-
-  const handleHeaderValueChange = useCallback(
-    (id: string | number, newValue: string) => {
-      dispatch(updateHeaderValue({ id, value: newValue }));
-    },
-    [dispatch]
-  );
-
-  const handleDeleteHeader = useCallback(
-    (id: string | number) => {
-      if (headers.length <= 1 && !headers[0]?.key && !headers[0]?.value) {
-        return;
-      }
-
-      dispatch(deleteHeader(id));
-    },
-    [dispatch, headers]
-  );
-
-  const handleBodyChange = useCallback(
-    (value: string) => {
-      dispatch(setRequestBody(value));
-    },
-    [dispatch]
-  );
-
-  const handleBodyLanguageChange = useCallback(
-    (lang: BodyLanguage) => {
-      dispatch(setBodyLanguage(lang));
-    },
-    [dispatch]
-  );
 
   const handleMethodChange = useCallback(
     (newMethod: string) => {
@@ -243,26 +143,7 @@ export default function ResizableContainer({
               />
             </div>
             <div className="flex-grow overflow-hidden mt-5 max-w-8xl mx-auto w-[90%]">
-              <RequestResponseArea
-                queryParams={queryParams}
-                onAddQueryParam={handleAddQueryParam}
-                onQueryParamKeyChange={handleQueryParamKeyChange}
-                onQueryParamValueChange={handleQueryParamValueChange}
-                onDeleteQueryParam={handleDeleteQueryParam}
-                headers={headers}
-                onAddHeader={handleAddHeader}
-                onHeaderKeyChange={handleHeaderKeyChange}
-                onHeaderValueChange={handleHeaderValueChange}
-                onDeleteHeader={handleDeleteHeader}
-                requestBody={requestBody}
-                onBodyChange={handleBodyChange}
-                bodyLanguage={bodyLanguage}
-                onBodyLanguageChange={handleBodyLanguageChange}
-                responseData={responseData}
-                responseContentType={responseContentType}
-                responseStatus={responseStatus}
-                isLoading={isLoading}
-              />
+              <RequestResponseArea />
             </div>
           </div>
         </ResizablePanel>
