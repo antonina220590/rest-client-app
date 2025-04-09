@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { KeyValueItem, methods } from '@/app/interfaces';
 import { redirect } from 'next/navigation';
 import { decodeFromBase64Url } from '@/app/components/rest-client/helpers/encoding';
+import { ReduxProvider } from '@/app/store/providers';
 
 interface RestClientPageProps {
   params: {
@@ -66,19 +67,21 @@ export default async function RESTful({
 
   return (
     <>
-      <div className="text-center">
-        <div className="flex flex-col h-full mx-auto gap-2">
-          <div className="flex h-[85dvh] w-full">
-            <ResizableContainer
-              initialMethod={initialMethod}
-              initialUrl={initialUrl}
-              initialBody={initialBody}
-              initialHeaders={initialHeaders}
-            />
+      <ReduxProvider>
+        <div className="text-center">
+          <div className="flex flex-col h-full mx-auto gap-2">
+            <div className="flex h-[85dvh] w-full">
+              <ResizableContainer
+                initialMethod={initialMethod}
+                initialUrl={initialUrl}
+                initialBody={initialBody}
+                initialHeaders={initialHeaders}
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <Toaster />
+        <Toaster />
+      </ReduxProvider>
     </>
   );
 }

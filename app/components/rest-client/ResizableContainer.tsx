@@ -21,6 +21,24 @@ import { buildUrlWithParams } from './helpers/urlBuilder';
 import { encodeToBase64Url } from './helpers/encoding';
 import { useDebounce } from '@/app/hooks/useDebounce';
 
+import { useSelector, useDispatch } from 'react-redux';
+import type { AppDispatch, RootState } from '@/app/store/store';
+import {
+  setMethod,
+  setUrl,
+  // setRequestBody,
+  // setBodyLanguage,
+  // addHeader,
+  // updateHeaderKey,
+  // updateHeaderValue,
+  // deleteHeader,
+  // addQueryParam,
+  // updateQueryParamKey,
+  // updateQueryParamValue,
+  // deleteQueryParam,
+  // setQueryParams,
+  // sendRequest,
+} from '@/app/store/restClientSlice';
 interface ResizableContainerProps {
   initialMethod?: string;
   initialUrl?: string;
@@ -43,9 +61,13 @@ export default function ResizableContainer({
     CLOSED_LAYOUT,
   } = useResizableLayout(false);
   const t = useTranslations('RESTful');
-
   const pathname = usePathname();
   const currentSearchParams = useSearchParams();
+
+  // Redux logic
+  const dispatch: AppDispatch = useDispatch();
+  const method = useSelector((state: RootState) => state.restClient.method);
+  const url = useSelector((state: RootState) => state.restClient.url);
 
   const [queryParams, setQueryParams] = useState<KeyValueItem[]>([
     { id: crypto.randomUUID(), key: '', value: '' },
@@ -53,9 +75,6 @@ export default function ResizableContainer({
   const [headers, setHeaders] = useState<KeyValueItem[]>(initialHeaders);
   const [requestBody, setRequestBody] = useState<string>(initialBody);
   const [bodyLanguage, setBodyLanguage] = useState<BodyLanguage>('json');
-  const [url, setUrl] = useState<string>(initialUrl);
-  const [method, setMethod] = useState<string>(initialMethod);
-
   const [responseData, setResponseData] = useState<string | null>(null);
   const [responseContentType, setResponseContentType] = useState<string | null>(
     null
@@ -65,6 +84,11 @@ export default function ResizableContainer({
 
   const debouncedUrl = useDebounce(url, 500);
   const debouncedRequestBody = useDebounce(requestBody, 500);
+
+  useEffect(() => {
+    dispatch(setMethod(initialMethod));
+    dispatch(setUrl(initialUrl));
+  }, [dispatch, initialMethod, initialUrl]);
 
   useEffect(() => {
     const encodedUrl = debouncedUrl
@@ -233,14 +257,17 @@ export default function ResizableContainer({
     setBodyLanguage(lang);
   }, []);
 
-  const handleMethodChange = useCallback((newMethod: string) => {
-    setMethod(newMethod);
-  }, []);
+  const handleMethodChange = useCallback(
+    (newMethod: string) => {
+      dispatch(setMethod(newMethod));
+    },
+    [dispatch]
+  );
 
   const handleUrlChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const newUrl = event.target.value;
-      setUrl(newUrl);
+      dispatch(setUrl(newUrl));
       const parsedParams: KeyValueItem[] = [];
       try {
         const urlObject = new URL(newUrl);
@@ -278,7 +305,7 @@ export default function ResizableContainer({
         setQueryParams([{ id: crypto.randomUUID(), key: '', value: '' }]);
       }
     },
-    []
+    [dispatch]
   );
 
   const handleSendRequest = useCallback(async () => {

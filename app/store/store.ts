@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import variablesReducer from './variablesSlice';
-import restClientReducer from './restclientSlice';
+import restClientReducer from './restClientSlice';
 import { PreloadedState } from './types';
 
 const loadState = () => {
