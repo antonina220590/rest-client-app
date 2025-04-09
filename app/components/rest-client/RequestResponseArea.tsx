@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
   ResizableHandle,
@@ -45,6 +51,11 @@ export function RequestResponseArea({
 }: RequestResponseAreaProps) {
   const [isRequestPanelCollapsed, setIsRequestPanelCollapsed] = useState(true);
   const verticalLayoutGroupRef = useRef<ImperativePanelGroupHandle>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const expandRequestPanel = useCallback(() => {
     const panelGroup = verticalLayoutGroupRef.current;
@@ -186,7 +197,7 @@ export function RequestResponseArea({
         <div className="p-2 md:p-4 h-full flex flex-col w-full">
           <div className="text-xs text-muted-foreground mb-1 flex-shrink-0 flex justify-between items-center px-1">
             <span>
-              {responseStatus !== null && !isLoading && (
+              {isMounted && responseStatus !== null && !isLoading && (
                 <span>
                   Status:{' '}
                   <span

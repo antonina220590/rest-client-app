@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { PanelLeftClose, PanelRightClose } from 'lucide-react';
 import {
   ResizableHandle,
@@ -17,7 +17,6 @@ import { BodyLanguage, KeyValueItem } from '@/app/interfaces';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { buildUrlWithParams } from './helpers/urlBuilder';
 import { encodeToBase64Url } from './helpers/encoding';
 import { useDebounce } from '@/app/hooks/useDebounce';
 
@@ -26,18 +25,18 @@ import type { AppDispatch, RootState } from '@/app/store/store';
 import {
   setMethod,
   setUrl,
-  // setRequestBody,
-  // setBodyLanguage,
-  // addHeader,
-  // updateHeaderKey,
-  // updateHeaderValue,
-  // deleteHeader,
-  // addQueryParam,
-  // updateQueryParamKey,
-  // updateQueryParamValue,
-  // deleteQueryParam,
-  // setQueryParams,
-  // sendRequest,
+  setRequestBody,
+  setBodyLanguage,
+  setHeaders,
+  addHeader,
+  updateHeaderKey,
+  updateHeaderValue,
+  deleteHeader,
+  addQueryParam,
+  updateQueryParamKey,
+  updateQueryParamValue,
+  deleteQueryParam,
+  sendRequest,
 } from '@/app/store/restClientSlice';
 interface ResizableContainerProps {
   initialMethod?: string;
@@ -63,24 +62,33 @@ export default function ResizableContainer({
   const t = useTranslations('RESTful');
   const pathname = usePathname();
   const currentSearchParams = useSearchParams();
-
-  // Redux logic
   const dispatch: AppDispatch = useDispatch();
+
   const method = useSelector((state: RootState) => state.restClient.method);
   const url = useSelector((state: RootState) => state.restClient.url);
-
-  const [queryParams, setQueryParams] = useState<KeyValueItem[]>([
-    { id: crypto.randomUUID(), key: '', value: '' },
-  ]);
-  const [headers, setHeaders] = useState<KeyValueItem[]>(initialHeaders);
-  const [requestBody, setRequestBody] = useState<string>(initialBody);
-  const [bodyLanguage, setBodyLanguage] = useState<BodyLanguage>('json');
-  const [responseData, setResponseData] = useState<string | null>(null);
-  const [responseContentType, setResponseContentType] = useState<string | null>(
-    null
+  const requestBody = useSelector(
+    (state: RootState) => state.restClient.requestBody
   );
-  const [responseStatus, setResponseStatus] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const bodyLanguage = useSelector(
+    (state: RootState) => state.restClient.bodyLanguage
+  );
+  const headers = useSelector((state: RootState) => state.restClient.headers);
+  const queryParams = useSelector(
+    (state: RootState) => state.restClient.queryParams
+  );
+  const responseData = useSelector(
+    (state: RootState) => state.restClient.responseData
+  );
+  const responseStatus = useSelector(
+    (state: RootState) => state.restClient.responseStatus
+  );
+  const responseContentType = useSelector(
+    (state: RootState) => state.restClient.responseContentType
+  );
+  const isLoading = useSelector(
+    (state: RootState) => state.restClient.isLoading
+  );
+  const error = useSelector((state: RootState) => state.restClient.error);
 
   const debouncedUrl = useDebounce(url, 500);
   const debouncedRequestBody = useDebounce(requestBody, 500);
@@ -88,7 +96,10 @@ export default function ResizableContainer({
   useEffect(() => {
     dispatch(setMethod(initialMethod));
     dispatch(setUrl(initialUrl));
-  }, [dispatch, initialMethod, initialUrl]);
+    dispatch(setRequestBody(initialBody));
+    dispatch(setBodyLanguage('json'));
+    dispatch(setHeaders(initialHeaders));
+  }, [dispatch, initialBody, initialHeaders, initialMethod, initialUrl]);
 
   useEffect(() => {
     const encodedUrl = debouncedUrl
@@ -133,129 +144,99 @@ export default function ResizableContainer({
     currentSearchParams,
   ]);
 
+  const prevError = useRef<string | null>(null);
+  const prevIsLoading = useRef<boolean>(false);
+
   useEffect(() => {
-    if (initialUrl) {
-      const parsedParams: KeyValueItem[] = [];
-      try {
-        const urlObject = new URL(initialUrl);
-        urlObject.searchParams.forEach((value, key) => {
-          parsedParams.push({ id: crypto.randomUUID(), key, value });
-        });
-      } catch {
-        const qIndex = initialUrl.indexOf('?');
-        if (qIndex !== -1) {
-          const queryString = initialUrl.substring(qIndex + 1);
-          try {
-            const params = new URLSearchParams(queryString);
-            params.forEach((value, key) => {
-              parsedParams.push({ id: crypto.randomUUID(), key, value });
-            });
-          } catch (searchParamError) {
-            toast.error(
-              `Initial URL QueryString parse error: ${searchParamError}`
-            );
-          }
-        }
-      }
-      if (parsedParams.length > 0) {
-        const uniqueKeys = new Set<string>();
-        const uniqueParsedParams = parsedParams.filter((p) => {
-          if (!uniqueKeys.has(p.key)) {
-            uniqueKeys.add(p.key);
-            return true;
-          }
-          return false;
-        });
-        setQueryParams(uniqueParsedParams);
-      } else {
-        setQueryParams([{ id: crypto.randomUUID(), key: '', value: '' }]);
-      }
+    if (error && error !== prevError.current) {
+      toast.error(t('Request Failed'), { description: error });
     }
-  }, [initialUrl]);
-
-  const handleAddQueryParam = () => {
-    const newParams = [
-      ...queryParams,
-      { id: crypto.randomUUID(), key: '', value: '' },
-    ];
-    setQueryParams(newParams);
-  };
-
-  const handleQueryParamKeyChange = (id: string | number, newKey: string) => {
-    let newParams = queryParams;
-    setQueryParams((prev) => {
-      newParams = prev.map((p) => (p.id === id ? { ...p, key: newKey } : p));
-      setUrl(buildUrlWithParams(url, newParams));
-      return newParams;
-    });
-  };
-
-  const handleQueryParamValueChange = (
-    id: string | number,
-    newValue: string
-  ) => {
-    let newParams = queryParams;
-    setQueryParams((prev) => {
-      newParams = prev.map((p) =>
-        p.id === id ? { ...p, value: newValue } : p
-      );
-      setUrl(buildUrlWithParams(url, newParams));
-      return newParams;
-    });
-  };
-
-  const handleDeleteQueryParam = (id: string | number) => {
     if (
-      queryParams.length <= 1 &&
-      !queryParams[0]?.key &&
-      !queryParams[0]?.value
-    )
-      return;
-    let newParams = queryParams;
-    const filteredParams = queryParams.filter((p) => p.id !== id);
-    setQueryParams(() => {
-      newParams =
-        filteredParams.length > 0
-          ? filteredParams
-          : [{ id: crypto.randomUUID(), key: '', value: '' }];
-      setUrl(buildUrlWithParams(url, newParams));
-      return newParams;
-    });
-  };
+      prevIsLoading.current &&
+      !isLoading &&
+      !error &&
+      responseStatus !== null
+    ) {
+      toast.success(t('Request successful!'));
+    }
+    prevError.current = error;
+    prevIsLoading.current = isLoading;
+  }, [error, isLoading, responseStatus, t]);
 
-  const handleAddHeader = () =>
-    setHeaders((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), key: '', value: '' },
-    ]);
+  const handleAddQueryParam = useCallback(() => {
+    dispatch(addQueryParam());
+  }, [dispatch]);
 
-  const handleHeaderKeyChange = (id: string | number, newKey: string) =>
-    setHeaders((prev) =>
-      prev.map((h) => (h.id === id ? { ...h, key: newKey } : h))
-    );
+  const handleQueryParamKeyChange = useCallback(
+    (id: string | number, newKey: string) => {
+      dispatch(updateQueryParamKey({ id, key: newKey }));
+    },
+    [dispatch]
+  );
 
-  const handleHeaderValueChange = (id: string | number, newValue: string) =>
-    setHeaders((prev) =>
-      prev.map((h) => (h.id === id ? { ...h, value: newValue } : h))
-    );
+  const handleQueryParamValueChange = useCallback(
+    (id: string | number, newValue: string) => {
+      dispatch(updateQueryParamValue({ id, value: newValue }));
+    },
+    [dispatch]
+  );
 
-  const handleDeleteHeader = (id: string | number) => {
-    if (headers.length <= 1 && !headers[0]?.key && !headers[0]?.value) return;
-    const newHeaders = headers.filter((h) => h.id !== id);
-    setHeaders(
-      newHeaders.length > 0
-        ? newHeaders
-        : [{ id: crypto.randomUUID(), key: '', value: '' }]
-    );
-  };
+  const handleDeleteQueryParam = useCallback(
+    (id: string | number) => {
+      if (
+        queryParams.length <= 1 &&
+        !queryParams[0]?.key &&
+        !queryParams[0]?.value
+      ) {
+        return;
+      }
 
-  const handleBodyChange = useCallback((value: string) => {
-    setRequestBody(value);
-  }, []);
+      dispatch(deleteQueryParam(id));
+    },
+    [dispatch, queryParams]
+  );
+  const handleAddHeader = useCallback(() => {
+    dispatch(addHeader());
+  }, [dispatch]);
 
-  const handleBodyLanguageChange = useCallback((lang: BodyLanguage) => {
-    setBodyLanguage(lang);
-  }, []);
+  const handleHeaderKeyChange = useCallback(
+    (id: string | number, newKey: string) => {
+      dispatch(updateHeaderKey({ id, key: newKey }));
+    },
+    [dispatch]
+  );
+
+  const handleHeaderValueChange = useCallback(
+    (id: string | number, newValue: string) => {
+      dispatch(updateHeaderValue({ id, value: newValue }));
+    },
+    [dispatch]
+  );
+
+  const handleDeleteHeader = useCallback(
+    (id: string | number) => {
+      if (headers.length <= 1 && !headers[0]?.key && !headers[0]?.value) {
+        return;
+      }
+
+      dispatch(deleteHeader(id));
+    },
+    [dispatch, headers]
+  );
+
+  const handleBodyChange = useCallback(
+    (value: string) => {
+      dispatch(setRequestBody(value));
+    },
+    [dispatch]
+  );
+
+  const handleBodyLanguageChange = useCallback(
+    (lang: BodyLanguage) => {
+      dispatch(setBodyLanguage(lang));
+    },
+    [dispatch]
+  );
 
   const handleMethodChange = useCallback(
     (newMethod: string) => {
@@ -268,140 +249,20 @@ export default function ResizableContainer({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const newUrl = event.target.value;
       dispatch(setUrl(newUrl));
-      const parsedParams: KeyValueItem[] = [];
-      try {
-        const urlObject = new URL(newUrl);
-        urlObject.searchParams.forEach((value, key) => {
-          parsedParams.push({ id: crypto.randomUUID(), key, value });
-        });
-      } catch {
-        const qIndex = newUrl.indexOf('?');
-        if (qIndex !== -1) {
-          const queryString = newUrl.substring(qIndex + 1);
-          try {
-            const params = new URLSearchParams(queryString);
-            params.forEach((value, key) => {
-              parsedParams.push({ id: crypto.randomUUID(), key, value });
-            });
-          } catch (searchParamError) {
-            toast.error(
-              `URL Input QueryString parse error: ${searchParamError}`
-            );
-          }
-        }
-      }
-
-      if (parsedParams.length > 0) {
-        const uniqueKeys = new Set<string>();
-        const uniqueParsedParams = parsedParams.filter((p) => {
-          if (!uniqueKeys.has(p.key)) {
-            uniqueKeys.add(p.key);
-            return true;
-          }
-          return false;
-        });
-        setQueryParams(uniqueParsedParams);
-      } else {
-        setQueryParams([{ id: crypto.randomUUID(), key: '', value: '' }]);
-      }
     },
     [dispatch]
   );
 
   const handleSendRequest = useCallback(async () => {
-    setIsLoading(true);
-    setResponseData(null);
-    setResponseStatus(null);
-    setResponseContentType(null);
-    try {
-      const validQueryParams = queryParams.filter((p) => p.key);
-
-      let headersToSend = headers.filter((h) => h.key);
-      if (
-        (method === 'POST' || method === 'PUT' || method === 'PATCH') &&
-        requestBody &&
-        bodyLanguage === 'json'
-      ) {
-        const hasContentType = headersToSend.some(
-          (h) => h.key.toLowerCase() === 'content-type'
-        );
-        if (!hasContentType) {
-          headersToSend = [
-            ...headersToSend,
-            {
-              id: 'content-type-auto',
-              key: 'Content-Type',
-              value: 'application/json',
-            },
-          ];
-        }
-      }
-
-      let targetUrl = url;
-      try {
-        const urlObject = new URL(url);
-        targetUrl = `${urlObject.protocol}//${urlObject.host}${urlObject.pathname}`;
-      } catch {
-        const qIndex = url.indexOf('?');
-        if (qIndex !== -1) {
-          targetUrl = url.substring(0, qIndex);
-        }
-      }
-
-      const proxyPayload = {
-        method: method,
-        targetUrl: targetUrl,
-        headers: headersToSend,
-        queryParams: validQueryParams,
-        body: requestBody,
-      };
-
-      const response = await fetch('/api/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(proxyPayload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ message: 'Proxy error response' }));
-        throw new Error(
-          `Proxy error: ${response.status} ${response.statusText}. ${errorData?.message || ''}`
-        );
-      }
-
-      const proxyResponse = await response.json();
-
-      if (proxyResponse.error) {
-        toast.error('API Request Failed', { description: proxyResponse.error });
-        setResponseData(proxyResponse.body || proxyResponse.error);
-        setResponseStatus(proxyResponse.status || 500);
-      } else {
-        setResponseData(proxyResponse.body);
-        setResponseStatus(proxyResponse.status);
-        const contentTypeHeader = proxyResponse.headers
-          ? Object.entries(proxyResponse.headers).find(
-              ([key]) => key.toLowerCase() === 'content-type'
-            )
-          : undefined;
-        setResponseContentType(
-          contentTypeHeader ? String(contentTypeHeader[1]) : null
-        );
-        toast.success('Request successful!');
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'An unknown error occurred';
-      toast.error(t('Request Failed'), { description: errorMessage });
-      setResponseData(errorMessage);
-      setResponseStatus(500);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [method, url, headers, queryParams, requestBody, bodyLanguage, t]);
+    const payload = {
+      method: method,
+      targetUrl: url,
+      headers: headers,
+      queryParams: queryParams,
+      body: requestBody,
+    };
+    dispatch(sendRequest(payload));
+  }, [dispatch, method, url, headers, queryParams, requestBody]);
 
   return (
     <div className="relative w-full h-full">

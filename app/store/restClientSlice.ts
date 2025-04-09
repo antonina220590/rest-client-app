@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type { KeyValueItem, BodyLanguage } from '@/app/interfaces';
 import { RootState } from './store';
+import { buildUrlWithParams } from '../components/rest-client/helpers/urlBuilder';
 
 interface RestClientState {
   method: string;
@@ -107,6 +108,23 @@ export const sendRequest = createAsyncThunk<
   }
 });
 
+const parseQueryParamsFromUrl = (url: string): KeyValueItem[] => {
+  const params: KeyValueItem[] = [];
+  try {
+    const urlObject = new URL(url);
+    const uniqueKeys = new Set<string>();
+    urlObject.searchParams.forEach((value, key) => {
+      if (!uniqueKeys.has(key)) {
+        params.push({ id: crypto.randomUUID(), key, value });
+        uniqueKeys.add(key);
+      }
+    });
+  } catch {}
+  return params.length > 0
+    ? params
+    : [{ id: crypto.randomUUID(), key: '', value: '' }];
+};
+
 const restClientSlice = createSlice({
   name: 'restClient',
   initialState,
@@ -116,12 +134,19 @@ const restClientSlice = createSlice({
     },
     setUrl(state, action: PayloadAction<string>) {
       state.url = action.payload;
+      state.queryParams = parseQueryParamsFromUrl(action.payload);
     },
     setRequestBody(state, action: PayloadAction<string>) {
       state.requestBody = action.payload;
     },
     setBodyLanguage(state, action: PayloadAction<BodyLanguage>) {
       state.bodyLanguage = action.payload;
+    },
+    setHeaders(state, action: PayloadAction<KeyValueItem[]>) {
+      state.headers =
+        action.payload.length > 0
+          ? action.payload
+          : [{ id: crypto.randomUUID(), key: '', value: '' }];
     },
     addHeader(state) {
       state.headers.push({ id: crypto.randomUUID(), key: '', value: '' });
@@ -148,20 +173,27 @@ const restClientSlice = createSlice({
     },
     addQueryParam(state) {
       state.queryParams.push({ id: crypto.randomUUID(), key: '', value: '' });
+      state.url = buildUrlWithParams(state.url, state.queryParams);
     },
     updateQueryParamKey(
       state,
       action: PayloadAction<{ id: string | number; key: string }>
     ) {
       const param = state.queryParams.find((p) => p.id === action.payload.id);
-      if (param) param.key = action.payload.key;
+      if (param) {
+        param.key = action.payload.key;
+        state.url = buildUrlWithParams(state.url, state.queryParams);
+      }
     },
     updateQueryParamValue(
       state,
       action: PayloadAction<{ id: string | number; value: string }>
     ) {
       const param = state.queryParams.find((p) => p.id === action.payload.id);
-      if (param) param.value = action.payload.value;
+      if (param) {
+        param.value = action.payload.value;
+        state.url = buildUrlWithParams(state.url, state.queryParams);
+      }
     },
     deleteQueryParam(state, action: PayloadAction<string | number>) {
       state.queryParams = state.queryParams.filter(
@@ -170,12 +202,14 @@ const restClientSlice = createSlice({
       if (state.queryParams.length === 0) {
         state.queryParams.push({ id: crypto.randomUUID(), key: '', value: '' });
       }
+      state.url = buildUrlWithParams(state.url, state.queryParams);
     },
     setQueryParams(state, action: PayloadAction<KeyValueItem[]>) {
       state.queryParams =
         action.payload.length > 0
           ? action.payload
           : [{ id: crypto.randomUUID(), key: '', value: '' }];
+      state.url = buildUrlWithParams(state.url, state.queryParams);
     },
     clearResponse(state) {
       state.isLoading = false;
@@ -233,6 +267,8 @@ export const {
   setUrl,
   setRequestBody,
   setBodyLanguage,
+
+  setHeaders,
   addHeader,
   updateHeaderKey,
   updateHeaderValue,
