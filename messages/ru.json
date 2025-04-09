@@ -80,7 +80,8 @@
     "Request Failed": "Запрос не выполнен",
     "Request successful!": "Запрос выполнен успешно!",
     "Error of decoding of URL from path": "Ошибка декодирования URL из path",
-    "Eror of decoding Body from path": "Ошибка декодирования Body из path"
+    "Eror of decoding Body from path": "Ошибка декодирования Body из path",
+    "variables": "Переменные"
   },
   "VariablesList": {
     "title": "Переменные",

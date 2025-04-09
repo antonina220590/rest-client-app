@@ -80,7 +80,8 @@
     "Request Failed": "Request Failed",
     "Request successful!": "Request successful!",
     "Error of decoding of URL from path": "Error of decoding of URL from path",
-    "Eror of decoding Body from path": "Eror of decoding Body from path"
+    "Eror of decoding Body from path": "Eror of decoding Body from path",
+    "variables": "Variables"
   },
   "VariablesList": {
     "title": "Variables",

@@ -18,7 +18,7 @@ export const AddVariableForm = ({ onAdd }: AddVariableFormProps) => {
   };
 
   return (
-    <div className="bg-white p-3 md:p-4 rounded-lg shadow">
+    <div className="bg-accent p-3 md:p-4 rounded-lg shadow">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
         <div>
           <label className="block text-sm font-medium mb-1 text-bg-secondary">
@@ -27,7 +27,7 @@ export const AddVariableForm = ({ onAdd }: AddVariableFormProps) => {
           <input
             value={newVar.key}
             onChange={(e) => setNewVar({ ...newVar, key: e.target.value })}
-            className="w-full p-2 text-sm md:text-base border border-border rounded font-body focus:outline-none focus:ring-2 focus:ring-ring"
+            className="bg-card w-full p-2 text-sm md:text-base border border-border rounded font-body focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder={t('keyPlaceholder')}
           />
         </div>
@@ -38,7 +38,7 @@ export const AddVariableForm = ({ onAdd }: AddVariableFormProps) => {
           <input
             value={newVar.value}
             onChange={(e) => setNewVar({ ...newVar, value: e.target.value })}
-            className="w-full p-2 text-sm md:text-base border border-border rounded font-body focus:outline-none focus:ring-2 focus:ring-ring"
+            className="bg-card w-full p-2 text-sm md:text-base border border-border rounded font-body focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder={t('valuePlaceholder')}
           />
         </div>
