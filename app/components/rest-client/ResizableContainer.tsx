@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PanelLeftClose, PanelRightClose } from 'lucide-react';
 import {
   ResizableHandle,
@@ -13,15 +13,32 @@ import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
-import { BodyLanguage } from './BodyEditor';
+import {
+  KeyValueItem,
+  methods,
+  ResizableContainerProps,
+} from '@/app/interfaces';
+import { useSyncUrlWithReduxState } from '@/app/hooks/useSyncUrlWithReduxState';
+import { useRequestNotifications } from '@/app/hooks/useRequestNotifications';
 
-interface KeyValueItem {
-  id: string;
-  key?: string;
-  value?: string;
-}
+import { useSelector, useDispatch } from 'react-redux';
+import type { AppDispatch, RootState } from '@/app/store/store';
+import {
+  setMethod,
+  setUrl,
+  setRequestBody,
+  setBodyLanguage,
+  setHeaders,
+  sendRequest,
+  clearResponse,
+} from '@/app/store/restClientSlice';
+import { decodeFromBase64Url } from './helpers/encoding';
+import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
-export default function ResizableContainer() {
+export default function ResizableContainer({
+  initialMethod = 'GET',
+}: ResizableContainerProps) {
   const {
     isPanelOpen: isCodePanelOpen,
     layoutGroupRef,
@@ -31,81 +48,98 @@ export default function ResizableContainer() {
     CLOSED_LAYOUT,
   } = useResizableLayout(false);
 
-  const [queryParams, setQueryParams] = useState<KeyValueItem[]>([
-    { id: crypto.randomUUID(), key: '', value: '' },
-  ]);
-  const [headers, setHeaders] = useState<KeyValueItem[]>([
-    { id: crypto.randomUUID(), key: '', value: '' },
-  ]);
-  const [requestBody, setRequestBody] = useState<string>('');
-  const [bodyLanguage, setBodyLanguage] = useState<BodyLanguage>('json');
-  const [_url, _setUrl] = useState<string>('');
-  const [_method, _setMethod] = useState<string>('');
+  const t = useTranslations('RESTful');
+  const dispatch: AppDispatch = useDispatch();
 
-  const [responseData, _setResponseData] = useState<string | null>(null);
-  const [responseContentType, _setResponseContentType] = useState<
-    string | null
-  >(null);
-  const [responseStatus, _setResponseStatus] = useState<number | null>(null);
-  const [isLoading, _setIsLoading] = useState<boolean>(false);
+  const [isClient, setIsClient] = useState(false);
 
-  const handleAddQueryParam = () =>
-    setQueryParams((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), key: '', value: '' },
-    ]);
-  const handleQueryParamKeyChange = (id: string | number, newKey: string) =>
-    setQueryParams((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, key: newKey } : p))
-    );
-  const handleQueryParamValueChange = (id: string | number, newValue: string) =>
-    setQueryParams((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, value: newValue } : p))
-    );
-  const handleDeleteQueryParam = (id: string | number) => {
-    if (
-      queryParams.length <= 1 &&
-      !queryParams[0]?.key &&
-      !queryParams[0]?.value
-    )
-      return;
-    const newParams = queryParams.filter((p) => p.id !== id);
-    setQueryParams(
-      newParams.length > 0
-        ? newParams
-        : [{ id: crypto.randomUUID(), key: '', value: '' }]
-    );
-  };
+  const methodFromRedux = useSelector(
+    (state: RootState) => state.restClient.method
+  );
 
-  const handleAddHeader = () =>
-    setHeaders((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), key: '', value: '' },
-    ]);
-  const handleHeaderKeyChange = (id: string | number, newKey: string) =>
-    setHeaders((prev) =>
-      prev.map((h) => (h.id === id ? { ...h, key: newKey } : h))
-    );
-  const handleHeaderValueChange = (id: string | number, newValue: string) =>
-    setHeaders((prev) =>
-      prev.map((h) => (h.id === id ? { ...h, value: newValue } : h))
-    );
-  const handleDeleteHeader = (id: string | number) => {
-    if (headers.length <= 1 && !headers[0]?.key && !headers[0]?.value) return;
-    const newHeaders = headers.filter((h) => h.id !== id);
-    setHeaders(
-      newHeaders.length > 0
-        ? newHeaders
-        : [{ id: crypto.randomUUID(), key: '', value: '' }]
-    );
-  };
+  const url = useSelector((state: RootState) => state.restClient.url);
+  const requestBody = useSelector(
+    (state: RootState) => state.restClient.requestBody
+  );
+  const headers = useSelector((state: RootState) => state.restClient.headers);
+  const queryParams = useSelector(
+    (state: RootState) => state.restClient.queryParams
+  );
 
-  const handleBodyChange = useCallback((value: string) => {
-    setRequestBody(value);
-  }, []);
-  const handleBodyLanguageChange = useCallback((lang: BodyLanguage) => {
-    setBodyLanguage(lang);
-  }, []);
+  useEffect(() => {
+    const pathSegments = window.location.pathname.split('/');
+    const searchParams = new URLSearchParams(window.location.search);
+
+    let currentMethod = 'GET';
+    let currentUrl = '';
+    let currentBody = '';
+    const currentHeaders: KeyValueItem[] = [];
+    if (pathSegments.length >= 3) {
+      const methodFromUrl = pathSegments[2].toUpperCase();
+      if (methods.includes(methodFromUrl)) {
+        currentMethod = methodFromUrl;
+      }
+    }
+
+    if (pathSegments.length >= 4 && pathSegments[3]) {
+      try {
+        currentUrl = decodeFromBase64Url(pathSegments[3]);
+      } catch {
+        toast.error(t('Error of decoding of URL from path'));
+      }
+    }
+    if (pathSegments.length >= 5 && pathSegments[4]) {
+      try {
+        currentBody = decodeFromBase64Url(pathSegments[4]);
+      } catch {
+        toast.error('Eror of decoding Body from path');
+      }
+    }
+    searchParams.forEach((value, key) => {
+      currentHeaders.push({ id: crypto.randomUUID(), key: key, value: value });
+    });
+    if (currentHeaders.length === 0) {
+      currentHeaders.push({ id: crypto.randomUUID(), key: '', value: '' });
+    }
+    dispatch(setMethod(currentMethod));
+    dispatch(setUrl(currentUrl));
+    dispatch(setRequestBody(currentBody));
+    dispatch(setBodyLanguage('json'));
+    dispatch(setHeaders(currentHeaders));
+    dispatch(clearResponse());
+    setIsClient(true);
+  }, [dispatch, t]);
+
+  const method = !isClient ? initialMethod : methodFromRedux;
+
+  useSyncUrlWithReduxState();
+  useRequestNotifications();
+
+  const handleMethodChange = useCallback(
+    (newMethod: string) => {
+      dispatch(setMethod(newMethod));
+    },
+    [dispatch]
+  );
+
+  const handleUrlChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newUrl = event.target.value;
+      dispatch(setUrl(newUrl));
+    },
+    [dispatch]
+  );
+
+  const handleSendRequest = useCallback(async () => {
+    const payload = {
+      method: methodFromRedux,
+      targetUrl: url,
+      headers: headers,
+      queryParams: queryParams,
+      body: requestBody,
+    };
+    dispatch(sendRequest(payload));
+  }, [methodFromRedux, url, headers, queryParams, requestBody, dispatch]);
 
   return (
     <div className="relative w-full h-full">
@@ -137,30 +171,15 @@ export default function ResizableContainer() {
         >
           <div className="flex flex-col h-full p-2 md:p-4">
             <div className="flex w-[90%] max-w-4xl mx-auto mt-5 justify-center">
-              <MethodSelector />
-              <UrlInput />
+              <MethodSelector value={method} onChange={handleMethodChange} />
+              <UrlInput
+                value={url}
+                onChange={handleUrlChange}
+                onSend={handleSendRequest}
+              />
             </div>
             <div className="flex-grow overflow-hidden mt-5 max-w-8xl mx-auto w-[90%]">
-              <RequestResponseArea
-                queryParams={queryParams}
-                onAddQueryParam={handleAddQueryParam}
-                onQueryParamKeyChange={handleQueryParamKeyChange}
-                onQueryParamValueChange={handleQueryParamValueChange}
-                onDeleteQueryParam={handleDeleteQueryParam}
-                headers={headers}
-                onAddHeader={handleAddHeader}
-                onHeaderKeyChange={handleHeaderKeyChange}
-                onHeaderValueChange={handleHeaderValueChange}
-                onDeleteHeader={handleDeleteHeader}
-                requestBody={requestBody}
-                onBodyChange={handleBodyChange}
-                bodyLanguage={bodyLanguage}
-                onBodyLanguageChange={handleBodyLanguageChange}
-                responseData={responseData}
-                responseContentType={responseContentType}
-                responseStatus={responseStatus}
-                isLoading={isLoading}
-              />
+              <RequestResponseArea />
             </div>
           </div>
         </ResizablePanel>

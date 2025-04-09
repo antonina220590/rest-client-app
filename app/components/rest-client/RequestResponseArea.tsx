@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
   ResizableHandle,
@@ -9,11 +15,26 @@ import {
 } from '@/components/ui/resizable';
 import { type ImperativePanelGroupHandle } from 'react-resizable-panels';
 import { Button } from '@/components/ui/button';
-import TabsComponent from './Tabs';
-import RequestBodyEditor, { BodyLanguage } from './BodyEditor';
+import TabsComponent from './TabsComponent';
+import RequestBodyEditor from './BodyEditor';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { Card } from '@/components/ui/card';
+import { BodyLanguage } from '@/app/interfaces';
+import Spinner from '../Spinner';
+import { useSelector, useDispatch } from 'react-redux';
+import type { AppDispatch, RootState } from '@/app/store/store';
+import {
+  addQueryParam,
+  updateQueryParamKey,
+  updateQueryParamValue,
+  deleteQueryParam,
+  addHeader,
+  updateHeaderKey,
+  updateHeaderValue,
+  deleteHeader,
+  setRequestBody,
+  setBodyLanguage,
+} from '@/app/store/restClientSlice';
 
 const VERTICAL_COLLAPSED_SIZE = 2;
 const VERTICAL_OPEN_LAYOUT: number[] = [40, 60];
@@ -22,55 +43,38 @@ const VERTICAL_COLLAPSED_LAYOUT: number[] = [
   100 - VERTICAL_COLLAPSED_SIZE,
 ];
 
-interface KeyValueItem {
-  id: string;
-  key?: string;
-  value?: string;
-}
-
-interface RequestResponseAreaProps {
-  queryParams: KeyValueItem[];
-  onAddQueryParam: () => void;
-  onQueryParamKeyChange: (id: string | number, newKey: string) => void;
-  onQueryParamValueChange: (id: string | number, newValue: string) => void;
-  onDeleteQueryParam: (id: string | number) => void;
-  headers: KeyValueItem[];
-  onAddHeader: () => void;
-  onHeaderKeyChange: (id: string | number, newKey: string) => void;
-  onHeaderValueChange: (id: string | number, newValue: string) => void;
-  onDeleteHeader: (id: string | number) => void;
-  requestBody: string;
-  onBodyChange: (value: string) => void;
-  bodyLanguage: BodyLanguage;
-  onBodyLanguageChange: (lang: BodyLanguage) => void;
-  responseData: string | null;
-  responseContentType: string | null;
-  responseStatus: number | null;
-  isLoading: boolean;
-}
-
-export function RequestResponseArea({
-  queryParams,
-  onAddQueryParam,
-  onQueryParamKeyChange,
-  onQueryParamValueChange,
-  onDeleteQueryParam,
-  headers,
-  onAddHeader,
-  onHeaderKeyChange,
-  onHeaderValueChange,
-  onDeleteHeader,
-  requestBody,
-  onBodyChange,
-  bodyLanguage,
-  onBodyLanguageChange,
-  responseData,
-  responseContentType,
-  responseStatus,
-  isLoading,
-}: RequestResponseAreaProps) {
+export function RequestResponseArea() {
   const [isRequestPanelCollapsed, setIsRequestPanelCollapsed] = useState(true);
   const verticalLayoutGroupRef = useRef<ImperativePanelGroupHandle>(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const dispatch: AppDispatch = useDispatch();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const queryParams = useSelector(
+    (state: RootState) => state.restClient.queryParams
+  );
+  const headers = useSelector((state: RootState) => state.restClient.headers);
+  const requestBody = useSelector(
+    (state: RootState) => state.restClient.requestBody
+  );
+  const bodyLanguage = useSelector(
+    (state: RootState) => state.restClient.bodyLanguage
+  );
+  const responseData = useSelector(
+    (state: RootState) => state.restClient.responseData
+  );
+  const responseContentType = useSelector(
+    (state: RootState) => state.restClient.responseContentType
+  );
+  const responseStatus = useSelector(
+    (state: RootState) => state.restClient.responseStatus
+  );
+  const isLoading = useSelector(
+    (state: RootState) => state.restClient.isLoading
+  );
 
   const expandRequestPanel = useCallback(() => {
     const panelGroup = verticalLayoutGroupRef.current;
@@ -99,42 +103,117 @@ export function RequestResponseArea({
 
   const { displayValue, displayLanguage } = useMemo(() => {
     if (isLoading) {
-      return {
-        displayValue: 'Loading response...',
-        displayLanguage: 'plaintext' as BodyLanguage,
-      };
+      return { displayValue: '', displayLanguage: 'plaintext' as BodyLanguage };
     }
-    if (responseData === null || responseData === undefined) {
-      return {
-        displayValue: '',
-        displayLanguage: 'plaintext' as BodyLanguage,
-      };
-    }
-    const isJson = responseContentType
-      ?.toLowerCase()
-      .includes('application/json');
-    if (isJson) {
-      try {
-        const parsed = JSON.parse(responseData);
-        const pretty = JSON.stringify(parsed, null, 2);
-        return {
-          displayValue: pretty,
-          displayLanguage: 'json' as BodyLanguage,
-        };
-      } catch (e) {
-        toast(`Response JSON parse error:${e}`);
+
+    if (responseData !== null && responseData !== undefined) {
+      const isErrorStatus = responseStatus !== null && responseStatus >= 400;
+
+      if (isErrorStatus) {
+        try {
+          const parsedError = JSON.parse(responseData);
+          if (
+            typeof parsedError === 'object' &&
+            parsedError !== null &&
+            typeof parsedError.error === 'string'
+          ) {
+            return {
+              displayValue: parsedError.error,
+              displayLanguage: 'plaintext' as BodyLanguage,
+            };
+          }
+        } catch {}
+
         return {
           displayValue: responseData,
           displayLanguage: 'plaintext' as BodyLanguage,
         };
       }
-    } else {
-      return {
-        displayValue: responseData,
-        displayLanguage: 'plaintext' as BodyLanguage,
-      };
+      const isJson = responseContentType
+        ?.toLowerCase()
+        .includes('application/json');
+      if (isJson) {
+        try {
+          const parsed = JSON.parse(responseData);
+          const pretty = JSON.stringify(parsed, null, 2);
+          return {
+            displayValue: pretty,
+            displayLanguage: 'json' as BodyLanguage,
+          };
+        } catch (e) {
+          toast.error(
+            `Response JSON parse error: ${e instanceof Error ? e.message : String(e)}`
+          );
+          return {
+            displayValue: responseData,
+            displayLanguage: 'plaintext' as BodyLanguage,
+          };
+        }
+      } else {
+        return {
+          displayValue: responseData,
+          displayLanguage: 'plaintext' as BodyLanguage,
+        };
+      }
     }
-  }, [responseData, responseContentType, isLoading]);
+
+    return { displayValue: '', displayLanguage: 'plaintext' as BodyLanguage };
+  }, [responseData, responseContentType, responseStatus, isLoading]);
+
+  const handleAddQueryParam = useCallback(
+    () => dispatch(addQueryParam()),
+    [dispatch]
+  );
+  const handleQueryParamKeyChange = useCallback(
+    (id: string | number, newKey: string) =>
+      dispatch(updateQueryParamKey({ id, key: newKey })),
+    [dispatch]
+  );
+  const handleQueryParamValueChange = useCallback(
+    (id: string | number, newValue: string) =>
+      dispatch(updateQueryParamValue({ id, value: newValue })),
+    [dispatch]
+  );
+  const handleDeleteQueryParam = useCallback(
+    (id: string | number) => {
+      if (
+        queryParams.length <= 1 &&
+        !queryParams[0]?.key &&
+        !queryParams[0]?.value
+      )
+        return;
+      dispatch(deleteQueryParam(id));
+    },
+    [dispatch, queryParams]
+  );
+
+  const handleAddHeader = useCallback(() => dispatch(addHeader()), [dispatch]);
+  const handleHeaderKeyChange = useCallback(
+    (id: string | number, newKey: string) =>
+      dispatch(updateHeaderKey({ id, key: newKey })),
+    [dispatch]
+  );
+  const handleHeaderValueChange = useCallback(
+    (id: string | number, newValue: string) =>
+      dispatch(updateHeaderValue({ id, value: newValue })),
+    [dispatch]
+  );
+  const handleDeleteHeader = useCallback(
+    (id: string | number) => {
+      if (headers.length <= 1 && !headers[0]?.key && !headers[0]?.value) return;
+      dispatch(deleteHeader(id));
+    },
+    [dispatch, headers]
+  );
+
+  const handleBodyChange = useCallback(
+    (value: string) => dispatch(setRequestBody(value)),
+    [dispatch]
+  );
+  const handleBodyLanguageChange = useCallback(
+    (lang: BodyLanguage) => dispatch(setBodyLanguage(lang)),
+    [dispatch]
+  );
 
   return (
     <ResizablePanelGroup
@@ -182,19 +261,19 @@ export function RequestResponseArea({
             <TabsComponent
               onTabChange={expandRequestPanel}
               queryParams={queryParams}
-              onAddQueryParam={onAddQueryParam}
-              onQueryParamKeyChange={onQueryParamKeyChange}
-              onQueryParamValueChange={onQueryParamValueChange}
-              onDeleteQueryParam={onDeleteQueryParam}
+              onAddQueryParam={handleAddQueryParam}
+              onQueryParamKeyChange={handleQueryParamKeyChange}
+              onQueryParamValueChange={handleQueryParamValueChange}
+              onDeleteQueryParam={handleDeleteQueryParam}
               headers={headers}
-              onAddHeader={onAddHeader}
-              onHeaderKeyChange={onHeaderKeyChange}
-              onHeaderValueChange={onHeaderValueChange}
-              onDeleteHeader={onDeleteHeader}
+              onAddHeader={handleAddHeader}
+              onHeaderKeyChange={handleHeaderKeyChange}
+              onHeaderValueChange={handleHeaderValueChange}
+              onDeleteHeader={handleDeleteHeader}
               requestBody={requestBody}
-              onBodyChange={onBodyChange}
+              onBodyChange={handleBodyChange}
               bodyLanguage={bodyLanguage}
-              onBodyLanguageChange={onBodyLanguageChange}
+              onBodyLanguageChange={handleBodyLanguageChange}
               showPrettifyButton={true}
               showLanguageSelector={true}
             />
@@ -218,7 +297,7 @@ export function RequestResponseArea({
         <div className="p-2 md:p-4 h-full flex flex-col w-full">
           <div className="text-xs text-muted-foreground mb-1 flex-shrink-0 flex justify-between items-center px-1">
             <span>
-              {responseStatus !== null && !isLoading && (
+              {isMounted && responseStatus !== null && !isLoading && (
                 <span>
                   Status:{' '}
                   <span
@@ -235,12 +314,13 @@ export function RequestResponseArea({
                 </span>
               )}
             </span>
-            {isLoading && (
-              <span className="animate-pulse font-semibold">Loading...</span>
-            )}
           </div>
-          <div className="flex-grow overflow-hidden border rounded-md">
-            <Card className="h-full p-4 bg-accent">
+          <div className="flex-grow overflow-auto border rounded-md bg-accent h-full">
+            {isLoading ? (
+              <div className="flex items-center justify-center h-full bg-accent">
+                <Spinner />
+              </div>
+            ) : (
               <RequestBodyEditor
                 contentEditable={true}
                 value={displayValue}
@@ -249,7 +329,7 @@ export function RequestResponseArea({
                 showPrettifyButton={false}
                 showLanguageSelector={false}
               />
-            </Card>
+            )}
           </div>
         </div>
       </ResizablePanel>

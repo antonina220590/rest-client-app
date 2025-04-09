@@ -75,17 +75,22 @@
     "value": "value",
     "Invalid Syntax": "Invalid Syntax",
     "JSON prettified successfully": "JSON prettified successfully",
-    "JSON is already prettified": "JSON is already prettified"
+    "JSON is already prettified": "JSON is already prettified",
+    "Prettify is only available for JSON": "Prettify is only available for JSON",
+    "Request Failed": "Request Failed",
+    "Request successful!": "Request successful!",
+    "Error of decoding of URL from path": "Error of decoding of URL from path",
+    "Eror of decoding Body from path": "Eror of decoding Body from path"
   },
   "VariablesList": {
-  "title": "Variables",
-  "keyLabel": "Key",
-  "valueLabel": "Value",
-  "keyPlaceholder": "Enter key",
-  "valuePlaceholder": "Enter value",
-  "addButton": "Add Variable",
-  "copyTooltip": "Click to copy",
-  "copiedText": "Copied!",
-  "deleteAriaLabel": "Delete variable"
-}
+    "title": "Variables",
+    "keyLabel": "Key",
+    "valueLabel": "Value",
+    "keyPlaceholder": "Enter key",
+    "valuePlaceholder": "Enter value",
+    "addButton": "Add Variable",
+    "copyTooltip": "Click to copy",
+    "copiedText": "Copied!",
+    "deleteAriaLabel": "Delete variable"
+  }
 }

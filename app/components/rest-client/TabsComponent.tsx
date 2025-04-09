@@ -3,35 +3,7 @@ import QueryParamsEditor from './QueryParamsEditor';
 import { Card } from '@/components/ui/card';
 import RequestBodyEditor from './BodyEditor';
 import { useTranslations } from 'next-intl';
-
-interface KeyValueItem {
-  id: string;
-  key?: string;
-  value?: string;
-}
-
-interface TabsComponentProps {
-  onTabChange: () => void;
-  queryParams: KeyValueItem[];
-  onAddQueryParam: () => void;
-  onQueryParamKeyChange: (id: string | number, newKey: string) => void;
-  onQueryParamValueChange: (id: string | number, newValue: string) => void;
-  onDeleteQueryParam: (id: string | number) => void;
-
-  headers: KeyValueItem[];
-  onAddHeader: () => void;
-  onHeaderKeyChange: (id: string | number, newKey: string) => void;
-  onHeaderValueChange: (id: string | number, newValue: string) => void;
-  onDeleteHeader: (id: string | number) => void;
-
-  requestBody: string;
-  onBodyChange: (value: string) => void;
-  bodyLanguage: 'json' | 'plaintext';
-
-  onBodyLanguageChange: (lang: 'json' | 'plaintext') => void;
-  showPrettifyButton: boolean;
-  showLanguageSelector: boolean;
-}
+import { TabsComponentProps } from '@/app/interfaces';
 
 export default function TabsComponent({
   onTabChange,
