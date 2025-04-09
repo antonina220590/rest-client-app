@@ -1,21 +1,14 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import type { KeyValueItem, BodyLanguage } from '@/app/interfaces';
+import type {
+  KeyValueItem,
+  BodyLanguage,
+  SendRequestSuccessPayload,
+  SendRequestPayload,
+  RejectPayload,
+  RestClientState,
+} from '@/app/interfaces';
 import { RootState } from './store';
 import { buildUrlWithParams } from '../components/rest-client/helpers/urlBuilder';
-
-interface RestClientState {
-  method: string;
-  url: string;
-  requestBody: string;
-  bodyLanguage: BodyLanguage;
-  headers: KeyValueItem[];
-  queryParams: KeyValueItem[];
-  isLoading: boolean;
-  error: string | null;
-  responseData: string | null;
-  responseStatus: number | null;
-  responseContentType: string | null;
-}
 
 const initialState: RestClientState = {
   method: 'GET',
@@ -30,27 +23,6 @@ const initialState: RestClientState = {
   responseStatus: null,
   responseContentType: null,
 };
-
-interface SendRequestPayload {
-  method: string;
-  targetUrl: string;
-  headers: KeyValueItem[];
-  queryParams: KeyValueItem[];
-  body: string | null;
-}
-
-interface SendRequestSuccessPayload {
-  body: string | null;
-  status: number;
-  headers: Record<string, string>;
-  contentType: string | null;
-}
-
-interface RejectPayload {
-  message: string;
-  status?: number;
-  body: string | null;
-}
 
 export const sendRequest = createAsyncThunk<
   SendRequestSuccessPayload,

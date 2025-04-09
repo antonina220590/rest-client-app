@@ -1,25 +1,24 @@
 export const dynamic = 'force-dynamic';
 import ResizableContainer from '@/app/components/rest-client/ResizableContainer';
 import { Toaster } from '@/components/ui/sonner';
-import { KeyValueItem, methods } from '@/app/interfaces';
+import {
+  KeyValueItem,
+  methods,
+  RestClientPageProps,
+  RestClientParams,
+  RestClientSearchParams,
+} from '@/app/interfaces';
 import { redirect } from 'next/navigation';
 import { decodeFromBase64Url } from '@/app/components/rest-client/helpers/encoding';
 import { ReduxProvider } from '@/app/store/providers';
 
-interface RestClientPageProps {
-  params: {
-    locale: string;
-    method: string;
-    slug?: string[];
-  };
-  searchParams: { [key: string]: string | string[] | undefined };
-}
 export default async function RESTful({
-  params: paramsMaybePromise,
+  params: paramsPromise,
   searchParams: searchParamsPromise,
 }: RestClientPageProps) {
-  const params = await paramsMaybePromise;
-  const searchParams = await searchParamsPromise;
+  const params: RestClientParams = await paramsPromise;
+  const searchParams: RestClientSearchParams = await searchParamsPromise;
+
   const requestedMethod = params.method.toUpperCase();
   const isValidMethod = methods.includes(requestedMethod);
   if (!isValidMethod) {

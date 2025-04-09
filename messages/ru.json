@@ -78,7 +78,9 @@
     "JSON is already prettified": "JSON уже отформатирован",
     "Prettify is only available for JSON": "Форматирование доступно только для JSON",
     "Request Failed": "Запрос не выполнен",
-    "Request successful!": "Запрос выполнен успешно!"
+    "Request successful!": "Запрос выполнен успешно!",
+    "Error of decoding of URL from path": "Ошибка декодирования URL из path",
+    "Eror of decoding Body from path": "Ошибка декодирования Body из path"
   },
   "VariablesList": {
     "title": "Переменные",

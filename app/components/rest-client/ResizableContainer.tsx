@@ -13,7 +13,11 @@ import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
-import { KeyValueItem } from '@/app/interfaces';
+import {
+  KeyValueItem,
+  methods,
+  ResizableContainerProps,
+} from '@/app/interfaces';
 import { useSyncUrlWithReduxState } from '@/app/hooks/useSyncUrlWithReduxState';
 import { useRequestNotifications } from '@/app/hooks/useRequestNotifications';
 
@@ -26,19 +30,13 @@ import {
   setBodyLanguage,
   setHeaders,
   sendRequest,
-  clearResponse,
 } from '@/app/store/restClientSlice';
-interface ResizableContainerProps {
-  initialMethod?: string;
-  initialUrl?: string;
-  initialBody?: string;
-  initialHeaders?: KeyValueItem[];
-}
+import { decodeFromBase64Url } from './helpers/encoding';
+import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
+
 export default function ResizableContainer({
   initialMethod = 'GET',
-  initialUrl = '',
-  initialBody = '',
-  initialHeaders = [{ id: crypto.randomUUID(), key: '', value: '' }],
 }: ResizableContainerProps) {
   const {
     isPanelOpen: isCodePanelOpen,
@@ -49,6 +47,7 @@ export default function ResizableContainer({
     CLOSED_LAYOUT,
   } = useResizableLayout(false);
 
+  const t = useTranslations('RESTful');
   const dispatch: AppDispatch = useDispatch();
 
   const [isClient, setIsClient] = useState(false);
@@ -56,7 +55,7 @@ export default function ResizableContainer({
   const methodFromRedux = useSelector(
     (state: RootState) => state.restClient.method
   );
-  const method = !isClient ? initialMethod : methodFromRedux;
+
   const url = useSelector((state: RootState) => state.restClient.url);
   const requestBody = useSelector(
     (state: RootState) => state.restClient.requestBody
@@ -67,14 +66,49 @@ export default function ResizableContainer({
   );
 
   useEffect(() => {
-    dispatch(setMethod(initialMethod));
-    dispatch(setUrl(initialUrl));
-    dispatch(setRequestBody(initialBody));
+    const pathSegments = window.location.pathname.split('/');
+    const searchParams = new URLSearchParams(window.location.search);
+
+    let currentMethod = 'GET';
+    let currentUrl = '';
+    let currentBody = '';
+    const currentHeaders: KeyValueItem[] = [];
+    if (pathSegments.length >= 3) {
+      const methodFromUrl = pathSegments[2].toUpperCase();
+      if (methods.includes(methodFromUrl)) {
+        currentMethod = methodFromUrl;
+      }
+    }
+
+    if (pathSegments.length >= 4 && pathSegments[3]) {
+      try {
+        currentUrl = decodeFromBase64Url(pathSegments[3]);
+      } catch {
+        toast.error(t('Error of decoding of URL from path'));
+      }
+    }
+    if (pathSegments.length >= 5 && pathSegments[4]) {
+      try {
+        currentBody = decodeFromBase64Url(pathSegments[4]);
+      } catch {
+        toast.error('Eror of decoding Body from path');
+      }
+    }
+    searchParams.forEach((value, key) => {
+      currentHeaders.push({ id: crypto.randomUUID(), key: key, value: value });
+    });
+    if (currentHeaders.length === 0) {
+      currentHeaders.push({ id: crypto.randomUUID(), key: '', value: '' });
+    }
+    dispatch(setMethod(currentMethod));
+    dispatch(setUrl(currentUrl));
+    dispatch(setRequestBody(currentBody));
     dispatch(setBodyLanguage('json'));
-    dispatch(setHeaders(initialHeaders));
-    dispatch(clearResponse());
+    dispatch(setHeaders(currentHeaders));
     setIsClient(true);
-  }, [dispatch, initialBody, initialHeaders, initialMethod, initialUrl]);
+  }, [dispatch, t]);
+
+  const method = !isClient ? initialMethod : methodFromRedux;
 
   useSyncUrlWithReduxState();
   useRequestNotifications();
