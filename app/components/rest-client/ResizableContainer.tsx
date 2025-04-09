@@ -30,6 +30,7 @@ import {
   setBodyLanguage,
   setHeaders,
   sendRequest,
+  clearResponse,
 } from '@/app/store/restClientSlice';
 import { decodeFromBase64Url } from './helpers/encoding';
 import { toast } from 'sonner';
@@ -105,6 +106,7 @@ export default function ResizableContainer({
     dispatch(setRequestBody(currentBody));
     dispatch(setBodyLanguage('json'));
     dispatch(setHeaders(currentHeaders));
+    dispatch(clearResponse());
     setIsClient(true);
   }, [dispatch, t]);
 
