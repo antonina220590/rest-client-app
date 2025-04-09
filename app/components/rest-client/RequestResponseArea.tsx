@@ -83,37 +83,63 @@ export function RequestResponseArea({
   };
 
   const { displayValue, displayLanguage } = useMemo(() => {
-    if (responseData === null || responseData === undefined) {
-      return {
-        displayValue: '',
-        displayLanguage: 'plaintext' as BodyLanguage,
-      };
+    if (isLoading) {
+      return { displayValue: '', displayLanguage: 'plaintext' as BodyLanguage };
     }
-    const isJson = responseContentType
-      ?.toLowerCase()
-      .includes('application/json');
-    if (isJson) {
-      try {
-        const parsed = JSON.parse(responseData);
-        const pretty = JSON.stringify(parsed, null, 2);
-        return {
-          displayValue: pretty,
-          displayLanguage: 'json' as BodyLanguage,
-        };
-      } catch (e) {
-        toast(`Response JSON parse error:${e}`);
+
+    if (responseData !== null && responseData !== undefined) {
+      const isErrorStatus = responseStatus !== null && responseStatus >= 400;
+
+      if (isErrorStatus) {
+        try {
+          const parsedError = JSON.parse(responseData);
+          if (
+            typeof parsedError === 'object' &&
+            parsedError !== null &&
+            typeof parsedError.error === 'string'
+          ) {
+            return {
+              displayValue: parsedError.error,
+              displayLanguage: 'plaintext' as BodyLanguage,
+            };
+          }
+        } catch {}
+
         return {
           displayValue: responseData,
           displayLanguage: 'plaintext' as BodyLanguage,
         };
       }
-    } else {
-      return {
-        displayValue: responseData,
-        displayLanguage: 'plaintext' as BodyLanguage,
-      };
+      const isJson = responseContentType
+        ?.toLowerCase()
+        .includes('application/json');
+      if (isJson) {
+        try {
+          const parsed = JSON.parse(responseData);
+          const pretty = JSON.stringify(parsed, null, 2);
+          return {
+            displayValue: pretty,
+            displayLanguage: 'json' as BodyLanguage,
+          };
+        } catch (e) {
+          toast.error(
+            `Response JSON parse error: ${e instanceof Error ? e.message : String(e)}`
+          );
+          return {
+            displayValue: responseData,
+            displayLanguage: 'plaintext' as BodyLanguage,
+          };
+        }
+      } else {
+        return {
+          displayValue: responseData,
+          displayLanguage: 'plaintext' as BodyLanguage,
+        };
+      }
     }
-  }, [responseData, responseContentType]);
+
+    return { displayValue: '', displayLanguage: 'plaintext' as BodyLanguage };
+  }, [responseData, responseContentType, responseStatus, isLoading]);
 
   return (
     <ResizablePanelGroup

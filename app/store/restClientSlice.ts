@@ -46,10 +46,16 @@ interface SendRequestSuccessPayload {
   contentType: string | null;
 }
 
+interface RejectPayload {
+  message: string;
+  status?: number;
+  body: string | null;
+}
+
 export const sendRequest = createAsyncThunk<
   SendRequestSuccessPayload,
   SendRequestPayload,
-  { rejectValue: string }
+  { rejectValue: RejectPayload }
 >('restClient/sendRequest', async (requestData, thunkAPI) => {
   let cleanTargetUrl = requestData.targetUrl;
   try {
@@ -71,19 +77,38 @@ export const sendRequest = createAsyncThunk<
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(proxyPayload),
     });
+    const responseStatus = response.status;
 
     if (!response.ok) {
-      const errorData = await response
-        .json()
-        .catch(() => ({ message: 'Proxy responded with an error' }));
-      const errorMessage = `Proxy Error ${response.status}: ${errorData?.message || response.statusText}`;
-      return thunkAPI.rejectWithValue(errorMessage);
+      let errorBody: string | null = null;
+      let errorData = null;
+      try {
+        errorBody = await response.text();
+        try {
+          errorData = JSON.parse(errorBody);
+        } catch {
+          errorData = null;
+        }
+      } catch {
+        errorBody = null;
+        errorData = null;
+      }
+
+      const errorMessage = `Proxy Error ${responseStatus}: ${typeof errorData === 'object' && errorData?.message ? errorData.message : response.statusText || 'Unknown error'}`;
+      return thunkAPI.rejectWithValue({
+        message: errorMessage,
+        status: responseStatus,
+        body: errorBody,
+      });
     }
     const proxyResponse = await response.json();
+
     if (proxyResponse.error) {
-      return thunkAPI.rejectWithValue(
-        proxyResponse.error || 'API request failed'
-      );
+      return thunkAPI.rejectWithValue({
+        message: proxyResponse.error,
+        status: proxyResponse.status || 500,
+        body: proxyResponse.body ?? null,
+      });
     }
 
     const contentTypeHeader = proxyResponse.headers
@@ -104,7 +129,11 @@ export const sendRequest = createAsyncThunk<
       error instanceof Error
         ? error.message
         : 'An unknown network error occurred';
-    return thunkAPI.rejectWithValue(message);
+    return thunkAPI.rejectWithValue({
+      message: message,
+      status: 500,
+      body: null,
+    });
   }
 });
 
@@ -253,10 +282,15 @@ const restClientSlice = createSlice({
       )
       .addCase(sendRequest.rejected, (state, action) => {
         state.isLoading = false;
-        state.error =
-          action.payload ?? action.error.message ?? 'Request failed';
-        state.responseData = null;
-        state.responseStatus = null;
+        if (action.payload) {
+          state.error = action.payload.message;
+          state.responseStatus = action.payload.status ?? null;
+          state.responseData = action.payload.body;
+        } else {
+          state.error = action.error.message ?? 'Request failed';
+          state.responseStatus = null;
+          state.responseData = null;
+        }
         state.responseContentType = null;
       });
   },
@@ -267,7 +301,6 @@ export const {
   setUrl,
   setRequestBody,
   setBodyLanguage,
-
   setHeaders,
   addHeader,
   updateHeaderKey,

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PanelLeftClose, PanelRightClose } from 'lucide-react';
 import {
   ResizableHandle,
@@ -14,11 +14,8 @@ import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
 import { BodyLanguage, KeyValueItem } from '@/app/interfaces';
-import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { encodeToBase64Url } from './helpers/encoding';
-import { useDebounce } from '@/app/hooks/useDebounce';
+import { useSyncUrlWithReduxState } from '@/app/hooks/useSyncUrlWithReduxState';
+import { useRequestNotifications } from '@/app/hooks/useRequestNotifications';
 
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch, RootState } from '@/app/store/store';
@@ -37,6 +34,7 @@ import {
   updateQueryParamValue,
   deleteQueryParam,
   sendRequest,
+  clearResponse,
 } from '@/app/store/restClientSlice';
 interface ResizableContainerProps {
   initialMethod?: string;
@@ -59,12 +57,16 @@ export default function ResizableContainer({
     OPEN_LAYOUT,
     CLOSED_LAYOUT,
   } = useResizableLayout(false);
-  const t = useTranslations('RESTful');
-  const pathname = usePathname();
-  const currentSearchParams = useSearchParams();
+
   const dispatch: AppDispatch = useDispatch();
 
-  const method = useSelector((state: RootState) => state.restClient.method);
+  const [isClient, setIsClient] = useState(false);
+
+  // const method = useSelector((state: RootState) => state.restClient.method);
+  const methodFromRedux = useSelector(
+    (state: RootState) => state.restClient.method
+  );
+  const method = !isClient ? initialMethod : methodFromRedux;
   const url = useSelector((state: RootState) => state.restClient.url);
   const requestBody = useSelector(
     (state: RootState) => state.restClient.requestBody
@@ -88,10 +90,6 @@ export default function ResizableContainer({
   const isLoading = useSelector(
     (state: RootState) => state.restClient.isLoading
   );
-  const error = useSelector((state: RootState) => state.restClient.error);
-
-  const debouncedUrl = useDebounce(url, 500);
-  const debouncedRequestBody = useDebounce(requestBody, 500);
 
   useEffect(() => {
     dispatch(setMethod(initialMethod));
@@ -99,69 +97,12 @@ export default function ResizableContainer({
     dispatch(setRequestBody(initialBody));
     dispatch(setBodyLanguage('json'));
     dispatch(setHeaders(initialHeaders));
+    dispatch(clearResponse());
+    setIsClient(true);
   }, [dispatch, initialBody, initialHeaders, initialMethod, initialUrl]);
 
-  useEffect(() => {
-    const encodedUrl = debouncedUrl
-      ? encodeToBase64Url(debouncedUrl)
-      : undefined;
-    const encodedBody = debouncedRequestBody
-      ? encodeToBase64Url(debouncedRequestBody)
-      : undefined;
-
-    const locale = pathname.split('/')[1];
-    const pathSegments = [`/${locale}`, method];
-    if (encodedUrl) {
-      pathSegments.push(encodedUrl);
-      if (encodedBody) {
-        pathSegments.push(encodedBody);
-      }
-    }
-    const newPathname = pathSegments.join('/');
-
-    const headerParams = new URLSearchParams();
-    headers.forEach((header) => {
-      if (header.key) {
-        headerParams.set(header.key, header.value);
-      }
-    });
-    const newSearchString = headerParams.toString();
-    const newFullAppUrl =
-      newPathname + (newSearchString ? `?${newSearchString}` : '');
-    const currentFullAppUrl = window.location.pathname + window.location.search;
-
-    if (newFullAppUrl !== currentFullAppUrl) {
-      if (typeof window !== 'undefined') {
-        window.history.replaceState(null, '', newFullAppUrl);
-      }
-    }
-  }, [
-    method,
-    debouncedUrl,
-    debouncedRequestBody,
-    headers,
-    pathname,
-    currentSearchParams,
-  ]);
-
-  const prevError = useRef<string | null>(null);
-  const prevIsLoading = useRef<boolean>(false);
-
-  useEffect(() => {
-    if (error && error !== prevError.current) {
-      toast.error(t('Request Failed'), { description: error });
-    }
-    if (
-      prevIsLoading.current &&
-      !isLoading &&
-      !error &&
-      responseStatus !== null
-    ) {
-      toast.success(t('Request successful!'));
-    }
-    prevError.current = error;
-    prevIsLoading.current = isLoading;
-  }, [error, isLoading, responseStatus, t]);
+  useSyncUrlWithReduxState();
+  useRequestNotifications();
 
   const handleAddQueryParam = useCallback(() => {
     dispatch(addQueryParam());
@@ -255,14 +196,14 @@ export default function ResizableContainer({
 
   const handleSendRequest = useCallback(async () => {
     const payload = {
-      method: method,
+      method: methodFromRedux,
       targetUrl: url,
       headers: headers,
       queryParams: queryParams,
       body: requestBody,
     };
     dispatch(sendRequest(payload));
-  }, [dispatch, method, url, headers, queryParams, requestBody]);
+  }, [methodFromRedux, url, headers, queryParams, requestBody, dispatch]);
 
   return (
     <div className="relative w-full h-full">
