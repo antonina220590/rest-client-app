@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import RequestBodyEditor from './BodyEditor';
 import { useTranslations } from 'next-intl';
 import { TabsComponentProps } from '@/app/interfaces';
+import VariablesListWrapper from '@/app/components/variables/VariablesListWrapper';
 
 export default function TabsComponent({
   onTabChange,
@@ -25,19 +26,20 @@ export default function TabsComponent({
   onBodyLanguageChange,
 }: TabsComponentProps) {
   const t = useTranslations('RESTful');
+
   return (
     <Tabs defaultValue="query" className="w-[90%] gap-0 flex flex-col h-full">
-      <TabsList className="grid w-full grid-cols-3 h-10 min-h-10 p-0 rounded-t-md rounded-b-none">
+      <TabsList className="grid w-full grid-cols-4 h-10 min-h-10 p-0 rounded-t-md rounded-b-none">
         <TabsTrigger
           value="query"
-          className=" bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
+          className="bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
           {t('query')}
         </TabsTrigger>
         <TabsTrigger
           value="headers"
-          className=" bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
+          className="bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
           onClick={onTabChange}
         >
           {t('headers')}
@@ -49,7 +51,15 @@ export default function TabsComponent({
         >
           {t('body')}
         </TabsTrigger>
+        <TabsTrigger
+          value="variables"
+          className="bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
+          onClick={onTabChange}
+        >
+          {t('variables')}
+        </TabsTrigger>
       </TabsList>
+
       <TabsContent
         value="query"
         className="w-[110%] overflow-y-auto min-h-0 flex overflow"
@@ -67,11 +77,12 @@ export default function TabsComponent({
           />
         </Card>
       </TabsContent>
+
       <TabsContent
         value="headers"
         className="w-[110%] overflow-y-auto min-h-0 flex overflow"
       >
-        <Card className=" bg-cta-secondary rounded-t-none w-[100vw]">
+        <Card className="bg-cta-secondary rounded-t-none w-[100vw]">
           <QueryParamsEditor
             items={headers}
             onAddItem={onAddHeader}
@@ -84,6 +95,7 @@ export default function TabsComponent({
           />
         </Card>
       </TabsContent>
+
       <TabsContent
         value="body"
         className="w-[110%] p-2 overflow-y-auto min-h-0 flex overflow"
@@ -99,6 +111,15 @@ export default function TabsComponent({
             showLanguageSelector={showLanguageSelector}
             onLanguageChange={onBodyLanguageChange}
           />
+        </Card>
+      </TabsContent>
+
+      <TabsContent
+        value="variables"
+        className="w-[110%] p-2 overflow-y-auto min-h-0 flex overflow text-left"
+      >
+        <Card className="border-0 p-2 h-fit min-h-[100%] w-[100vw]  bg-cta-secondary">
+          <VariablesListWrapper />
         </Card>
       </TabsContent>
     </Tabs>

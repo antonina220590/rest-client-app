@@ -14,13 +14,13 @@ export const buildUrlWithParams = (
     }
   }
 
-  const searchParams = new URLSearchParams();
-  params.forEach((param) => {
-    if (param.key) {
-      searchParams.append(param.key, param.value);
-    }
-  });
+  const rawQuery = params
+    .filter((p) => p.key)
+    .map((p) => `${p.key}=${p.value}`)
+    .join('&');
 
-  const searchString = searchParams.toString();
-  return searchString ? `${baseUrlString}?${searchString}` : baseUrlString;
+  return rawQuery ? `${baseUrlString}?${rawQuery}` : baseUrlString;
 };
+
+export const decodeTemplate = (str: string): string =>
+  str.replace(/%7B%7B/g, '{{').replace(/%7D%7D/g, '}}');

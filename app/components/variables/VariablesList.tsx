@@ -1,84 +1,96 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   addVariable,
   deleteVariable,
   updateVariable,
-} from '../../store/variablesSlice';
-import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/app/firebase/config';
+} from '@/app/store/variablesSlice';
 import dynamic from 'next/dynamic';
 import { VariableItem } from './VariableItem';
 import { AddVariableForm } from './AddVariableForm';
 import { Variable } from '@/app/store/types';
+import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 const VariablesListContent = () => {
-  const t = useTranslations('VariablesList');
   const variables = useAppSelector((state) => state.variables);
   const dispatch = useAppDispatch();
+  const t = useTranslations('VariablesList');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingField, setEditingField] = useState<'key' | 'value' | null>(
     null
   );
-  const [user, loading] = useAuthState(auth);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/');
-    }
-  }, [user, loading, router]);
 
   const handleAdd = (key: string, value: string) => {
     dispatch(addVariable({ key, value }));
+    toast.success(t('success.added', { key }));
   };
 
-  const handleEditStart = (variable: Variable, field: 'key' | 'value') => {
-    setEditingId(variable.id);
-    setEditingField(field);
-  };
+  const handleEditSave = (updatedVariable: Variable) => {
+    if (!editingField) return;
 
-  const handleEditSave = (variable: Variable) => {
-    if (editingField) {
-      dispatch(updateVariable(variable));
+    const originalVariable = variables.find((v) => v.id === updatedVariable.id);
+
+    const hasChanged =
+      originalVariable?.[editingField] !== updatedVariable[editingField];
+
+    if (!hasChanged) {
       setEditingId(null);
       setEditingField(null);
+      return;
     }
+
+    if (editingField === 'key') {
+      const keyExists = variables.some(
+        (v) => v.id !== updatedVariable.id && v.key === updatedVariable.key
+      );
+
+      if (keyExists) {
+        toast.error(t('error.keyExists', { key: updatedVariable.key }));
+        return;
+      }
+    }
+
+    dispatch(updateVariable(updatedVariable));
+    toast.success(t('success.updated', { key: updatedVariable.key }));
+    setEditingId(null);
+    setEditingField(null);
   };
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+    toast.success(t('copiedText'));
   };
 
-  if (loading) {
-    return (
-      <div className="p-4 md:p-6 w-full max-w-4xl mx-auto">Loading...</div>
-    );
-  }
+  const handleDelete = (id: string) => {
+    const variable = variables.find((v) => v.id === id);
+    if (variable) {
+      dispatch(deleteVariable(id));
+      toast.success(t('success.deleted', { key: variable.key }));
+    }
+  };
+
+  const existingKeys = variables.map((variable) => variable.key);
 
   return (
     <div className="p-4 md:p-6 w-full max-w-3xl mx-auto">
       <div className="flex flex-col space-y-4 md:space-y-6">
-        <h1 className="font-heading text-xl md:text-2xl font-bold text-bg-secondary">
-          {t('title')}
-        </h1>
-
-        <AddVariableForm onAdd={handleAdd} />
-
+        <AddVariableForm onAdd={handleAdd} existingKeys={existingKeys} />
         <div className="space-y-2 md:space-y-3">
           {variables.map((variable) => (
             <VariableItem
               key={variable.id}
               variable={variable}
-              onEdit={handleEditStart}
+              onEdit={(v, field) => {
+                setEditingId(v.id);
+                setEditingField(field);
+              }}
               onSave={handleEditSave}
-              onDelete={(id) => dispatch(deleteVariable(id))}
+              onDelete={handleDelete}
               onCopy={copyToClipboard}
               copiedId={copiedId}
               editingId={editingId}

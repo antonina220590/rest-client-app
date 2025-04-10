@@ -80,17 +80,26 @@
     "Request Failed": "Запрос не выполнен",
     "Request successful!": "Запрос выполнен успешно!",
     "Error of decoding of URL from path": "Ошибка декодирования URL из path",
-    "Eror of decoding Body from path": "Ошибка декодирования Body из path"
+    "Eror of decoding Body from path": "Ошибка декодирования Body из path",
+    "variables": "Переменные"
   },
   "VariablesList": {
-    "title": "Переменные",
-    "keyLabel": "Ключ",
-    "valueLabel": "Значение",
-    "keyPlaceholder": "Введите ключ",
-    "valuePlaceholder": "Введите значение",
-    "addButton": "Добавить переменную",
-    "copyTooltip": "Нажмите чтобы скопировать",
-    "copiedText": "Скопировано!",
-    "deleteAriaLabel": "Удалить переменную"
+  "title": "Переменные",
+  "keyLabel": "Ключ",
+  "valueLabel": "Значение",
+  "keyPlaceholder": "Введите ключ",
+  "valuePlaceholder": "Введите значение",
+  "addButton": "Добавить переменную",
+  "copyTooltip": "Кликните для копирования",
+  "copiedText": "Скопировано!",
+  "deleteAriaLabel": "Удалить переменную",
+  "error": {
+    "keyExists": "Переменная с ключом {key} уже существует"
+  },
+  "success": {
+    "added": "Переменная {key} добавлена",
+    "updated": "Переменная {key} обновлена",
+    "deleted": "Переменная {key} удалена"
   }
+}
 }
