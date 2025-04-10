@@ -1,20 +1,36 @@
 'use client';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 type AddVariableFormProps = {
   onAdd: (key: string, value: string) => void;
+  existingKeys: string[];
 };
 
-export const AddVariableForm = ({ onAdd }: AddVariableFormProps) => {
+export const AddVariableForm = ({
+  onAdd,
+  existingKeys,
+}: AddVariableFormProps) => {
   const t = useTranslations('VariablesList');
   const [newVar, setNewVar] = useState({ key: '', value: '' });
 
   const handleAdd = () => {
-    if (newVar.key.trim() && newVar.value.trim()) {
-      onAdd(newVar.key.trim(), newVar.value.trim());
-      setNewVar({ key: '', value: '' });
+    const { key, value } = newVar;
+    const trimmedKey = key.trim();
+
+    if (!trimmedKey || !value.trim()) {
+      toast.error(t('error.emptyFields'));
+      return;
     }
+
+    if (existingKeys.includes(trimmedKey)) {
+      toast.error(t('error.keyExists', { key: trimmedKey }));
+      return;
+    }
+
+    onAdd(trimmedKey, value.trim());
+    setNewVar({ key: '', value: '' });
   };
 
   return (
@@ -31,6 +47,7 @@ export const AddVariableForm = ({ onAdd }: AddVariableFormProps) => {
             placeholder={t('keyPlaceholder')}
           />
         </div>
+
         <div>
           <label className="block text-sm font-medium mb-1 text-bg-secondary">
             {t('valueLabel')}
@@ -43,6 +60,7 @@ export const AddVariableForm = ({ onAdd }: AddVariableFormProps) => {
           />
         </div>
       </div>
+
       <button
         onClick={handleAdd}
         className="btn-primary w-full md:w-auto text-sm md:text-base px-3 py-2 md:px-4 md:py-2"
