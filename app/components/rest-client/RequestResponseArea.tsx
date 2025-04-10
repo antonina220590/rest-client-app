@@ -315,7 +315,7 @@ export function RequestResponseArea() {
               )}
             </span>
           </div>
-          <div className="flex-grow overflow-auto border rounded-md bg-accent h-full">
+          <div className="flex-grow overflow-auto border rounded-md bg-accent h-full text-sm">
             {isLoading ? (
               <div className="flex items-center justify-center h-full bg-accent">
                 <Spinner />

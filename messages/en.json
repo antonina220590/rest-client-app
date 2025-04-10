@@ -80,7 +80,15 @@
     "Request Failed": "Request Failed",
     "Request successful!": "Request successful!",
     "Error of decoding of URL from path": "Error of decoding of URL from path",
-    "Eror of decoding Body from path": "Eror of decoding Body from path"
+    "Eror of decoding Body from path": "Eror of decoding Body from path",
+    "providingURL": "// Provide URL for code generation",
+    "generatingCodeFor": "// Code generation for",
+    "The API returned an empty code snippet": "The API returned an empty code snippet",
+    "Code generation error": "Code generation error",
+    "errorGeneration": "// Code generation error",
+    "Code copied!": "Code copied!",
+    "Error:": "Error:",
+    "Code Snippet": "Code Snippet"
   },
   "VariablesList": {
     "title": "Variables",

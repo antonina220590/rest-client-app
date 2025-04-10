@@ -34,7 +34,7 @@ export interface RequestBodyEditorProps {
   onLanguageChange?: (language: BodyLanguage) => void;
   showPrettifyButton?: boolean;
   showLanguageSelector?: boolean;
-
+  className?: string;
   contentEditable: boolean;
 }
 

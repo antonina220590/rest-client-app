@@ -80,7 +80,15 @@
     "Request Failed": "Запрос не выполнен",
     "Request successful!": "Запрос выполнен успешно!",
     "Error of decoding of URL from path": "Ошибка декодирования URL из path",
-    "Eror of decoding Body from path": "Ошибка декодирования Body из path"
+    "Eror of decoding Body from path": "Ошибка декодирования Body из path",
+    "providingURL": "// Введите URL для генерации кода",
+    "generatingCodeFor": "// Генерация кода для",
+    "The API returned an empty code snippet": "API вернул пустой фрагмент кода",
+    "Code generation error": "Ошибка при генерации кода",
+    "errorGeneration": "// Ошибка при генерации кода",
+    "Code copied!": "Код скопирован!",
+    "Error:": "Ошибка:",
+    "Code Snippet": "Фрагмент кода"
   },
   "VariablesList": {
     "title": "Переменные",

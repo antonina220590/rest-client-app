@@ -10,23 +10,24 @@ type GeneratedCodeMirrorLanguage =
 export function mapSelectedLangToCm(lang: string): GeneratedCodeMirrorLanguage {
   const lowerLang = lang.toLowerCase();
 
-  switch (lowerLang) {
-    case 'curl':
-      return 'shell';
-    case 'javascript':
-    case 'fetch':
-    case 'xhr':
-    case 'nodejs':
-      return 'javascript';
-    case 'python':
-      return 'python';
-    case 'java':
-      return 'java';
-    case 'c#':
-      return 'csharp';
-    case 'go':
-      return 'go';
-    default:
-      return 'plaintext';
+  if (lowerLang.includes('curl')) {
+    return 'shell';
+  } else if (
+    lowerLang.includes('javascript') ||
+    lowerLang.includes('fetch') ||
+    lowerLang.includes('xhr') ||
+    lowerLang.includes('nodejs')
+  ) {
+    return 'javascript';
+  } else if (lowerLang.includes('python')) {
+    return 'python';
+  } else if (lowerLang.includes('java')) {
+    return 'java';
+  } else if (lowerLang.includes('c#')) {
+    return 'csharp';
+  } else if (lowerLang.includes('go')) {
+    return 'go';
+  } else {
+    return 'plaintext';
   }
 }
