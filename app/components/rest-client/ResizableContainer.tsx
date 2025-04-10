@@ -20,6 +20,7 @@ import {
 } from '@/app/interfaces';
 import { useSyncUrlWithReduxState } from '@/app/hooks/useSyncUrlWithReduxState';
 import { useRequestNotifications } from '@/app/hooks/useRequestNotifications';
+import { useRequestHistory } from '@/app/store/hooks';
 
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch, RootState } from '@/app/store/store';
@@ -32,7 +33,6 @@ import {
   sendRequest,
   clearResponse,
 } from '@/app/store/restClientSlice';
-import { addHistoryItem } from '@/app/store/historySlice';
 import { decodeFromBase64Url } from './helpers/encoding';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
@@ -40,6 +40,8 @@ import { useTranslations } from 'next-intl';
 export default function ResizableContainer({
   initialMethod = 'GET',
 }: ResizableContainerProps) {
+  useRequestHistory();
+
   const {
     isPanelOpen: isCodePanelOpen,
     layoutGroupRef,
@@ -57,7 +59,6 @@ export default function ResizableContainer({
   const methodFromRedux = useSelector(
     (state: RootState) => state.restClient.method
   );
-
   const url = useSelector((state: RootState) => state.restClient.url);
   const requestBody = useSelector(
     (state: RootState) => state.restClient.requestBody
@@ -65,9 +66,6 @@ export default function ResizableContainer({
   const headers = useSelector((state: RootState) => state.restClient.headers);
   const queryParams = useSelector(
     (state: RootState) => state.restClient.queryParams
-  );
-  const bodyLanguage = useSelector(
-    (state: RootState) => state.restClient.bodyLanguage
   );
 
   useEffect(() => {
@@ -78,6 +76,7 @@ export default function ResizableContainer({
     let currentUrl = '';
     let currentBody = '';
     const currentHeaders: KeyValueItem[] = [];
+
     if (pathSegments.length >= 3) {
       const methodFromUrl = pathSegments[2].toUpperCase();
       if (methods.includes(methodFromUrl)) {
@@ -92,6 +91,7 @@ export default function ResizableContainer({
         toast.error(t('Error of decoding of URL from path'));
       }
     }
+
     if (pathSegments.length >= 5 && pathSegments[4]) {
       try {
         currentBody = decodeFromBase64Url(pathSegments[4]);
@@ -99,12 +99,15 @@ export default function ResizableContainer({
         toast.error('Error of decoding Body from path');
       }
     }
+
     searchParams.forEach((value, key) => {
-      currentHeaders.push({ id: crypto.randomUUID(), key: key, value: value });
+      currentHeaders.push({ id: crypto.randomUUID(), key, value });
     });
+
     if (currentHeaders.length === 0) {
       currentHeaders.push({ id: crypto.randomUUID(), key: '', value: '' });
     }
+
     dispatch(setMethod(currentMethod));
     dispatch(setUrl(currentUrl));
     dispatch(setRequestBody(currentBody));
@@ -144,34 +147,11 @@ export default function ResizableContainer({
     };
 
     try {
-      const result = await dispatch(sendRequest(payload));
-
-      // Сохраняем в историю только если запрос успешен
-      if (sendRequest.fulfilled.match(result)) {
-        dispatch(
-          addHistoryItem({
-            method: methodFromRedux,
-            url: url,
-            headers: headers.filter((h) => h.key),
-            queryParams: queryParams.filter((p) => p.key),
-            body: requestBody,
-            bodyLanguage: bodyLanguage,
-          })
-        );
-      }
+      await dispatch(sendRequest(payload));
     } catch {
       toast.error(t('requestFailed'));
     }
-  }, [
-    methodFromRedux,
-    url,
-    headers,
-    queryParams,
-    requestBody,
-    bodyLanguage,
-    dispatch,
-    t,
-  ]);
+  }, [methodFromRedux, url, headers, queryParams, requestBody, dispatch, t]);
 
   return (
     <div className="relative w-full h-full">
@@ -183,7 +163,7 @@ export default function ResizableContainer({
         className="absolute top-2 right-2 z-10 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         {isCodePanelOpen ? (
-          <PanelRightClose className="h-6 w-6 " />
+          <PanelRightClose className="h-6 w-6" />
         ) : (
           <PanelLeftClose className="h-4 w-4" />
         )}

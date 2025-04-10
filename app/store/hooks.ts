@@ -10,19 +10,13 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export const useRequestHistory = () => {
   const dispatch = useAppDispatch();
-  const {
-    responseStatus,
-    isLoading,
-    method,
-    url,
-    headers,
-    queryParams,
-    requestBody,
-    bodyLanguage,
-  } = useAppSelector(selectRestClient);
+  const { responseStatus } = useAppSelector(selectRestClient);
+  const { method, url, headers, queryParams, requestBody, bodyLanguage } =
+    useAppSelector((state) => state.restClient);
 
   useEffect(() => {
-    if (responseStatus && !isLoading) {
+    if (responseStatus) {
+      // Если есть статус ответа (запрос выполнен)
       dispatch(
         addHistoryItem({
           method,
@@ -35,9 +29,8 @@ export const useRequestHistory = () => {
       );
     }
   }, [
-    dispatch,
     responseStatus,
-    isLoading,
+    dispatch,
     method,
     url,
     headers,
