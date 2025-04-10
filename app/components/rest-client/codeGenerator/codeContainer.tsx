@@ -10,7 +10,6 @@ import RequestBodyEditor from '../BodyEditor';
 import { mapSelectedLangToCm } from '../helpers/langMapping';
 import { shallowEqual, useSelector } from 'react-redux';
 import { RootState } from '@/app/store/store';
-import Spinner from '../../Spinner';
 import { useTranslations } from 'next-intl';
 
 export default function CodeContainer() {
@@ -110,11 +109,6 @@ export default function CodeContainer() {
       <span className="flex mb-2">{t('Code Snippet')}</span>
       <div>
         <div className="flex-grow border rounded-md overflow-hidden min-h-[400px] bg-accent text-sm">
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
-              <Spinner />
-            </div>
-          )}
           <div className="flex justify-between mb-2">
             <LangSelector
               value={selectedLanguage}
@@ -133,6 +127,7 @@ export default function CodeContainer() {
               <Copy className="h-4 w-4" />
             </Button>
           </div>
+
           <RequestBodyEditor
             value={generatedCode}
             language={codeMirrorLanguage}
