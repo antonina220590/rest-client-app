@@ -25,33 +25,48 @@ const initialState: RestClientState = {
   responseContentType: null,
 };
 
+const decodeTemplateVariables = (str: string): string => {
+  return str.replace(/%7B%7B/g, '{{').replace(/%7D%7D/g, '}}');
+};
+
 export const sendRequest = createAsyncThunk<
   SendRequestSuccessPayload,
   SendRequestPayload,
   { rejectValue: RejectPayload; state: RootState }
->('restClient/sendRequest', async (payload, thunkAPI) => {
-  const { getState, rejectWithValue } = thunkAPI;
+>('restClient/sendRequest', async (payload, { getState, rejectWithValue }) => {
   const { variables } = getState();
 
   const processedHeaders = payload.headers
     .map((header) => ({
       ...header,
-      key: interpolateVariables(header.key, variables),
-      value: interpolateVariables(header.value, variables),
+      key: interpolateVariables(decodeTemplateVariables(header.key), variables),
+      value: interpolateVariables(
+        decodeTemplateVariables(header.value),
+        variables
+      ),
     }))
     .filter((h) => h.key);
 
   const preparedRequest: SendRequestPayload = {
     ...payload,
-    targetUrl: interpolateVariables(payload.targetUrl, variables),
+    targetUrl: interpolateVariables(
+      decodeTemplateVariables(payload.targetUrl),
+      variables
+    )
+      .replace(/\/+/g, '/')
+      .replace(/:\//, '://'),
     headers: processedHeaders,
     queryParams: payload.queryParams.map((p) => ({
       ...p,
-      key: interpolateVariables(p.key, variables),
-      value: interpolateVariables(p.value, variables),
+      key: interpolateVariables(decodeTemplateVariables(p.key), variables),
+      value: interpolateVariables(decodeTemplateVariables(p.value), variables),
     })),
-    body: payload.body ? interpolateVariables(payload.body, variables) : null,
+    body: payload.body
+      ? interpolateVariables(decodeTemplateVariables(payload.body), variables)
+      : null,
   };
+
+  // console.log('Processed URL:', preparedRequest.targetUrl);
 
   let cleanTargetUrl = preparedRequest.targetUrl;
   try {
@@ -62,7 +77,7 @@ export const sendRequest = createAsyncThunk<
   const proxyPayload = {
     method: preparedRequest.method,
     targetUrl: cleanTargetUrl,
-    headers: preparedRequest.headers,
+    headers: processedHeaders,
     queryParams: preparedRequest.queryParams,
     body: preparedRequest.body,
   };
@@ -74,31 +89,23 @@ export const sendRequest = createAsyncThunk<
       body: JSON.stringify(proxyPayload),
     });
 
-    const responseStatus = response.status;
-
     if (!response.ok) {
       let errorBody: string | null = null;
       try {
         errorBody = await response.text();
+        // console.log('Error response body:', errorBody);
       } catch {
         errorBody = null;
       }
-
       return rejectWithValue({
-        message: `Error ${responseStatus}: ${response.statusText}`,
-        status: responseStatus,
+        message: `Error ${response.status}: ${response.statusText}`,
+        status: response.status,
         body: errorBody,
       });
     }
 
     const proxyResponse = await response.json();
-
-    const contentTypeHeader = proxyResponse.headers
-      ? (Object.entries(proxyResponse.headers).find(
-          ([key]) => key.toLowerCase() === 'content-type'
-        ) as [string, string] | undefined)
-      : undefined;
-    const contentType = contentTypeHeader ? contentTypeHeader[1] : null;
+    const contentType = response.headers.get('content-type');
 
     return {
       body: proxyResponse.body ?? null,
@@ -107,11 +114,7 @@ export const sendRequest = createAsyncThunk<
       contentType: contentType,
     };
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : 'An unknown network error occurred';
-
+    const message = error instanceof Error ? error.message : 'Request failed';
     return rejectWithValue({
       message,
       status: 500,
@@ -125,10 +128,8 @@ const parseQueryParamsFromUrl = (url: string): KeyValueItem[] => {
   try {
     const urlObject = new URL(url);
     urlObject.searchParams.forEach((value, key) => {
-      const decodedKey = key.replace(/%7B%7B/g, '{{').replace(/%7D%7D/g, '}}');
-      const decodedValue = value
-        .replace(/%7B%7B/g, '{{')
-        .replace(/%7D%7D/g, '}}');
+      const decodedKey = decodeTemplateVariables(key);
+      const decodedValue = decodeTemplateVariables(value);
 
       params.push({
         id: crypto.randomUUID(),
