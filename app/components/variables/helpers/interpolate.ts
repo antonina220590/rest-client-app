@@ -1,4 +1,4 @@
-import { Variable } from '@/app/store/types';
+import { Variable } from '@/app/interfaces';
 
 export const interpolateVariables = (
   text: string,

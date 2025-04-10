@@ -9,7 +9,7 @@ import {
 import dynamic from 'next/dynamic';
 import { VariableItem } from './VariableItem';
 import { AddVariableForm } from './AddVariableForm';
-import { Variable } from '@/app/store/types';
+import { Variable } from '@/app/interfaces';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 

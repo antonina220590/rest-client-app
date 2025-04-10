@@ -32,6 +32,7 @@ import {
   sendRequest,
   clearResponse,
 } from '@/app/store/restClientSlice';
+import { addHistoryItem } from '@/app/store/historySlice';
 import { decodeFromBase64Url } from './helpers/encoding';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
@@ -65,6 +66,9 @@ export default function ResizableContainer({
   const queryParams = useSelector(
     (state: RootState) => state.restClient.queryParams
   );
+  const bodyLanguage = useSelector(
+    (state: RootState) => state.restClient.bodyLanguage
+  );
 
   useEffect(() => {
     const pathSegments = window.location.pathname.split('/');
@@ -92,7 +96,7 @@ export default function ResizableContainer({
       try {
         currentBody = decodeFromBase64Url(pathSegments[4]);
       } catch {
-        toast.error('Eror of decoding Body from path');
+        toast.error('Error of decoding Body from path');
       }
     }
     searchParams.forEach((value, key) => {
@@ -134,12 +138,40 @@ export default function ResizableContainer({
     const payload = {
       method: methodFromRedux,
       targetUrl: url,
-      headers: headers,
-      queryParams: queryParams,
+      headers: headers.filter((h) => h.key),
+      queryParams: queryParams.filter((p) => p.key),
       body: requestBody,
     };
-    dispatch(sendRequest(payload));
-  }, [methodFromRedux, url, headers, queryParams, requestBody, dispatch]);
+
+    try {
+      const result = await dispatch(sendRequest(payload));
+
+      // Сохраняем в историю только если запрос успешен
+      if (sendRequest.fulfilled.match(result)) {
+        dispatch(
+          addHistoryItem({
+            method: methodFromRedux,
+            url: url,
+            headers: headers.filter((h) => h.key),
+            queryParams: queryParams.filter((p) => p.key),
+            body: requestBody,
+            bodyLanguage: bodyLanguage,
+          })
+        );
+      }
+    } catch {
+      toast.error(t('requestFailed'));
+    }
+  }, [
+    methodFromRedux,
+    url,
+    headers,
+    queryParams,
+    requestBody,
+    bodyLanguage,
+    dispatch,
+    t,
+  ]);
 
   return (
     <div className="relative w-full h-full">
