@@ -29,7 +29,8 @@ export const sendRequest = createAsyncThunk<
   SendRequestSuccessPayload,
   SendRequestPayload,
   { rejectValue: RejectPayload; state: RootState }
->('restClient/sendRequest', async (payload, { getState }) => {
+>('restClient/sendRequest', async (payload, thunkAPI) => {
+  const { getState, rejectWithValue } = thunkAPI;
   const { variables } = getState();
 
   const processedHeaders = payload.headers
@@ -73,25 +74,45 @@ export const sendRequest = createAsyncThunk<
       body: JSON.stringify(proxyPayload),
     });
 
+    const responseStatus = response.status;
+
     if (!response.ok) {
-      const errorBody = await response.text().catch(() => null);
-      return Promise.reject({
-        message: `Error ${response.status}: ${response.statusText}`,
-        status: response.status,
+      let errorBody: string | null = null;
+      try {
+        errorBody = await response.text();
+      } catch {
+        errorBody = null;
+      }
+
+      return rejectWithValue({
+        message: `Error ${responseStatus}: ${response.statusText}`,
+        status: responseStatus,
         body: errorBody,
       });
     }
 
     const proxyResponse = await response.json();
+
+    const contentTypeHeader = proxyResponse.headers
+      ? (Object.entries(proxyResponse.headers).find(
+          ([key]) => key.toLowerCase() === 'content-type'
+        ) as [string, string] | undefined)
+      : undefined;
+    const contentType = contentTypeHeader ? contentTypeHeader[1] : null;
+
     return {
       body: proxyResponse.body ?? null,
       status: proxyResponse.status,
       headers: proxyResponse.headers || {},
-      contentType: proxyResponse.headers?.['content-type'] ?? null,
+      contentType: contentType,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed';
-    return Promise.reject({
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'An unknown network error occurred';
+
+    return rejectWithValue({
       message,
       status: 500,
       body: null,
