@@ -35,7 +35,7 @@ export default function CodeContainer() {
     <div className="h-full">
       <span> Code Generator</span>
       <div>
-        <div className="flex-grow border rounded-md overflow-hidden min-h-[400px]">
+        <div className="flex-grow border rounded-md overflow-hidden min-h-[400px] bg-accent">
           <div className="flex justify-between mb-2">
             <LangSelector
               value={selectedLanguage}
