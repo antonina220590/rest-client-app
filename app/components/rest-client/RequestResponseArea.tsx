@@ -44,7 +44,7 @@ const VERTICAL_COLLAPSED_LAYOUT: number[] = [
 ];
 
 export function RequestResponseArea() {
-  const [isRequestPanelCollapsed, setIsRequestPanelCollapsed] = useState(true);
+  const [isRequestPanelCollapsed, setIsRequestPanelCollapsed] = useState(false);
   const verticalLayoutGroupRef = useRef<ImperativePanelGroupHandle>(null);
   const [isMounted, setIsMounted] = useState(false);
   const dispatch: AppDispatch = useDispatch();

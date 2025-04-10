@@ -8,10 +8,28 @@ import {
   indentUnit,
   syntaxHighlighting,
 } from '@codemirror/language';
+import { javascript } from '@codemirror/lang-javascript';
+import { python } from '@codemirror/lang-python';
+import { java } from '@codemirror/lang-java';
+import { cpp } from '@codemirror/lang-cpp';
+import { go } from '@codemirror/lang-go';
+import { StreamLanguage } from '@codemirror/language';
+import { shell } from '@codemirror/legacy-modes/mode/shell';
 import { closeBrackets } from '@codemirror/autocomplete';
-import { BodyLanguage } from '@/app/interfaces';
 
-export const useCodeMirrorExtensions = (language: BodyLanguage) => {
+type AcceptedLanguage =
+  | 'json'
+  | 'plaintext'
+  | 'shell'
+  | 'javascript'
+  | 'python'
+  | 'java'
+  | 'csharp'
+  | 'go'
+  | 'plaintext'
+  | 'shell';
+
+export const useCodeMirrorExtensions = (language: AcceptedLanguage) => {
   const extensions = useMemo(() => {
     const base = [
       materialLight,
@@ -22,11 +40,25 @@ export const useCodeMirrorExtensions = (language: BodyLanguage) => {
       syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
     ];
 
-    if (language === 'json') {
-      return [...base, json()];
+    switch (language) {
+      case 'json':
+        return [...base, json()];
+      case 'javascript':
+        return [...base, javascript({ jsx: false, typescript: false })];
+      case 'python':
+        return [...base, python()];
+      case 'java':
+        return [...base, java()];
+      case 'csharp':
+        return [...base, cpp()];
+      case 'go':
+        return [...base, go()];
+      case 'shell':
+        return [...base, StreamLanguage.define(shell)];
+      case 'plaintext':
+      default:
+        return base;
     }
-
-    return base;
   }, [language]);
 
   return extensions;

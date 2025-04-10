@@ -42,7 +42,10 @@ export default function RequestBodyEditor({
   const t = useTranslations('RESTful');
 
   const handlePrettify = useCallback(() => {
-    if (!onChange) {
+    if (!onChange || language !== 'json') {
+      if (language !== 'json') {
+        toast.info(t('Prettify is only available for JSON'));
+      }
       return;
     }
     prettifyJsonInput({
