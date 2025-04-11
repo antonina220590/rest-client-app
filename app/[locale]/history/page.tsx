@@ -1,7 +1,12 @@
-export default function History() {
+import { ReduxProvider } from '@/app/store/providers';
+import HistoryList from '@/app/components/history/HistoryList';
+
+export default function HistoryPage() {
   return (
-    <div className="text-center">
-      <h1>History page</h1>
+    <div className="container mx-auto p-4">
+      <ReduxProvider>
+        <HistoryList />
+      </ReduxProvider>
     </div>
   );
 }

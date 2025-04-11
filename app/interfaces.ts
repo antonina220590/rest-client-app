@@ -197,3 +197,14 @@ export interface HistoryItem {
 export interface HistoryState {
   items: HistoryItem[];
 }
+
+export interface HistoryItemProps {
+  item: HistoryItem;
+  translations: {
+    method: string;
+    url: string;
+    time: string;
+    bodyType: string;
+    copyTooltip: string;
+  };
+}

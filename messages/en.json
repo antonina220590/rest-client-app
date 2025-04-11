@@ -101,5 +101,24 @@
     "updated": "Variable {key} updated",
     "deleted": "Variable {key} deleted"
   }
-}
+},
+
+  "HistoryList": {
+    "title": "Request History",
+    "clearButton": "Clear History",
+    "emptyTitle": "You haven't executed any requests yet",
+    "emptyDescription": "It's empty here. Try those options:",
+    "goToClientButton": "Go to REST Client",
+    "methodLabel": "Method",
+    "urlLabel": "URL",
+    "timeLabel": "Time",
+    "bodyTypeLabel": "Body Type",
+    "copyLinkTooltip": "Copy request link",
+    "error": {
+      "clearFailed": "Failed to clear history"
+    },
+    "success": {
+      "cleared": "History cleared successfully"
+    }
+  }
 }

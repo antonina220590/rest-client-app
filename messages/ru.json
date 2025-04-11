@@ -101,5 +101,23 @@
     "updated": "Переменная {key} обновлена",
     "deleted": "Переменная {key} удалена"
   }
-}
+},
+  "HistoryList": {
+    "title": "История запросов",
+    "clearButton": "Очистить историю",
+    "emptyTitle": "Вы еще не выполняли запросов",
+    "emptyDescription": "Здесь пока пусто. Попробуйте:",
+    "goToClientButton": "Перейти в REST клиент",
+    "methodLabel": "Метод",
+    "urlLabel": "URL",
+    "timeLabel": "Время",
+    "bodyTypeLabel": "Тип тела",
+    "copyLinkTooltip": "Копировать ссылку запроса",
+    "error": {
+      "clearFailed": "Не удалось очистить историю"
+    },
+    "success": {
+      "cleared": "История успешно очищена"
+    }
+  }
 }
