@@ -1,3 +1,5 @@
+import { Variable } from './store/types';
+
 export interface KeyValueItem {
   id: string;
   key: string;
@@ -177,3 +179,17 @@ export type EditorLanguage =
   | 'java'
   | 'csharp'
   | 'go';
+
+export interface UseGeneratedCodeProps {
+  selectedLanguage: string;
+  method: string;
+  url: string;
+  headers: KeyValueItem[];
+  requestBody: string;
+  variables: Variable[];
+}
+
+export interface UseGeneratedCodeReturn {
+  generatedCode: string;
+  isLoading: boolean;
+}
