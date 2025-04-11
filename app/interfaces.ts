@@ -1,3 +1,5 @@
+import { Variable } from './store/types';
+
 export interface KeyValueItem {
   id: string;
   key: string;
@@ -30,13 +32,14 @@ export type BodyLanguage = 'json' | 'plaintext';
 export interface RequestBodyEditorProps {
   value: string;
   onChange?: (value: string) => void;
-  language: BodyLanguage;
+  language: EditorLanguage;
   readOnly?: boolean;
   onLanguageChange?: (language: BodyLanguage) => void;
   showPrettifyButton?: boolean;
   showLanguageSelector?: boolean;
-
+  className?: string;
   contentEditable: boolean;
+  lineWrapping?: boolean;
 }
 
 export interface QueryParam {
@@ -58,6 +61,17 @@ export const methods = [
   'PATCH',
   'OPTIONS',
   'HEAD',
+];
+
+export const langs = [
+  'JavaScript - Fetch',
+  'curl',
+  'JavaScript - XHR',
+  'NodeJS',
+  'Python',
+  'Java',
+  'C#',
+  'Go',
 ];
 
 export interface KeyValueRowProps {
@@ -93,6 +107,11 @@ export interface URLInputProps {
 }
 
 export interface MethodProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export interface LangProps {
   value: string;
   onChange: (value: string) => void;
 }
@@ -150,4 +169,27 @@ export interface ResizableContainerProps {
   initialUrl?: string;
   initialBody?: string;
   initialHeaders?: KeyValueItem[];
+}
+
+export type EditorLanguage =
+  | BodyLanguage
+  | 'shell'
+  | 'javascript'
+  | 'python'
+  | 'java'
+  | 'csharp'
+  | 'go';
+
+export interface UseGeneratedCodeProps {
+  selectedLanguage: string;
+  method: string;
+  url: string;
+  headers: KeyValueItem[];
+  requestBody: string;
+  variables: Variable[];
+}
+
+export interface UseGeneratedCodeReturn {
+  generatedCode: string;
+  isLoading: boolean;
 }

@@ -36,6 +36,16 @@ export const sendRequest = createAsyncThunk<
 >('restClient/sendRequest', async (payload, { getState, rejectWithValue }) => {
   const { variables } = getState();
 
+  const methodUpper = payload.method.toUpperCase();
+  if ((methodUpper === 'GET' || methodUpper === 'HEAD') && payload.body) {
+    const errorPayload: RejectPayload = {
+      message: 'Request body is not allowed for GET/HEAD methods',
+      status: 400,
+      body: 'Request body is not allowed for GET/HEAD methods. Please clear the request body.',
+    };
+    return rejectWithValue(errorPayload);
+  }
+
   const processedHeaders = payload.headers
     .map((header) => ({
       ...header,
@@ -66,8 +76,6 @@ export const sendRequest = createAsyncThunk<
       : null,
   };
 
-  // console.log('Processed URL:', preparedRequest.targetUrl);
-
   let cleanTargetUrl = preparedRequest.targetUrl;
   try {
     const urlObject = new URL(cleanTargetUrl);
@@ -93,7 +101,6 @@ export const sendRequest = createAsyncThunk<
       let errorBody: string | null = null;
       try {
         errorBody = await response.text();
-        // console.log('Error response body:', errorBody);
       } catch {
         errorBody = null;
       }

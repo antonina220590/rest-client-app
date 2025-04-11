@@ -81,25 +81,34 @@
     "Request successful!": "Request successful!",
     "Error of decoding of URL from path": "Error of decoding of URL from path",
     "Eror of decoding Body from path": "Eror of decoding Body from path",
-    "variables": "Variables"
+    "providingURL": "// Provide URL for code generation",
+    "generatingCodeFor": "// Code generation for",
+    "The API returned an empty code snippet": "The API returned an empty code snippet",
+    "Code generation error": "Code generation error",
+    "errorGeneration": "// Code generation error",
+    "Code copied!": "Code copied!",
+    "Error:": "Error:",
+    "Code Snippet": "Code Snippet",
+    "variables": "Variables",
+    "variablesError": "// Variable substitution error"
   },
   "VariablesList": {
-  "title": "Variables",
-  "keyLabel": "Key",
-  "valueLabel": "Value",
-  "keyPlaceholder": "Enter key",
-  "valuePlaceholder": "Enter value",
-  "addButton": "Add Variable",
-  "copyTooltip": "Click to copy",
-  "copiedText": "Copied!",
-  "deleteAriaLabel": "Delete variable",
-  "error": {
-    "keyExists": "Variable with key {key} already exists"
-  },
-  "success": {
-    "added": "Variable {key} added",
-    "updated": "Variable {key} updated",
-    "deleted": "Variable {key} deleted"
+    "title": "Variables",
+    "keyLabel": "Key",
+    "valueLabel": "Value",
+    "keyPlaceholder": "Enter key",
+    "valuePlaceholder": "Enter value",
+    "addButton": "Add Variable",
+    "copyTooltip": "Click to copy",
+    "copiedText": "Copied!",
+    "deleteAriaLabel": "Delete variable",
+    "error": {
+      "keyExists": "Variable with key {key} already exists"
+    },
+    "success": {
+      "added": "Variable {key} added",
+      "updated": "Variable {key} updated",
+      "deleted": "Variable {key} deleted"
+    }
   }
-}
 }

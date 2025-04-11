@@ -81,25 +81,34 @@
     "Request successful!": "Запрос выполнен успешно!",
     "Error of decoding of URL from path": "Ошибка декодирования URL из path",
     "Eror of decoding Body from path": "Ошибка декодирования Body из path",
-    "variables": "Переменные"
+    "providingURL": "// Введите URL для генерации кода",
+    "generatingCodeFor": "// Генерация кода для",
+    "The API returned an empty code snippet": "API вернул пустой фрагмент кода",
+    "Code generation error": "Ошибка при генерации кода",
+    "errorGeneration": "// Ошибка при генерации кода",
+    "Code copied!": "Код скопирован!",
+    "Error:": "Ошибка:",
+    "Code Snippet": "Фрагмент кода",
+    "variables": "Переменные",
+    "variablesError": "// Ошибка подстановки переменных"
   },
   "VariablesList": {
-  "title": "Переменные",
-  "keyLabel": "Ключ",
-  "valueLabel": "Значение",
-  "keyPlaceholder": "Введите ключ",
-  "valuePlaceholder": "Введите значение",
-  "addButton": "Добавить переменную",
-  "copyTooltip": "Кликните для копирования",
-  "copiedText": "Скопировано!",
-  "deleteAriaLabel": "Удалить переменную",
-  "error": {
-    "keyExists": "Переменная с ключом {key} уже существует"
-  },
-  "success": {
-    "added": "Переменная {key} добавлена",
-    "updated": "Переменная {key} обновлена",
-    "deleted": "Переменная {key} удалена"
+    "title": "Переменные",
+    "keyLabel": "Ключ",
+    "valueLabel": "Значение",
+    "keyPlaceholder": "Введите ключ",
+    "valuePlaceholder": "Введите значение",
+    "addButton": "Добавить переменную",
+    "copyTooltip": "Кликните для копирования",
+    "copiedText": "Скопировано!",
+    "deleteAriaLabel": "Удалить переменную",
+    "error": {
+      "keyExists": "Переменная с ключом {key} уже существует"
+    },
+    "success": {
+      "added": "Переменная {key} добавлена",
+      "updated": "Переменная {key} обновлена",
+      "deleted": "Переменная {key} удалена"
+    }
   }
-}
 }

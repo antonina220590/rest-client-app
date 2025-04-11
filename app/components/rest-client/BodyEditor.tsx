@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useCallback } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
+import React, { useCallback, useMemo } from 'react';
+import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 
 import { Button } from '@/components/ui/button';
 import { WandSparkles, Braces, Type } from 'lucide-react';
@@ -27,8 +27,17 @@ export default function RequestBodyEditor({
   showPrettifyButton = true,
   showLanguageSelector = true,
   contentEditable,
+  lineWrapping = false,
 }: RequestBodyEditorProps) {
-  const extensions = useCodeMirrorExtensions(language);
+  const baseExtensions = useCodeMirrorExtensions(language);
+
+  const extensions = useMemo(() => {
+    const exts = [...baseExtensions];
+    if (lineWrapping) {
+      exts.push(EditorView.lineWrapping);
+    }
+    return exts;
+  }, [baseExtensions, lineWrapping]);
 
   const handleEditorChange = useCallback(
     (newValue: string) => {
@@ -42,7 +51,10 @@ export default function RequestBodyEditor({
   const t = useTranslations('RESTful');
 
   const handlePrettify = useCallback(() => {
-    if (!onChange) {
+    if (!onChange || language !== 'json') {
+      if (language !== 'json') {
+        toast.info(t('Prettify is only available for JSON'));
+      }
       return;
     }
     prettifyJsonInput({
@@ -64,7 +76,7 @@ export default function RequestBodyEditor({
   return (
     <div className="flex flex-col h-full w-full">
       {!readOnly && (showLanguageSelector || showPrettifyButton) && (
-        <div className="flex justify-end items-center p-2 gap-2 border-b h-fit min-h-[30px] w-[90%]">
+        <div className="flex justify-start items-center p-2 gap-2 border-b h-fit min-h-[30px] w-full">
           {showLanguageSelector && onLanguageChange && (
             <TooltipProvider delayDuration={100}>
               <ToggleGroup
@@ -131,7 +143,7 @@ export default function RequestBodyEditor({
           )}
         </div>
       )}
-      <div className="flex-grow w-[90%]">
+      <div className="flex-grow w-[100%]">
         <CodeMirror
           value={value}
           onChange={handleEditorChange}
