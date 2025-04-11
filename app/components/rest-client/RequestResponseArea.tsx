@@ -328,6 +328,7 @@ export function RequestResponseArea() {
                 readOnly={true}
                 showPrettifyButton={false}
                 showLanguageSelector={false}
+                lineWrapping={false}
               />
             )}
           </div>

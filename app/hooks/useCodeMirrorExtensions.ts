@@ -44,7 +44,6 @@ export const useCodeMirrorExtensions = (language: AcceptedLanguage) => {
       case 'json':
         return [...base, json()];
       case 'javascript':
-        //return [...base, javascript({ jsx: false, typescript: false })];
         return [...base, javascript()];
       case 'python':
         return [...base, python()];

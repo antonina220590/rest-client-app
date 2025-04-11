@@ -162,6 +162,7 @@ export default function CodeContainer() {
             showPrettifyButton={false}
             showLanguageSelector={false}
             contentEditable={false}
+            lineWrapping={true}
           />
         </div>
       </div>

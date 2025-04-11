@@ -37,6 +37,7 @@ export interface RequestBodyEditorProps {
   showLanguageSelector?: boolean;
   className?: string;
   contentEditable: boolean;
+  lineWrapping?: boolean;
 }
 
 export interface QueryParam {
