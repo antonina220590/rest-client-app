@@ -110,6 +110,12 @@ export function RequestResponseArea() {
       const isErrorStatus = responseStatus !== null && responseStatus >= 400;
 
       if (isErrorStatus) {
+        if (responseStatus === 404) {
+          return {
+            displayValue: '404 Not Found',
+            displayLanguage: 'plaintext' as BodyLanguage,
+          };
+        }
         try {
           const parsedError = JSON.parse(responseData);
           if (
