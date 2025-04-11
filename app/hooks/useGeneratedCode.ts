@@ -40,6 +40,7 @@ export function useGeneratedCode({
         substitutedBody = interpolateVariables(requestBody, currentVariables);
         substitutedHeaders = headers.map((header) => ({
           ...header,
+          key: interpolateVariables(header.key, currentVariables),
           value: interpolateVariables(header.value, currentVariables),
         }));
       } catch (substError) {
