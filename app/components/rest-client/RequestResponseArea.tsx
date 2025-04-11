@@ -34,6 +34,7 @@ import {
   deleteHeader,
   setRequestBody,
   setBodyLanguage,
+  setActiveTab,
 } from '@/app/store/restClientSlice';
 
 const VERTICAL_COLLAPSED_SIZE = 2;
@@ -53,6 +54,9 @@ export function RequestResponseArea() {
     setIsMounted(true);
   }, []);
 
+  const activeTab = useSelector(
+    (state: RootState) => state.restClient.activeTab
+  );
   const queryParams = useSelector(
     (state: RootState) => state.restClient.queryParams
   );
@@ -221,6 +225,14 @@ export function RequestResponseArea() {
     [dispatch]
   );
 
+  const handleTabChange = useCallback(
+    (newTabValue: string) => {
+      dispatch(setActiveTab(newTabValue));
+      expandRequestPanel();
+    },
+    [dispatch, expandRequestPanel]
+  );
+
   return (
     <ResizablePanelGroup
       ref={verticalLayoutGroupRef}
@@ -264,25 +276,30 @@ export function RequestResponseArea() {
               isRequestPanelCollapsed && 'overflow-hidden'
             )}
           >
-            <TabsComponent
-              onTabChange={expandRequestPanel}
-              queryParams={queryParams}
-              onAddQueryParam={handleAddQueryParam}
-              onQueryParamKeyChange={handleQueryParamKeyChange}
-              onQueryParamValueChange={handleQueryParamValueChange}
-              onDeleteQueryParam={handleDeleteQueryParam}
-              headers={headers}
-              onAddHeader={handleAddHeader}
-              onHeaderKeyChange={handleHeaderKeyChange}
-              onHeaderValueChange={handleHeaderValueChange}
-              onDeleteHeader={handleDeleteHeader}
-              requestBody={requestBody}
-              onBodyChange={handleBodyChange}
-              bodyLanguage={bodyLanguage}
-              onBodyLanguageChange={handleBodyLanguageChange}
-              showPrettifyButton={true}
-              showLanguageSelector={true}
-            />
+            {isMounted ? (
+              <TabsComponent
+                value={activeTab}
+                onValueChange={handleTabChange}
+                queryParams={queryParams}
+                onAddQueryParam={handleAddQueryParam}
+                onQueryParamKeyChange={handleQueryParamKeyChange}
+                onQueryParamValueChange={handleQueryParamValueChange}
+                onDeleteQueryParam={handleDeleteQueryParam}
+                headers={headers}
+                onAddHeader={handleAddHeader}
+                onHeaderKeyChange={handleHeaderKeyChange}
+                onHeaderValueChange={handleHeaderValueChange}
+                onDeleteHeader={handleDeleteHeader}
+                requestBody={requestBody}
+                onBodyChange={handleBodyChange}
+                bodyLanguage={bodyLanguage}
+                onBodyLanguageChange={handleBodyLanguageChange}
+                showPrettifyButton={true}
+                showLanguageSelector={true}
+              />
+            ) : (
+              <div className="p-4">Loading tabs...</div>
+            )}
           </div>
         </div>
       </ResizablePanel>

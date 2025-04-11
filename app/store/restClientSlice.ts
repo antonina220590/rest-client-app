@@ -23,6 +23,8 @@ const initialState: RestClientState = {
   responseData: null,
   responseStatus: null,
   responseContentType: null,
+  activeTab: 'query',
+  isCodePanelOpen: false,
 };
 
 const decodeTemplateVariables = (str: string): string => {
@@ -237,6 +239,15 @@ const restClientSlice = createSlice({
           : [{ id: crypto.randomUUID(), key: '', value: '' }];
       state.url = buildUrlWithParams(state.url, state.queryParams);
     },
+    setActiveTab(state, action: PayloadAction<string>) {
+      state.activeTab = action.payload;
+    },
+    toggleCodePanel(state) {
+      state.isCodePanelOpen = !state.isCodePanelOpen;
+    },
+    setCodePanelOpen(state, action: PayloadAction<boolean>) {
+      state.isCodePanelOpen = action.payload;
+    },
     clearResponse: (state) => {
       state.isLoading = false;
       state.error = null;
@@ -293,6 +304,9 @@ export const {
   setQueryParams,
   clearResponse,
   clearAllRequestState,
+  setActiveTab,
+  toggleCodePanel,
+  setCodePanelOpen,
 } = restClientSlice.actions;
 
 export default restClientSlice.reducer;
@@ -307,3 +321,5 @@ export const selectRestClientResponse = (state: RootState) => ({
   contentType: state.restClient.responseContentType,
   error: state.restClient.error,
 });
+export const selectIsCodePanelOpen = (state: RootState) =>
+  state.restClient.isCodePanelOpen;
