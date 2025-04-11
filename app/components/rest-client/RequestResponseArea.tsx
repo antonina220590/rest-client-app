@@ -44,7 +44,7 @@ const VERTICAL_COLLAPSED_LAYOUT: number[] = [
 ];
 
 export function RequestResponseArea() {
-  const [isRequestPanelCollapsed, setIsRequestPanelCollapsed] = useState(true);
+  const [isRequestPanelCollapsed, setIsRequestPanelCollapsed] = useState(false);
   const verticalLayoutGroupRef = useRef<ImperativePanelGroupHandle>(null);
   const [isMounted, setIsMounted] = useState(false);
   const dispatch: AppDispatch = useDispatch();
@@ -315,7 +315,7 @@ export function RequestResponseArea() {
               )}
             </span>
           </div>
-          <div className="flex-grow overflow-auto border rounded-md bg-accent h-full">
+          <div className="flex-grow overflow-auto border rounded-md bg-accent h-full text-sm">
             {isLoading ? (
               <div className="flex items-center justify-center h-full bg-accent">
                 <Spinner />
@@ -328,6 +328,7 @@ export function RequestResponseArea() {
                 readOnly={true}
                 showPrettifyButton={false}
                 showLanguageSelector={false}
+                lineWrapping={false}
               />
             )}
           </div>

@@ -77,7 +77,7 @@ const VariablesListContent = () => {
   const existingKeys = variables.map((variable) => variable.key);
 
   return (
-    <div className="p-4 md:p-6 w-full max-w-3xl mx-auto">
+    <div className="p-4 md:p-0 w-full max-w-3xl mx-auto">
       <div className="flex flex-col space-y-4 md:space-y-6">
         <AddVariableForm onAdd={handleAdd} existingKeys={existingKeys} />
         <div className="space-y-2 md:space-y-3">

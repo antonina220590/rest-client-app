@@ -36,6 +36,7 @@ import {
 import { decodeFromBase64Url } from './helpers/encoding';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import CodeContainer from './codeGenerator/CodeContainer';
 
 export default function ResizableContainer({
   initialMethod = 'GET',
@@ -211,7 +212,7 @@ export default function ResizableContainer({
         >
           {isCodePanelOpen && (
             <div className="p-4 h-full overflow-auto">
-              <p>Generated Code</p>
+              <CodeContainer />
             </div>
           )}
         </ResizablePanel>

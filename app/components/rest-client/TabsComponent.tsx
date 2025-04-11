@@ -100,7 +100,7 @@ export default function TabsComponent({
         value="body"
         className="w-[110%] p-2 overflow-y-auto min-h-0 flex overflow"
       >
-        <Card className="border rounded-sm p-2 h-fit min-h-[100%] w-[100vw]">
+        <Card className="border rounded-sm p-2 h-fit min-h-[100%] w-[100vw] text-sm">
           <RequestBodyEditor
             value={requestBody}
             contentEditable={false}
