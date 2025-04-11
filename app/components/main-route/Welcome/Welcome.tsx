@@ -23,7 +23,6 @@ export default function Welcome() {
           <nav>
             <NavBtn href="/GET" text={t('restClient')} />
             <NavBtn href="/history" text={t('history')} />
-            <NavBtn href="/variables" text={t('variables')} />
           </nav>
         </>
       ) : (

@@ -88,7 +88,8 @@
     "errorGeneration": "// Code generation error",
     "Code copied!": "Code copied!",
     "Error:": "Error:",
-    "Code Snippet": "Code Snippet"
+    "Code Snippet": "Code Snippet",
+    "variables": "Variables"
   },
   "VariablesList": {
     "title": "Variables",
@@ -99,6 +100,14 @@
     "addButton": "Add Variable",
     "copyTooltip": "Click to copy",
     "copiedText": "Copied!",
-    "deleteAriaLabel": "Delete variable"
+    "deleteAriaLabel": "Delete variable",
+    "error": {
+      "keyExists": "Variable with key {key} already exists"
+    },
+    "success": {
+      "added": "Variable {key} added",
+      "updated": "Variable {key} updated",
+      "deleted": "Variable {key} deleted"
+    }
   }
 }

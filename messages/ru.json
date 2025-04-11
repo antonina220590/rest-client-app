@@ -88,7 +88,8 @@
     "errorGeneration": "// Ошибка при генерации кода",
     "Code copied!": "Код скопирован!",
     "Error:": "Ошибка:",
-    "Code Snippet": "Фрагмент кода"
+    "Code Snippet": "Фрагмент кода",
+    "variables": "Переменные"
   },
   "VariablesList": {
     "title": "Переменные",
@@ -97,8 +98,16 @@
     "keyPlaceholder": "Введите ключ",
     "valuePlaceholder": "Введите значение",
     "addButton": "Добавить переменную",
-    "copyTooltip": "Нажмите чтобы скопировать",
+    "copyTooltip": "Кликните для копирования",
     "copiedText": "Скопировано!",
-    "deleteAriaLabel": "Удалить переменную"
+    "deleteAriaLabel": "Удалить переменную",
+    "error": {
+      "keyExists": "Переменная с ключом {key} уже существует"
+    },
+    "success": {
+      "added": "Переменная {key} добавлена",
+      "updated": "Переменная {key} обновлена",
+      "deleted": "Переменная {key} удалена"
+    }
   }
 }

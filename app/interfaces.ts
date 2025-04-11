@@ -22,6 +22,7 @@ export interface TabsComponentProps {
   onBodyLanguageChange: (lang: 'json' | 'plaintext') => void;
   showPrettifyButton: boolean;
   showLanguageSelector: boolean;
+  showVariablesTab?: boolean;
 }
 
 export type BodyLanguage = 'json' | 'plaintext';
