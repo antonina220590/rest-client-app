@@ -89,7 +89,8 @@
     "Code copied!": "Код скопирован!",
     "Error:": "Ошибка:",
     "Code Snippet": "Фрагмент кода",
-    "variables": "Переменные"
+    "variables": "Переменные",
+    "variablesError": "// Ошибка подстановки переменных"
   },
   "VariablesList": {
     "title": "Переменные",

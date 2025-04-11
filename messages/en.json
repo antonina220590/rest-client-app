@@ -89,7 +89,8 @@
     "Code copied!": "Code copied!",
     "Error:": "Error:",
     "Code Snippet": "Code Snippet",
-    "variables": "Variables"
+    "variables": "Variables",
+    "variablesError": "// Variable substitution error"
   },
   "VariablesList": {
     "title": "Variables",

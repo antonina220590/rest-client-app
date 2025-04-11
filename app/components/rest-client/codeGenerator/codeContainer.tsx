@@ -11,6 +11,7 @@ import { mapSelectedLangToCm } from '../helpers/langMapping';
 import { shallowEqual, useSelector } from 'react-redux';
 import { RootState } from '@/app/store/store';
 import { useTranslations } from 'next-intl';
+import { interpolateVariables } from '../../variables/helpers/interpolate';
 
 export default function CodeContainer() {
   const t = useTranslations('RESTful');
@@ -29,6 +30,11 @@ export default function CodeContainer() {
     shallowEqual
   );
 
+  const variables = useSelector(
+    (state: RootState) => state.variables,
+    shallowEqual
+  );
+
   useEffect(() => {
     if (!url) {
       setGeneratedCode(t('providingURL'));
@@ -39,12 +45,33 @@ export default function CodeContainer() {
       setIsLoading(true);
       setGeneratedCode(t('generatingCodeFor', { language: selectedLanguage }));
 
+      let substitutedUrl = url;
+      let substitutedBody = requestBody;
+      let substitutedHeaders = headers;
+
+      try {
+        const currentVariables = Array.isArray(variables) ? variables : [];
+
+        substitutedUrl = interpolateVariables(url, currentVariables);
+        substitutedBody = interpolateVariables(requestBody, currentVariables);
+        substitutedHeaders = headers.map((header) => ({
+          ...header,
+          value: interpolateVariables(header.value, currentVariables),
+        }));
+      } catch (substError) {
+        const errorDetails =
+          substError instanceof Error ? substError.message : String(substError);
+        setGeneratedCode(t('variablesErrorDetails', { details: errorDetails }));
+        setIsLoading(false);
+        return;
+      }
+
       const payload = {
         selectedLanguage,
         method,
-        url,
-        headers,
-        requestBody,
+        url: substitutedUrl,
+        headers: substitutedHeaders,
+        requestBody: substitutedBody,
       };
 
       try {
@@ -83,7 +110,7 @@ export default function CodeContainer() {
       }
     };
     fetchGeneratedCode();
-  }, [selectedLanguage, method, url, headers, requestBody, t]);
+  }, [selectedLanguage, method, url, headers, requestBody, t, variables]);
 
   const handleLanguageChange = (newLang: string) => {
     setSelectedLanguage(newLang);

@@ -1,36 +1,25 @@
 import { configureStore } from '@reduxjs/toolkit';
 import variablesReducer from './variablesSlice';
 import restClientReducer from './restClientSlice';
-
-const STATE_KEY = 'appPersistentState_v1';
+import { PreloadedState } from './types';
 
 const loadState = () => {
-  if (typeof window === 'undefined') {
-    return undefined;
-  }
+  if (typeof window === 'undefined') return undefined;
 
   try {
-    const serializedState = localStorage.getItem(STATE_KEY);
-    if (serializedState === null) {
-      return undefined;
-    }
-    const fullState = JSON.parse(serializedState);
-    return {
-      variables: fullState.variables,
-    };
+    const serializedState = localStorage.getItem('variablesState');
+    return serializedState ? JSON.parse(serializedState) : undefined;
   } catch {
     return undefined;
   }
 };
-
-const preloadedState = loadState();
 
 export const store = configureStore({
   reducer: {
     variables: variablesReducer,
     restClient: restClientReducer,
   },
-  preloadedState: preloadedState,
+  preloadedState: loadState() as PreloadedState | undefined,
 });
 
 export type RootState = ReturnType<typeof store.getState>;
@@ -40,10 +29,7 @@ if (typeof window !== 'undefined') {
   store.subscribe(() => {
     const state = store.getState();
     try {
-      const stateToPersist = {
-        variables: state.variables,
-      };
-      localStorage.setItem(STATE_KEY, JSON.stringify(stateToPersist));
+      localStorage.setItem('variablesState', JSON.stringify(state));
     } catch {}
   });
 }
