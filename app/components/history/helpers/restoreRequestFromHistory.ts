@@ -6,26 +6,33 @@ import {
   setBodyLanguage,
   setHeaders,
   setQueryParams,
+  clearResponse,
 } from '@/app/store/restClientSlice';
 import { HistoryItem } from '@/app/interfaces';
 
-export const restoreRequestFromHistory = (
+export const restoreRequestFromHistory = async (
   searchParams: URLSearchParams,
   dispatch: AppDispatch
-) => {
-  const requestId = searchParams.get('restore');
-  if (!requestId) return;
+): Promise<boolean> => {
+  const restoreParam = searchParams.get('restore');
+  const requestId = Array.isArray(restoreParam)
+    ? restoreParam[0]
+    : restoreParam;
+
+  if (!requestId || typeof requestId !== 'string') {
+    return false;
+  }
 
   try {
-    const savedRequests = localStorage.getItem('savedRequests');
-    if (!savedRequests) return;
+    const historyStr = localStorage.getItem('requestsHistory') || '[]';
+    const historyItems: HistoryItem[] = JSON.parse(historyStr);
 
-    const requests: Record<string, Omit<HistoryItem, 'id'>> = JSON.parse(
-      savedRequests
-    );
-    const requestData = requests[requestId];
-    if (!requestData) return;
+    const requestData = historyItems.find((item) => item.id === requestId);
+    if (!requestData) {
+      return false;
+    }
 
+    dispatch(clearResponse());
     dispatch(setMethod(requestData.method));
     dispatch(setUrl(requestData.url));
     dispatch(setRequestBody(requestData.body || ''));
@@ -33,7 +40,7 @@ export const restoreRequestFromHistory = (
 
     dispatch(
       setHeaders(
-        requestData.headers.map((h) => ({
+        requestData.headers?.map((h) => ({
           id: crypto.randomUUID(),
           key: h.key,
           value: h.value,
@@ -43,7 +50,7 @@ export const restoreRequestFromHistory = (
 
     dispatch(
       setQueryParams(
-        requestData.queryParams.map((p) => ({
+        requestData.queryParams?.map((p) => ({
           id: crypto.randomUUID(),
           key: p.key,
           value: p.value,
@@ -51,7 +58,9 @@ export const restoreRequestFromHistory = (
       )
     );
 
-    searchParams.delete('restore');
-    window.history.replaceState(null, '', `?${searchParams.toString()}`);
-  } catch {}
+    return true;
+  } catch (error) {
+    console.error('Error restoring request from history:', error);
+    return false;
+  }
 };

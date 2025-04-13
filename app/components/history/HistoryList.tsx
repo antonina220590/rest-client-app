@@ -2,7 +2,6 @@
 
 import { useHistoryItems, useClearHistory } from '@/app/store/hooks';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import Spinner from '@/app/components/Spinner';
 import HistoryItem from './HistoryItem';
@@ -28,7 +27,12 @@ export default function HistoryList() {
     }
   };
 
-  if (!isClient) return <Spinner />;
+  if (!isClient)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );
 
   if (items.length === 0) {
     return (
@@ -38,9 +42,9 @@ export default function HistoryList() {
         </h2>
         <p className="mb-6 text-muted-foreground">{t('emptyDescription')}</p>
         <Link href="/rest-client">
-          <Button variant="default" className="px-6">
+          <button className="btn-primary w-full md:w-auto text-sm md:text-base px-3 py-2 md:px-4 md:py-2">
             {t('goToClientButton')}
-          </Button>
+          </button>
         </Link>
       </div>
     );
@@ -52,13 +56,13 @@ export default function HistoryList() {
         <h1 className="text-2xl font-heading font-bold text-foreground">
           {t('title')}
         </h1>
-        <Button
+        <button
           onClick={handleClearHistory}
           aria-label={t('clearButton')}
-          className="font-heading bg-cta-primary hover:bg-cta-hover text-white"
+          className="btn-primary w-full md:w-auto text-sm md:text-base px-3 py-2 md:px-4 md:py-2"
         >
           {t('clearButton')}
-        </Button>
+        </button>
       </div>
 
       <div className="grid gap-3">

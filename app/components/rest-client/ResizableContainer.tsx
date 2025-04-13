@@ -8,20 +8,14 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
-
 import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
-import {
-  KeyValueItem,
-  methods,
-  ResizableContainerProps,
-} from '@/app/interfaces';
+import { KeyValueItem, methods } from '@/app/interfaces';
 import { useSyncUrlWithReduxState } from '@/app/hooks/useSyncUrlWithReduxState';
 import { useRequestNotifications } from '@/app/hooks/useRequestNotifications';
 import { useRequestHistory } from '@/app/store/hooks';
-
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch, RootState } from '@/app/store/store';
 import {
@@ -32,17 +26,30 @@ import {
   setHeaders,
   sendRequest,
   clearResponse,
+  setQueryParams,
 } from '@/app/store/restClientSlice';
 import { decodeFromBase64Url } from './helpers/encoding';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import CodeContainer from './codeGenerator/CodeContainer';
+import { useSearchParams } from 'next/navigation';
+import { restoreRequestFromHistory } from '@/app/components/history/helpers/restoreRequestFromHistory';
+
+interface ResizableContainerProps {
+  initialMethod?: string;
+  initialUrl?: string;
+  initialBody?: string;
+  initialHeaders?: KeyValueItem[];
+  skipInitialization?: boolean;
+}
 
 export default function ResizableContainer({
   initialMethod = 'GET',
+  initialUrl = '',
+  initialBody = '',
+  initialHeaders = [],
+  skipInitialization = false,
 }: ResizableContainerProps) {
-  useRequestHistory();
-
   const {
     isPanelOpen: isCodePanelOpen,
     layoutGroupRef,
@@ -54,9 +61,8 @@ export default function ResizableContainer({
 
   const t = useTranslations('RESTful');
   const dispatch: AppDispatch = useDispatch();
-
+  const searchParams = useSearchParams();
   const [isClient, setIsClient] = useState(false);
-
   const methodFromRedux = useSelector(
     (state: RootState) => state.restClient.method
   );
@@ -73,10 +79,11 @@ export default function ResizableContainer({
     const pathSegments = window.location.pathname.split('/');
     const searchParams = new URLSearchParams(window.location.search);
 
-    let currentMethod = 'GET';
-    let currentUrl = '';
-    let currentBody = '';
-    const currentHeaders: KeyValueItem[] = [];
+    let currentMethod = initialMethod;
+    let currentUrl = initialUrl;
+    let currentBody = initialBody;
+    const currentHeaders: KeyValueItem[] = [...initialHeaders];
+    const currentQueryParams: KeyValueItem[] = [];
 
     if (pathSegments.length >= 3) {
       const methodFromUrl = pathSegments[2].toUpperCase();
@@ -97,31 +104,64 @@ export default function ResizableContainer({
       try {
         currentBody = decodeFromBase64Url(pathSegments[4]);
       } catch {
-        toast.error('Error of decoding Body from path');
+        toast.error(t('Error of decoding Body from path'));
       }
     }
 
     searchParams.forEach((value, key) => {
-      currentHeaders.push({ id: crypto.randomUUID(), key, value });
+      if (key !== 'restore') {
+        currentHeaders.push({ id: crypto.randomUUID(), key, value });
+      }
     });
-
-    if (currentHeaders.length === 0) {
-      currentHeaders.push({ id: crypto.randomUUID(), key: '', value: '' });
-    }
 
     dispatch(setMethod(currentMethod));
     dispatch(setUrl(currentUrl));
     dispatch(setRequestBody(currentBody));
     dispatch(setBodyLanguage('json'));
-    dispatch(setHeaders(currentHeaders));
+    dispatch(
+      setHeaders(
+        currentHeaders.length
+          ? currentHeaders
+          : [{ id: crypto.randomUUID(), key: '', value: '' }]
+      )
+    );
+    dispatch(setQueryParams(currentQueryParams));
     dispatch(clearResponse());
     setIsClient(true);
-  }, [dispatch, t]);
+  }, [
+    dispatch,
+    t,
+    initialMethod,
+    initialUrl,
+    initialBody,
+    initialHeaders,
+    skipInitialization,
+  ]);
 
-  const method = !isClient ? initialMethod : methodFromRedux;
+  // Handle restore from history
+  useEffect(() => {
+    if (!isClient) return;
 
+    const restoreParam = searchParams?.get('restore');
+    if (restoreParam) {
+      restoreRequestFromHistory(
+        new URLSearchParams(window.location.search),
+        dispatch
+      ).then((restored: boolean) => {
+        if (restored) {
+          // Clean up URL after restore
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState(null, '', cleanUrl);
+        }
+      });
+    }
+  }, [searchParams, dispatch, isClient]);
+
+  useRequestHistory();
   useSyncUrlWithReduxState();
   useRequestNotifications();
+
+  const method = !isClient ? initialMethod : methodFromRedux;
 
   const handleMethodChange = useCallback(
     (newMethod: string) => {
