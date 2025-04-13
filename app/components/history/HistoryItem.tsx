@@ -5,8 +5,13 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { HistoryItemProps } from '@/app/interfaces';
 import { cn } from '@/lib/utils';
+import { interpolateVariables } from '@/app/components/variables/helpers/interpolate';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/store/store';
 
 export default function HistoryItem({ item, translations }: HistoryItemProps) {
+  const variables = useSelector((state: RootState) => state.variables);
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(item.url);
     toast.success(translations.copyTooltip);
@@ -20,13 +25,37 @@ export default function HistoryItem({ item, translations }: HistoryItemProps) {
     DELETE: 'bg-chart-1',
   };
 
+  const createRestClientUrl = () => {
+    const params = new URLSearchParams();
+    params.set('method', item.method);
+    params.set('url', item.url);
+
+    item.headers?.forEach((header) => {
+      if (header.key) {
+        params.set(`headers[${header.key}]`, header.value);
+      }
+    });
+
+    item.queryParams?.forEach((param) => {
+      if (param.key) {
+        params.set(`queryParams[${param.key}]`, param.value);
+      }
+    });
+
+    if (item.body) {
+      params.set('body', item.body);
+    }
+    if (item.bodyLanguage) {
+      params.set('bodyLanguage', item.bodyLanguage);
+    }
+
+    return `/rest-client?${params.toString()}`;
+  };
+
   return (
     <div className="p-4 border rounded-lg hover:bg-accent/10 transition-colors border-border">
       <div className="flex justify-between items-start gap-4">
-        <Link
-          href={`/rest-client?method=${item.method}&url=${encodeURIComponent(item.url)}`}
-          className="flex-1 group"
-        >
+        <Link href={createRestClientUrl()} className="flex-1 group">
           <div className="flex items-center gap-3 mb-2">
             <span
               className={cn(
@@ -41,7 +70,7 @@ export default function HistoryItem({ item, translations }: HistoryItemProps) {
             </span>
           </div>
           <p className="text-sm text-foreground font-body group-hover:text-primary transition-colors truncate">
-            {item.url}
+            {interpolateVariables(item.url, variables)}
           </p>
         </Link>
         <div className="flex items-center gap-2">

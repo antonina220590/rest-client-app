@@ -1,11 +1,10 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import type { RootState } from '@/app/interfaces';
 import type { AppDispatch } from './store';
-import { useEffect } from 'react';
 import { addHistoryItem } from '../store/historySlice';
+import { clearHistory, selectSortedHistoryItems } from '../store/historySlice';
 import { selectRestClient } from '../store/restClientSlice';
-import { clearHistory } from './historySlice';
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -63,9 +62,7 @@ export const useRequestHistory = () => {
 };
 
 export const useHistoryItems = () => {
-  return useAppSelector((state) =>
-    [...state.history.items].sort((a, b) => b.timestamp - a.timestamp)
-  );
+  return useAppSelector(selectSortedHistoryItems);
 };
 
 export const useClearHistory = () => {

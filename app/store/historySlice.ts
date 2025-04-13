@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '@/app/interfaces';
 import type { HistoryItem, HistoryState } from '@/app/interfaces';
 
@@ -47,7 +47,11 @@ export const historySlice = createSlice({
 
 export const { addHistoryItem, clearHistory } = historySlice.actions;
 
-export const selectHistoryItems = (state: RootState) =>
-  [...state.history.items].sort((a, b) => b.timestamp - a.timestamp);
+export const selectHistoryItems = (state: RootState) => state.history.items;
+
+export const selectSortedHistoryItems = createSelector(
+  [selectHistoryItems],
+  (items) => [...items].sort((a, b) => b.timestamp - a.timestamp)
+);
 
 export default historySlice.reducer;
