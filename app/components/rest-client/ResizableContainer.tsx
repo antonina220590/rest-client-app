@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
-import UrlInput from './UrlInput';
+import UrlInput from './UrlInput/UrlInput';
 import {
   KeyValueItem,
   methods,

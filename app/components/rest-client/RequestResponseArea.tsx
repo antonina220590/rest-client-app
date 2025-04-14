@@ -16,7 +16,7 @@ import {
 import { type ImperativePanelGroupHandle } from 'react-resizable-panels';
 import { Button } from '@/components/ui/button';
 import TabsComponent from './TabsComponent';
-import RequestBodyEditor from './BodyEditor';
+import RequestBodyEditor from './BodyEditor/BodyEditor';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { BodyLanguage } from '@/app/interfaces';

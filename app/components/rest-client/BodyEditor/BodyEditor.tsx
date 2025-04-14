@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/tooltip';
 import { useTranslations } from 'next-intl';
 import { BodyLanguage, RequestBodyEditorProps } from '@/app/interfaces';
-import { prettifyJsonInput } from './helpers/prettifier';
+import { prettifyJsonInput } from '../helpers/prettifier';
 import { useCodeMirrorExtensions } from '@/app/hooks/useCodeMirrorExtensions';
 
 export default function RequestBodyEditor({
