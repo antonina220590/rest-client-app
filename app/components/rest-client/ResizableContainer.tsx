@@ -122,10 +122,14 @@ export default function ResizableContainer({
     dispatch(setUrl(currentUrl));
     dispatch(setRequestBody(currentBody));
     dispatch(setBodyLanguage('json'));
+    const filteredHeaders = currentHeaders.filter(
+      (h) => h.key.trim() !== '' || h.value.trim() !== ''
+    );
+
     dispatch(
       setHeaders(
-        currentHeaders.length
-          ? currentHeaders
+        filteredHeaders.length > 0
+          ? filteredHeaders
           : [{ id: crypto.randomUUID(), key: '', value: '' }]
       )
     );
