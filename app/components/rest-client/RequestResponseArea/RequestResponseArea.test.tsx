@@ -193,4 +193,61 @@ describe('RequestResponseArea Component', () => {
 
     expect(mockTogglePanel).toHaveBeenCalledTimes(1);
   });
+
+  it('should apply success styling for 2xx status codes', async () => {
+    const preloadedState: Partial<RootState> = {
+      restClient: {
+        ...restClientInitialState,
+        isLoading: false,
+        responseStatus: 201,
+      },
+    };
+    renderWithProviders(<RequestResponseArea />, { preloadedState });
+    await screen.findByTestId('tabs-component');
+    const statusSpan = await screen.findByText((content, element) => {
+      return element?.tagName.toLowerCase() === 'span' && content === '201';
+    });
+
+    expect(statusSpan).toBeInTheDocument();
+    expect(statusSpan).toHaveClass('text-green-600');
+    expect(statusSpan).not.toHaveClass('text-destructive');
+  });
+
+  it('should apply error styling for 4xx/5xx status codes', async () => {
+    const preloadedState: Partial<RootState> = {
+      restClient: {
+        ...restClientInitialState,
+        isLoading: false,
+        responseStatus: 404,
+      },
+    };
+    renderWithProviders(<RequestResponseArea />, { preloadedState });
+    await screen.findByTestId('tabs-component');
+    const statusSpan = await screen.findByText((content, element) => {
+      return element?.tagName.toLowerCase() === 'span' && content === '404';
+    });
+
+    expect(statusSpan).toBeInTheDocument();
+    expect(statusSpan).toHaveClass('text-destructive');
+    expect(statusSpan).not.toHaveClass('text-green-600');
+  });
+
+  it('should apply no specific styling for other status codes', async () => {
+    const preloadedState: Partial<RootState> = {
+      restClient: {
+        ...restClientInitialState,
+        isLoading: false,
+        responseStatus: 302,
+      },
+    };
+    renderWithProviders(<RequestResponseArea />, { preloadedState });
+    await screen.findByTestId('tabs-component');
+    const statusSpan = await screen.findByText((content, element) => {
+      return element?.tagName.toLowerCase() === 'span' && content === '302';
+    });
+
+    expect(statusSpan).toBeInTheDocument();
+    expect(statusSpan).not.toHaveClass('text-destructive');
+    expect(statusSpan).not.toHaveClass('text-green-600');
+  });
 });
