@@ -65,6 +65,7 @@
   },
   "RESTful": {
     "send": "Send",
+    "history": "History",
     "query": "Query",
     "headers": "Headers",
     "body": "Body",
@@ -93,22 +94,44 @@
     "variablesError": "// Variable substitution error"
   },
   "VariablesList": {
-    "title": "Variables",
-    "keyLabel": "Key",
-    "valueLabel": "Value",
-    "keyPlaceholder": "Enter key",
-    "valuePlaceholder": "Enter value",
-    "addButton": "Add Variable",
-    "copyTooltip": "Click to copy",
-    "copiedText": "Copied!",
-    "deleteAriaLabel": "Delete variable",
+  "title": "Variables",
+  "keyLabel": "Key",
+  "valueLabel": "Value",
+  "keyPlaceholder": "Enter key",
+  "valuePlaceholder": "Enter value",
+  "addButton": "Add Variable",
+  "copyTooltip": "Click to copy",
+  "copiedText": "Copied!",
+  "deleteAriaLabel": "Delete variable",
+  "error": {
+    "keyExists": "Variable with key {key} already exists"
+  },
+  "success": {
+    "added": "Variable {key} added",
+    "updated": "Variable {key} updated",
+    "deleted": "Variable {key} deleted"
+  }
+},
+
+  "HistoryList": {
+    "title": "Request History",
+    "clearButton": "Clear History",
+    "emptyTitle": "You haven't executed any requests yet",
+    "emptyDescription": "It's empty here. Try those options:",
+    "goToClientButton": "Go to REST Client",
+    "methodLabel": "Method",
+    "urlLabel": "URL",
+    "timeLabel": "Time",
+    "bodyTypeLabel": "Body Type",
+    "copyLinkTooltip": "Copy request link",
     "error": {
-      "keyExists": "Variable with key {key} already exists"
+      "clearFailed": "Failed to clear history",
+      "deleteFailed": "Failed to delete item"
     },
     "success": {
-      "added": "Variable {key} added",
-      "updated": "Variable {key} updated",
-      "deleted": "Variable {key} deleted"
+      "cleared": "History cleared successfully",
+      "deleted": "Item deleted"
+      
     }
   }
 }
