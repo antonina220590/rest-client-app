@@ -25,7 +25,7 @@ export default function HistoryItem({ item, onDelete }: HistoryItemProps) {
   };
 
   return (
-    <div className="p-3 border rounded-lg hover:bg-accent/10 transition-colors border-border">
+    <div className="p-4 border rounded-lg transition-all duration-200 border-border/50 bg-background/80 hover:bg-accent/40 shadow-sm hover:shadow-md hover:scale-[1.01]">
       <div className="flex justify-between items-start gap-4">
         <Link href={createRestClientUrl()} className="flex-1 group">
           <div className="flex items-center gap-3 mb-2">
@@ -71,7 +71,6 @@ export default function HistoryItem({ item, onDelete }: HistoryItemProps) {
             </svg>
           </button>
         </div>
-        <div className="flex items-center gap-2"></div>
       </div>
     </div>
   );
