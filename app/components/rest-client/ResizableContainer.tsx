@@ -105,7 +105,12 @@ export default function ResizableContainer({
     }
 
     searchParams.forEach((value, key) => {
-      currentHeaders.push({ id: crypto.randomUUID(), key, value });
+      const alreadyExists = currentHeaders.some(
+        (h) => h.key === key && h.value === value
+      );
+      if (!alreadyExists) {
+        currentHeaders.push({ id: crypto.randomUUID(), key, value });
+      }
     });
 
     const qs = new URLSearchParams(currentUrl.split('?')[1] || '');
