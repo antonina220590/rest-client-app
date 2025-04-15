@@ -8,8 +8,9 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const userSession = req.cookies.get('user');
-  const restrictedPaths = ['/history', '/RESTful', '/variables'];
-  const regex = /^\/([a-zA-Z-]{2,3})?(\/(history|RESTful|variables))$/;
+  const restrictedPaths = ['/history', '/GET', '/POST', '/variables'];
+  const regex =
+    /^\/([a-zA-Z-]{2,3})?(\/(history|GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD|variables))(\/.*)?$/;
 
   if (!userSession && restrictedPaths.some((_path) => regex.test(pathname))) {
     return NextResponse.redirect(new URL('/', req.url));
@@ -21,8 +22,14 @@ export function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     '/([a-zA-Z-]{2,3})?/history',
-    '/([a-zA-Z-]{2,3})?/RESTful',
     '/([a-zA-Z-]{2,3})?/variables',
+    '/([a-zA-Z-]{2,3})?/GET/:path*',
+    '/([a-zA-Z-]{2,3})?/POST/:path*',
+    '/([a-zA-Z-]{2,3})?/PUT/:path*',
+    '/([a-zA-Z-]{2,3})?/DELETE/:path*',
+    '/([a-zA-Z-]{2,3})?/PATCH/:path*',
+    '/([a-zA-Z-]{2,3})?/OPTIONS/:path*',
+    '/([a-zA-Z-]{2,3})?/HEAD/:path*',
     '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
   ],
 };
