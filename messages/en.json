@@ -65,6 +65,7 @@
   },
   "RESTful": {
     "send": "Send",
+    "history": "History",
     "query": "Query",
     "headers": "Headers",
     "body": "Body",

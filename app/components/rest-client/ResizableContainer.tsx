@@ -125,7 +125,6 @@ export default function ResizableContainer({
     const filteredHeaders = currentHeaders.filter(
       (h) => h.key.trim() !== '' || h.value.trim() !== ''
     );
-
     dispatch(
       setHeaders(
         filteredHeaders.length > 0
