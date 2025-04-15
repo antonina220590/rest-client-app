@@ -22,7 +22,7 @@ export default function SocialLink({
       target="_blank"
       className="transition-transform duration-300 ease-in-out hover:scale-110"
     >
-      <Image src={src} alt={alt} width={width} height={height} />
+      <Image src={src} alt={alt} width={width} height={height} priority />
     </Link>
   );
 }
