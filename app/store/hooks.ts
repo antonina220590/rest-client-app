@@ -3,7 +3,11 @@ import { useCallback, useRef, useEffect } from 'react';
 import type { RootState } from '@/app/interfaces';
 import type { AppDispatch } from './store';
 import { addHistoryItem } from '../store/historySlice';
-import { clearHistory, selectSortedHistoryItems } from '../store/historySlice';
+import {
+  clearHistory,
+  selectSortedHistoryItems,
+  removeHistoryItem,
+} from '../store/historySlice';
 import { selectRestClient } from '../store/restClientSlice';
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
@@ -68,4 +72,9 @@ export const useHistoryItems = () => {
 export const useClearHistory = () => {
   const dispatch = useAppDispatch();
   return useCallback(() => dispatch(clearHistory()), [dispatch]);
+};
+
+export const useRemoveHistoryItem = () => {
+  const dispatch = useDispatch();
+  return (id: string) => dispatch(removeHistoryItem(id));
 };

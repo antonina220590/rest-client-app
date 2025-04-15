@@ -240,6 +240,7 @@ export interface HistoryState {
 
 export interface HistoryItemProps {
   item: HistoryItem;
+  onDelete: (id: string) => void;
   translations: {
     method: string;
     url: string;

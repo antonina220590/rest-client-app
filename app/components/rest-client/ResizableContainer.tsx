@@ -12,7 +12,11 @@ import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
-import { KeyValueItem, methods } from '@/app/interfaces';
+import {
+  KeyValueItem,
+  methods,
+  ResizableContainerProps,
+} from '@/app/interfaces';
 import { useSyncUrlWithReduxState } from '@/app/hooks/useSyncUrlWithReduxState';
 import { useRequestNotifications } from '@/app/hooks/useRequestNotifications';
 import { useRequestHistory } from '@/app/store/hooks';
@@ -28,27 +32,18 @@ import {
   clearResponse,
   setQueryParams,
 } from '@/app/store/restClientSlice';
-import { decodeFromBase64Url } from './helpers/encoding';
+import { decodeFromBase64Url, encodeToBase64Url } from './helpers/encoding';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import CodeContainer from './codeGenerator/CodeContainer';
 import { useSearchParams } from 'next/navigation';
 import { restoreRequestFromHistory } from '@/app/components/history/helpers/restoreRequestFromHistory';
 
-interface ResizableContainerProps {
-  initialMethod?: string;
-  initialUrl?: string;
-  initialBody?: string;
-  initialHeaders?: KeyValueItem[];
-  skipInitialization?: boolean;
-}
-
 export default function ResizableContainer({
   initialMethod = 'GET',
   initialUrl = '',
   initialBody = '',
   initialHeaders = [],
-  skipInitialization = false,
 }: ResizableContainerProps) {
   const {
     isPanelOpen: isCodePanelOpen,
@@ -128,34 +123,53 @@ export default function ResizableContainer({
     dispatch(setQueryParams(currentQueryParams));
     dispatch(clearResponse());
     setIsClient(true);
-  }, [
-    dispatch,
-    t,
-    initialMethod,
-    initialUrl,
-    initialBody,
-    initialHeaders,
-    skipInitialization,
-  ]);
+  }, [dispatch, t, initialMethod, initialUrl, initialBody, initialHeaders]);
 
   // Handle restore from history
+  const [isRestored, setIsRestored] = useState(false);
+
   useEffect(() => {
+    console.log('useEffect started');
     if (!isClient) return;
 
     const restoreParam = searchParams?.get('restore');
-    if (restoreParam) {
+    console.log('window.location.search:', window.location.search);
+    console.log('searchParams:', searchParams?.toString());
+    console.log('restoreParam from URL:', searchParams?.get('restore'));
+    if (restoreParam && !isRestored) {
+      console.log('Restoration started...');
       restoreRequestFromHistory(
         new URLSearchParams(window.location.search),
         dispatch
-      ).then((restored: boolean) => {
-        if (restored) {
-          // Clean up URL after restore
-          const cleanUrl = window.location.pathname;
-          window.history.replaceState(null, '', cleanUrl);
+      ).then((restoredData) => {
+        if (restoredData) {
+          console.log('Restoration successful:', restoredData);
+
+          const pathSegments = window.location.pathname.split('/');
+          const locale = pathSegments[1] || 'ru';
+
+          const encodedUrl = encodeToBase64Url(restoredData.url);
+          const encodedBody = restoredData.body
+            ? `/${encodeToBase64Url(restoredData.body)}`
+            : '';
+
+          const newPath = `/${locale}/${restoredData.method}/${encodedUrl}${encodedBody}`;
+
+          // Устанавливаем флаг, что данные восстановлены
+          setIsRestored(true);
+
+          // Обновим URL
+          console.log('Updating URL:', newPath);
+          window.history.replaceState(null, '', newPath);
+        } else {
+          console.log('Restore failed, cleaning URL.');
+          const url = new URL(window.location.href);
+          url.searchParams.delete('restore');
+          window.history.replaceState(null, '', url.toString());
         }
       });
     }
-  }, [searchParams, dispatch, isClient]);
+  }, [searchParams, dispatch, isClient, isRestored]);
 
   useRequestHistory();
   useSyncUrlWithReduxState();

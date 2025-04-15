@@ -7,7 +7,7 @@ import { interpolateVariables } from '@/app/components/variables/helpers/interpo
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store/store';
 
-export default function HistoryItem({ item }: HistoryItemProps) {
+export default function HistoryItem({ item, onDelete }: HistoryItemProps) {
   const variables = useSelector((state: RootState) => state.variables);
 
   const methodColors: Record<string, string> = {
@@ -46,7 +46,32 @@ export default function HistoryItem({ item }: HistoryItemProps) {
             {interpolateVariables(item.url, variables)}
           </p>
         </Link>
-        <div className="flex items-center gap-2"></div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onDelete(item.id);
+            }}
+            className="text-destructive hover:text-destructive/80 transition-transform transform hover:scale-110 cursor-pointer"
+            aria-label="Delete history item"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );

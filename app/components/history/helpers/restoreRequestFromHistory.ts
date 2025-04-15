@@ -13,23 +13,23 @@ import { HistoryItem } from '@/app/interfaces';
 export const restoreRequestFromHistory = async (
   searchParams: URLSearchParams,
   dispatch: AppDispatch
-): Promise<boolean> => {
+): Promise<HistoryItem | null> => {
   const restoreParam = searchParams.get('restore');
+  console.log('Restore Param:', restoreParam);
   const requestId = Array.isArray(restoreParam)
     ? restoreParam[0]
     : restoreParam;
 
   if (!requestId || typeof requestId !== 'string') {
-    return false;
+    return null;
   }
 
   try {
     const historyStr = localStorage.getItem('requestsHistory') || '[]';
     const historyItems: HistoryItem[] = JSON.parse(historyStr);
-
     const requestData = historyItems.find((item) => item.id === requestId);
     if (!requestData) {
-      return false;
+      return null;
     }
 
     dispatch(clearResponse());
@@ -58,9 +58,9 @@ export const restoreRequestFromHistory = async (
       )
     );
 
-    return true;
+    return requestData;
   } catch (error) {
     console.error('Error restoring request from history:', error);
-    return false;
+    return null;
   }
 };

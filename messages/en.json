@@ -124,10 +124,13 @@
     "bodyTypeLabel": "Body Type",
     "copyLinkTooltip": "Copy request link",
     "error": {
-      "clearFailed": "Failed to clear history"
+      "clearFailed": "Failed to clear history",
+      "deleteFailed": "Failed to delete item"
     },
     "success": {
-      "cleared": "History cleared successfully"
+      "cleared": "History cleared successfully",
+      "deleted": "Item deleted"
+      
     }
   }
 }

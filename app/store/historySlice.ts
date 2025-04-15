@@ -42,10 +42,14 @@ export const historySlice = createSlice({
         localStorage.removeItem('requestHistory');
       }
     },
+    removeHistoryItem: (state, action: PayloadAction<string>) => {
+      state.items = state.items.filter((item) => item.id !== action.payload);
+    },
   },
 });
 
-export const { addHistoryItem, clearHistory } = historySlice.actions;
+export const { addHistoryItem, clearHistory, removeHistoryItem } =
+  historySlice.actions;
 
 export const selectHistoryItems = (state: RootState) => state.history.items;
 

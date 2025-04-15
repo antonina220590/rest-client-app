@@ -1,18 +1,24 @@
 'use client';
 
-import { useHistoryItems, useClearHistory } from '@/app/store/hooks';
+import {
+  useHistoryItems,
+  useClearHistory,
+  useRemoveHistoryItem,
+} from '@/app/store/hooks';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Spinner from '@/app/components/Spinner';
 import HistoryItem from './HistoryItem';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 
 export default function HistoryList() {
   const t = useTranslations('HistoryList');
   const [isClient, setIsClient] = useState(false);
   const items = useHistoryItems();
   const clearHistory = useClearHistory();
+  const removeHistoryItem = useRemoveHistoryItem();
 
   useEffect(() => {
     setIsClient(true);
@@ -24,6 +30,15 @@ export default function HistoryList() {
       toast.success(t('success.cleared'));
     } catch {
       toast.error(t('error.clearFailed'));
+    }
+  };
+
+  const handleDeleteItem = (id: string) => {
+    try {
+      removeHistoryItem(id);
+      toast.success(t('success.deleted'));
+    } catch {
+      toast.error(t('error.deleteFailed'));
     }
   };
 
@@ -70,6 +85,7 @@ export default function HistoryList() {
           <HistoryItem
             key={item.id}
             item={item}
+            onDelete={handleDeleteItem}
             translations={{
               method: t('methodLabel'),
               url: t('urlLabel'),
@@ -80,6 +96,7 @@ export default function HistoryList() {
           />
         ))}
       </div>
+      <Toaster />
     </div>
   );
 }
