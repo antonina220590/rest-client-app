@@ -3,7 +3,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import QueryInputs from './QueryInput/QueryInput';
+import QueryInputs from '../QueryInputs/QueryInputs';
 import { QueryParam } from '@/app/interfaces';
 
 export default function QueryParamsEditor({

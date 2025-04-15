@@ -1,5 +1,5 @@
 export const dynamic = 'force-dynamic';
-import ResizableContainer from '@/app/components/rest-client/ResizableContainer';
+import ResizableContainer from '@/app/components/rest-client/ResizableContainer/ResizableContainer';
 import { Toaster } from '@/components/ui/sonner';
 import {
   KeyValueItem,

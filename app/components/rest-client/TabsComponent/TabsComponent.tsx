@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import QueryParamsEditor from './QueryParamsEditor';
+import QueryParamsEditor from '../QueryParamsEditor/QueryParamsEditor';
 import { Card } from '@/components/ui/card';
-import RequestBodyEditor from './BodyEditor/BodyEditor';
+import RequestBodyEditor from '../BodyEditor/BodyEditor';
 import { useTranslations } from 'next-intl';
 import { TabsComponentProps } from '@/app/interfaces';
 import VariablesListWrapper from '@/app/components/variables/VariablesListWrapper';

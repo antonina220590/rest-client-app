@@ -11,7 +11,7 @@ import { RootState } from './store';
 import { buildUrlWithParams } from '@/app/components/rest-client/helpers/urlBuilder';
 import { interpolateVariables } from '@/app/components/variables/helpers/interpolate';
 
-const initialState: RestClientState = {
+export const initialState: RestClientState = {
   method: 'GET',
   url: '',
   requestBody: '',
@@ -24,7 +24,6 @@ const initialState: RestClientState = {
   responseStatus: null,
   responseContentType: null,
   activeTab: 'query',
-  isCodePanelOpen: false,
 };
 
 const decodeTemplateVariables = (str: string): string => {
@@ -242,12 +241,6 @@ const restClientSlice = createSlice({
     setActiveTab(state, action: PayloadAction<string>) {
       state.activeTab = action.payload;
     },
-    toggleCodePanel(state) {
-      state.isCodePanelOpen = !state.isCodePanelOpen;
-    },
-    setCodePanelOpen(state, action: PayloadAction<boolean>) {
-      state.isCodePanelOpen = action.payload;
-    },
     clearResponse: (state) => {
       state.isLoading = false;
       state.error = null;
@@ -305,8 +298,6 @@ export const {
   clearResponse,
   clearAllRequestState,
   setActiveTab,
-  toggleCodePanel,
-  setCodePanelOpen,
 } = restClientSlice.actions;
 
 export default restClientSlice.reducer;
@@ -321,5 +312,3 @@ export const selectRestClientResponse = (state: RootState) => ({
   contentType: state.restClient.responseContentType,
   error: state.restClient.error,
 });
-export const selectIsCodePanelOpen = (state: RootState) =>
-  state.restClient.isCodePanelOpen;

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
-import QueryInputs from './QueryInput';
+import QueryInputs from './QueryInputs';
 import type { KeyValueRowProps } from '@/app/interfaces';
 
 vi.mock('lucide-react', () => ({

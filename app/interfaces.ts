@@ -145,7 +145,6 @@ export interface RestClientState {
   responseStatus: number | null;
   responseContentType: string | null;
   activeTab: string;
-  isCodePanelOpen: boolean;
 }
 export interface SendRequestPayload {
   method: string;
