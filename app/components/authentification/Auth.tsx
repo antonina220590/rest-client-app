@@ -126,6 +126,7 @@ const Auth = ({ registration }: AuthProps) => {
             type="password"
             placeholder={t('passwordPlaceholder')}
             register={register('password')}
+            autocomplete={registration ? 'new-password' : 'current-password'}
           >
             {errors.password && (
               <p className="text-red-500 text-sm mb-3">
