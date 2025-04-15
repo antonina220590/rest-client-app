@@ -5,8 +5,13 @@ import { cn } from '@/lib/utils';
 import { interpolateVariables } from '@/app/components/variables/helpers/interpolate';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store/store';
+import { encodeToBase64Url } from '../rest-client/helpers/encoding';
 
-export default function HistoryItem({ item, onDelete }: HistoryItemProps) {
+export default function HistoryItem({
+  item,
+  onDelete,
+  callback,
+}: HistoryItemProps) {
   const variables = useSelector((state: RootState) => state.variables);
 
   const methodColors: Record<string, string> = {
@@ -19,15 +24,22 @@ export default function HistoryItem({ item, onDelete }: HistoryItemProps) {
 
   const createRestClientUrl = () => {
     const params = new URLSearchParams();
-    params.set('restore', item.id);
-
-    return `/${item.method}?${params.toString()}`;
+    item.headers.forEach((header) => {
+      params.set(header.key, header.value);
+    });
+    const body = item.body ? `/${encodeToBase64Url(item.body)}` : '';
+    const urlRestore = `/${item.method}/${encodeToBase64Url(item.url)}${body}?${params.toString()}`;
+    return urlRestore;
   };
 
   return (
     <div className="p-4 border rounded-lg transition-all duration-200 border-border/50 bg-background/80 hover:bg-accent/40 shadow-sm hover:shadow-md hover:scale-[1.01]">
       <div className="flex justify-between items-start gap-4">
-        <Link href={createRestClientUrl()} className="flex-1 group">
+        <Link
+          href={createRestClientUrl()}
+          onClick={callback}
+          className="flex-1 group"
+        >
           <div className="flex items-center gap-3 mb-2">
             <span
               className={cn(

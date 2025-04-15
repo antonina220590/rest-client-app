@@ -13,7 +13,6 @@ import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
 import {
-  HistoryItem,
   KeyValueItem,
   methods,
   ResizableContainerProps,
@@ -76,64 +75,43 @@ export default function ResizableContainer({
     const pathSegments = window.location.pathname.split('/');
     const searchParams = new URLSearchParams(window.location.search);
 
-    const isRestore = searchParams.get('restore');
-    let historyItem: HistoryItem | undefined;
-    if (isRestore) {
-      historyItem = historyItems.find((item) => item.id === isRestore);
-    }
-
     let currentMethod = initialMethod;
     let currentUrl = initialUrl;
     let currentBody = initialBody;
     const currentHeaders: KeyValueItem[] = [...initialHeaders];
     const currentQueryParams: KeyValueItem[] = [];
 
-    if (isRestore) {
-      if (historyItem) {
-        currentMethod = historyItem.method;
-        currentUrl = historyItem.url;
-        currentBody = historyItem.body;
-        currentHeaders.length = 0;
-        const qs = new URLSearchParams(currentUrl.split('?')[1] || '');
-        qs.forEach((value, key) => {
-          if (key !== 'restore') {
-            currentQueryParams.push({ id: crypto.randomUUID(), key, value });
-          }
-        });
-        historyItem.headers.forEach((header) => {
-          currentHeaders.push({ id: crypto.randomUUID(), ...header });
-        });
+    if (pathSegments.length >= 3) {
+      const methodFromUrl = pathSegments[2].toUpperCase();
+      if (methods.includes(methodFromUrl)) {
+        currentMethod = methodFromUrl;
       }
-    } else {
-      if (pathSegments.length >= 3) {
-        const methodFromUrl = pathSegments[2].toUpperCase();
-        if (methods.includes(methodFromUrl)) {
-          currentMethod = methodFromUrl;
-        }
-      }
-
-      if (pathSegments.length >= 4 && pathSegments[3]) {
-        try {
-          currentUrl = decodeFromBase64Url(pathSegments[3]);
-        } catch {
-          toast.error(t('Error of decoding of URL from path'));
-        }
-      }
-
-      if (pathSegments.length >= 5 && pathSegments[4]) {
-        try {
-          currentBody = decodeFromBase64Url(pathSegments[4]);
-        } catch {
-          toast.error(t('Error of decoding Body from path'));
-        }
-      }
-
-      searchParams.forEach((value, key) => {
-        if (key !== 'restore') {
-          currentHeaders.push({ id: crypto.randomUUID(), key, value });
-        }
-      });
     }
+
+    if (pathSegments.length >= 4 && pathSegments[3]) {
+      try {
+        currentUrl = decodeFromBase64Url(pathSegments[3]);
+      } catch {
+        toast.error(t('Error of decoding of URL from path'));
+      }
+    }
+
+    if (pathSegments.length >= 5 && pathSegments[4]) {
+      try {
+        currentBody = decodeFromBase64Url(pathSegments[4]);
+      } catch {
+        toast.error(t('Error of decoding Body from path'));
+      }
+    }
+
+    searchParams.forEach((value, key) => {
+      currentHeaders.push({ id: crypto.randomUUID(), key, value });
+    });
+
+    const qs = new URLSearchParams(currentUrl.split('?')[1] || '');
+    qs.forEach((value, key) => {
+      currentQueryParams.push({ id: crypto.randomUUID(), key, value });
+    });
 
     dispatch(setMethod(currentMethod));
     dispatch(setUrl(currentUrl));

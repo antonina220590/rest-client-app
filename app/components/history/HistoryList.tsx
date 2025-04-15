@@ -9,12 +9,41 @@ import HistoryItem from './HistoryItem';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
+import { AppDispatch } from '@/app/store/store';
+import { useDispatch } from 'react-redux';
+import {
+  setHeaders,
+  setMethod,
+  setRequestBody,
+  setUrl,
+} from '@/app/store/restClientSlice';
+import { HistoryItem as HistoryItemType } from '@/app/interfaces';
 
 export default function HistoryList() {
   const t = useTranslations('HistoryList');
   const items = useHistoryItems();
   const clearHistory = useClearHistory();
   const deleteHistoryItem = useDeleteHistoryItem();
+
+  const dispatch: AppDispatch = useDispatch();
+
+  const handleLinkCallback = (item: HistoryItemType) => {
+    dispatch(setMethod(item.method));
+    dispatch(setUrl(item.url));
+    dispatch(setRequestBody(item.body));
+    dispatch(
+      setHeaders(
+        item.headers.length
+          ? []
+          : item.headers.map((header) => ({
+              id: crypto.randomUUID(),
+              key: header.key,
+              value: header.value,
+            }))
+      )
+    );
+  };
+
   const handleClearHistory = () => {
     try {
       clearHistory();
@@ -77,6 +106,7 @@ export default function HistoryList() {
               bodyType: t('bodyTypeLabel'),
               copyTooltip: t('copyLinkTooltip'),
             }}
+            callback={() => handleLinkCallback(item)}
           />
         ))}
       </div>

@@ -13,6 +13,7 @@ export function useSyncUrlWithReduxState() {
     (state: RootState) => state.restClient.requestBody
   );
   const headers = useSelector((state: RootState) => state.restClient.headers);
+
   const debouncedUrl = useDebounce(url, 500);
   const debouncedRequestBody = useDebounce(requestBody, 500);
 
@@ -21,8 +22,6 @@ export function useSyncUrlWithReduxState() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (searchParams?.get('restore')) return;
-
     const encodedUrl = debouncedUrl
       ? encodeToBase64Url(debouncedUrl)
       : undefined;
