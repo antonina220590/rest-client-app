@@ -15,7 +15,6 @@ export const restoreRequestFromHistory = async (
   dispatch: AppDispatch
 ): Promise<HistoryItem | null> => {
   const restoreParam = searchParams.get('restore');
-  console.log('Restore Param:', restoreParam);
   const requestId = Array.isArray(restoreParam)
     ? restoreParam[0]
     : restoreParam;
@@ -59,8 +58,7 @@ export const restoreRequestFromHistory = async (
     );
 
     return requestData;
-  } catch (error) {
-    console.error('Error restoring request from history:', error);
+  } catch {
     return null;
   }
 };

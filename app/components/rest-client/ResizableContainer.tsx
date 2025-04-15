@@ -129,22 +129,15 @@ export default function ResizableContainer({
   const [isRestored, setIsRestored] = useState(false);
 
   useEffect(() => {
-    console.log('useEffect started');
     if (!isClient) return;
 
     const restoreParam = searchParams?.get('restore');
-    console.log('window.location.search:', window.location.search);
-    console.log('searchParams:', searchParams?.toString());
-    console.log('restoreParam from URL:', searchParams?.get('restore'));
     if (restoreParam && !isRestored) {
-      console.log('Restoration started...');
       restoreRequestFromHistory(
         new URLSearchParams(window.location.search),
         dispatch
       ).then((restoredData) => {
         if (restoredData) {
-          console.log('Restoration successful:', restoredData);
-
           const pathSegments = window.location.pathname.split('/');
           const locale = pathSegments[1] || 'ru';
 
@@ -155,14 +148,10 @@ export default function ResizableContainer({
 
           const newPath = `/${locale}/${restoredData.method}/${encodedUrl}${encodedBody}`;
 
-          // Устанавливаем флаг, что данные восстановлены
           setIsRestored(true);
 
-          // Обновим URL
-          console.log('Updating URL:', newPath);
           window.history.replaceState(null, '', newPath);
         } else {
-          console.log('Restore failed, cleaning URL.');
           const url = new URL(window.location.href);
           url.searchParams.delete('restore');
           window.history.replaceState(null, '', url.toString());
