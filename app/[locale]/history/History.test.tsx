@@ -1,6 +1,19 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import History from './page';
 import { IntlProvider } from 'next-intl';
+import { vi } from 'vitest';
+import React from 'react';
+import {
+  useHistoryItems,
+  useClearHistory,
+  useDeleteHistoryItem,
+} from '@/app/store/hooks';
+
+vi.mock('@/app/store/hooks', () => ({
+  useHistoryItems: vi.fn(),
+  useClearHistory: vi.fn(),
+  useDeleteHistoryItem: vi.fn(),
+}));
 
 const messages = {
   HistoryList: {
@@ -32,31 +45,45 @@ const renderWithIntl = (ui: React.ReactElement) =>
     </IntlProvider>
   );
 
-describe('History Component', () => {
-  it('should render empty title when history is empty', () => {
+describe('History Page (with lazy-loaded HistoryList)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useHistoryItems).mockReturnValue([]);
+    vi.mocked(useClearHistory).mockReturnValue(vi.fn());
+    vi.mocked(useDeleteHistoryItem).mockReturnValue(vi.fn());
+  });
+
+  it('should render empty title when history is empty', async () => {
     renderWithIntl(<History />);
-    const heading = screen.getByRole('heading', {
+    const heading = await screen.findByRole('heading', {
       name: /you haven't executed any requests yet/i,
     });
     expect(heading).toBeInTheDocument();
   });
 
-  it('should render the empty description paragraph', () => {
+  it('should render the empty description paragraph', async () => {
     renderWithIntl(<History />);
-    const paragraph = screen.getByText(/it's empty here. try those options:/i);
+    const paragraph = await screen.findByText(
+      /it's empty here. try those options:/i
+    );
     expect(paragraph).toBeInTheDocument();
   });
 
-  it('should render the go to client button', () => {
+  it('should render the go to client button', async () => {
     renderWithIntl(<History />);
-    const button = screen.getByRole('button', {
+    const button = await screen.findByRole('button', {
       name: /go to rest client/i,
     });
     expect(button).toBeInTheDocument();
   });
 
-  it('should render centered container', () => {
+  it('should render centered container for empty state', async () => {
     const { container } = renderWithIntl(<History />);
+    await waitFor(() => {
+      expect(
+        screen.getByText(/you haven't executed any requests yet/i)
+      ).toBeInTheDocument();
+    });
     const div = container.querySelector('.text-center');
     expect(div).toBeInTheDocument();
   });

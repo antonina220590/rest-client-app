@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useDebounce } from './useDebounce';
 import { encodeToBase64Url } from '@/app/components/rest-client/helpers/encoding';
 import type { RootState } from '@/app/store/store';
+import { useSearchParams } from 'next/navigation';
 
 export function useSyncUrlWithReduxState() {
   const method = useSelector((state: RootState) => state.restClient.method);
@@ -17,7 +18,11 @@ export function useSyncUrlWithReduxState() {
 
   const pathname = usePathname();
 
+  const searchParams = useSearchParams();
+
   useEffect(() => {
+    if (searchParams?.get('restore')) return;
+
     const encodedUrl = debouncedUrl
       ? encodeToBase64Url(debouncedUrl)
       : undefined;
@@ -63,5 +68,6 @@ export function useSyncUrlWithReduxState() {
     headers,
     pathname,
     requestBody,
+    searchParams,
   ]);
 }

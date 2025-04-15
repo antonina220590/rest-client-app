@@ -1,5 +1,4 @@
 'use client';
-
 import Link from 'next/link';
 import { HistoryItemProps } from '@/app/interfaces';
 import { cn } from '@/lib/utils';
@@ -22,7 +21,7 @@ export default function HistoryItem({ item, onDelete }: HistoryItemProps) {
     const params = new URLSearchParams();
     params.set('restore', item.id);
 
-    return `/rest-client?${params.toString()}`;
+    return `/${item.method}?${params.toString()}`;
   };
 
   return (
@@ -72,6 +71,7 @@ export default function HistoryItem({ item, onDelete }: HistoryItemProps) {
             </svg>
           </button>
         </div>
+        <div className="flex items-center gap-2"></div>
       </div>
     </div>
   );

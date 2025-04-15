@@ -1,13 +1,10 @@
 'use client';
-
 import {
   useHistoryItems,
   useClearHistory,
-  useRemoveHistoryItem,
+  useDeleteHistoryItem,
 } from '@/app/store/hooks';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import Spinner from '@/app/components/Spinner';
 import HistoryItem from './HistoryItem';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -15,15 +12,9 @@ import { Toaster } from '@/components/ui/sonner';
 
 export default function HistoryList() {
   const t = useTranslations('HistoryList');
-  const [isClient, setIsClient] = useState(false);
   const items = useHistoryItems();
   const clearHistory = useClearHistory();
-  const removeHistoryItem = useRemoveHistoryItem();
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
+  const deleteHistoryItem = useDeleteHistoryItem();
   const handleClearHistory = () => {
     try {
       clearHistory();
@@ -35,19 +26,12 @@ export default function HistoryList() {
 
   const handleDeleteItem = (id: string) => {
     try {
-      removeHistoryItem(id);
+      deleteHistoryItem(id);
       toast.success(t('success.deleted'));
     } catch {
       toast.error(t('error.deleteFailed'));
     }
   };
-
-  if (!isClient)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner />
-      </div>
-    );
 
   if (items.length === 0) {
     return (

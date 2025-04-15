@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { PanelLeftClose, PanelRightClose } from 'lucide-react';
 import {
   ResizableHandle,
@@ -13,6 +13,7 @@ import { RequestResponseArea } from './RequestResponseArea';
 import MethodSelector from './MethodSelector';
 import UrlInput from './UrlInput';
 import {
+  HistoryItem,
   KeyValueItem,
   methods,
   ResizableContainerProps,
@@ -32,12 +33,10 @@ import {
   clearResponse,
   setQueryParams,
 } from '@/app/store/restClientSlice';
-import { decodeFromBase64Url, encodeToBase64Url } from './helpers/encoding';
+import { decodeFromBase64Url } from './helpers/encoding';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import CodeContainer from './codeGenerator/CodeContainer';
-import { useSearchParams } from 'next/navigation';
-import { restoreRequestFromHistory } from '@/app/components/history/helpers/restoreRequestFromHistory';
 
 export default function ResizableContainer({
   initialMethod = 'GET',
@@ -56,7 +55,6 @@ export default function ResizableContainer({
 
   const t = useTranslations('RESTful');
   const dispatch: AppDispatch = useDispatch();
-  const searchParams = useSearchParams();
   const [isClient, setIsClient] = useState(false);
   const methodFromRedux = useSelector(
     (state: RootState) => state.restClient.method
@@ -70,9 +68,19 @@ export default function ResizableContainer({
     (state: RootState) => state.restClient.queryParams
   );
 
+  const historyItems = useRef(
+    useSelector((state: RootState) => state.history.items)
+  ).current;
+
   useEffect(() => {
     const pathSegments = window.location.pathname.split('/');
     const searchParams = new URLSearchParams(window.location.search);
+
+    const isRestore = searchParams.get('restore');
+    let historyItem: HistoryItem | undefined;
+    if (isRestore) {
+      historyItem = historyItems.find((item) => item.id === isRestore);
+    }
 
     let currentMethod = initialMethod;
     let currentUrl = initialUrl;
@@ -80,34 +88,52 @@ export default function ResizableContainer({
     const currentHeaders: KeyValueItem[] = [...initialHeaders];
     const currentQueryParams: KeyValueItem[] = [];
 
-    if (pathSegments.length >= 3) {
-      const methodFromUrl = pathSegments[2].toUpperCase();
-      if (methods.includes(methodFromUrl)) {
-        currentMethod = methodFromUrl;
+    if (isRestore) {
+      if (historyItem) {
+        currentMethod = historyItem.method;
+        currentUrl = historyItem.url;
+        currentBody = historyItem.body;
+        currentHeaders.length = 0;
+        const qs = new URLSearchParams(currentUrl.split('?')[1] || '');
+        qs.forEach((value, key) => {
+          if (key !== 'restore') {
+            currentQueryParams.push({ id: crypto.randomUUID(), key, value });
+          }
+        });
+        historyItem.headers.forEach((header) => {
+          currentHeaders.push({ id: crypto.randomUUID(), ...header });
+        });
       }
-    }
+    } else {
+      if (pathSegments.length >= 3) {
+        const methodFromUrl = pathSegments[2].toUpperCase();
+        if (methods.includes(methodFromUrl)) {
+          currentMethod = methodFromUrl;
+        }
+      }
 
-    if (pathSegments.length >= 4 && pathSegments[3]) {
-      try {
-        currentUrl = decodeFromBase64Url(pathSegments[3]);
-      } catch {
-        toast.error(t('Error of decoding of URL from path'));
+      if (pathSegments.length >= 4 && pathSegments[3]) {
+        try {
+          currentUrl = decodeFromBase64Url(pathSegments[3]);
+        } catch {
+          toast.error(t('Error of decoding of URL from path'));
+        }
       }
-    }
 
-    if (pathSegments.length >= 5 && pathSegments[4]) {
-      try {
-        currentBody = decodeFromBase64Url(pathSegments[4]);
-      } catch {
-        toast.error(t('Error of decoding Body from path'));
+      if (pathSegments.length >= 5 && pathSegments[4]) {
+        try {
+          currentBody = decodeFromBase64Url(pathSegments[4]);
+        } catch {
+          toast.error(t('Error of decoding Body from path'));
+        }
       }
-    }
 
-    searchParams.forEach((value, key) => {
-      if (key !== 'restore') {
-        currentHeaders.push({ id: crypto.randomUUID(), key, value });
-      }
-    });
+      searchParams.forEach((value, key) => {
+        if (key !== 'restore') {
+          currentHeaders.push({ id: crypto.randomUUID(), key, value });
+        }
+      });
+    }
 
     dispatch(setMethod(currentMethod));
     dispatch(setUrl(currentUrl));
@@ -123,44 +149,17 @@ export default function ResizableContainer({
     dispatch(setQueryParams(currentQueryParams));
     dispatch(clearResponse());
     setIsClient(true);
-  }, [dispatch, t, initialMethod, initialUrl, initialBody, initialHeaders]);
+  }, [
+    dispatch,
+    t,
+    initialMethod,
+    initialUrl,
+    initialBody,
+    initialHeaders,
+    historyItems,
+  ]);
 
-  // Handle restore from history
-  const [isRestored, setIsRestored] = useState(false);
-
-  useEffect(() => {
-    if (!isClient) return;
-
-    const restoreParam = searchParams?.get('restore');
-    if (restoreParam && !isRestored) {
-      restoreRequestFromHistory(
-        new URLSearchParams(window.location.search),
-        dispatch
-      ).then((restoredData) => {
-        if (restoredData) {
-          const pathSegments = window.location.pathname.split('/');
-          const locale = pathSegments[1] || 'ru';
-
-          const encodedUrl = encodeToBase64Url(restoredData.url);
-          const encodedBody = restoredData.body
-            ? `/${encodeToBase64Url(restoredData.body)}`
-            : '';
-
-          const newPath = `/${locale}/${restoredData.method}/${encodedUrl}${encodedBody}`;
-
-          setIsRestored(true);
-
-          window.history.replaceState(null, '', newPath);
-        } else {
-          const url = new URL(window.location.href);
-          url.searchParams.delete('restore');
-          window.history.replaceState(null, '', url.toString());
-        }
-      });
-    }
-  }, [searchParams, dispatch, isClient, isRestored]);
-
-  useRequestHistory();
+  useRequestHistory(historyItems);
   useSyncUrlWithReduxState();
   useRequestNotifications();
 

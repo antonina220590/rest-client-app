@@ -36,20 +36,30 @@ export const historySlice = createSlice({
         localStorage.setItem('requestHistory', JSON.stringify(state.items));
       }
     },
+    removeRepeatedHistoryItem: (state, action: PayloadAction<string>) => {
+      state.items = state.items.filter((item) => item.id !== action.payload);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('requestHistory', JSON.stringify(state.items));
+      }
+    },
     clearHistory: (state) => {
       state.items = [];
       if (typeof window !== 'undefined') {
         localStorage.removeItem('requestHistory');
       }
     },
-    removeHistoryItem: (state, action: PayloadAction<string>) => {
+    deleteHistoryItem: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((item) => item.id !== action.payload);
     },
   },
 });
 
-export const { addHistoryItem, clearHistory, removeHistoryItem } =
-  historySlice.actions;
+export const {
+  addHistoryItem,
+  clearHistory,
+  removeRepeatedHistoryItem,
+  deleteHistoryItem,
+} = historySlice.actions;
 
 export const selectHistoryItems = (state: RootState) => state.history.items;
 
