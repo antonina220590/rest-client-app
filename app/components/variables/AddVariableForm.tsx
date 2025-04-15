@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -37,9 +38,6 @@ export const AddVariableForm = ({
     <div className="bg-accent p-3 md:p-4 rounded-lg shadow">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
         <div>
-          <label className="block text-sm font-medium mb-1 text-bg-secondary">
-            {t('keyLabel')}
-          </label>
           <input
             value={newVar.key}
             onChange={(e) => setNewVar({ ...newVar, key: e.target.value })}
@@ -47,11 +45,7 @@ export const AddVariableForm = ({
             placeholder={t('keyPlaceholder')}
           />
         </div>
-
         <div>
-          <label className="block text-sm font-medium mb-1 text-bg-secondary">
-            {t('valueLabel')}
-          </label>
           <input
             value={newVar.value}
             onChange={(e) => setNewVar({ ...newVar, value: e.target.value })}

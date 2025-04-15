@@ -65,6 +65,7 @@
   },
   "RESTful": {
     "send": "Отправить",
+    "history": "History",
     "query": "Параметры",
     "headers": "Заголовки",
     "body": "Тело",
@@ -93,22 +94,42 @@
     "variablesError": "// Ошибка подстановки переменных"
   },
   "VariablesList": {
-    "title": "Переменные",
-    "keyLabel": "Ключ",
-    "valueLabel": "Значение",
-    "keyPlaceholder": "Введите ключ",
-    "valuePlaceholder": "Введите значение",
-    "addButton": "Добавить переменную",
-    "copyTooltip": "Кликните для копирования",
-    "copiedText": "Скопировано!",
-    "deleteAriaLabel": "Удалить переменную",
+  "title": "Переменные",
+  "keyLabel": "Ключ",
+  "valueLabel": "Значение",
+  "keyPlaceholder": "Введите ключ",
+  "valuePlaceholder": "Введите значение",
+  "addButton": "Добавить переменную",
+  "copyTooltip": "Кликните для копирования",
+  "copiedText": "Скопировано!",
+  "deleteAriaLabel": "Удалить переменную",
+  "error": {
+    "keyExists": "Переменная с ключом {key} уже существует"
+  },
+  "success": {
+    "added": "Переменная {key} добавлена",
+    "updated": "Переменная {key} обновлена",
+    "deleted": "Переменная {key} удалена"
+  }
+},
+  "HistoryList": {
+    "title": "История запросов",
+    "clearButton": "Очистить историю",
+    "emptyTitle": "Вы еще не выполняли запросов",
+    "emptyDescription": "Здесь пока пусто. Попробуйте:",
+    "goToClientButton": "Перейти в REST клиент",
+    "methodLabel": "Метод",
+    "urlLabel": "URL",
+    "timeLabel": "Время",
+    "bodyTypeLabel": "Тип тела",
+    "copyLinkTooltip": "Копировать ссылку запроса",
     "error": {
-      "keyExists": "Переменная с ключом {key} уже существует"
+      "clearFailed": "Не удалось очистить историю",
+      "deleteFailed": "Запрос не удален"
     },
     "success": {
-      "added": "Переменная {key} добавлена",
-      "updated": "Переменная {key} обновлена",
-      "deleted": "Переменная {key} удалена"
+      "cleared": "История успешно очищена",
+      "deleted": "Запрос удален"
     }
   }
 }

@@ -1,7 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import variablesReducer from './variablesSlice';
 import restClientReducer from './restClientSlice';
-import { PreloadedState } from './types';
+import historyReducer from './historySlice';
+import { PreloadedState } from '@/app/interfaces';
 
 const loadState = () => {
   if (typeof window === 'undefined') return undefined;
@@ -18,6 +19,7 @@ export const store = configureStore({
   reducer: {
     variables: variablesReducer,
     restClient: restClientReducer,
+    history: historyReducer,
   },
   preloadedState: loadState() as PreloadedState | undefined,
 });

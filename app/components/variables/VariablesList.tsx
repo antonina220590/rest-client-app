@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
@@ -6,14 +7,13 @@ import {
   deleteVariable,
   updateVariable,
 } from '@/app/store/variablesSlice';
-import dynamic from 'next/dynamic';
 import { VariableItem } from './VariableItem';
 import { AddVariableForm } from './AddVariableForm';
-import { Variable } from '@/app/store/types';
+import { Variable } from '@/app/interfaces';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
-const VariablesListContent = () => {
+export const VariablesListContent = () => {
   const variables = useAppSelector((state) => state.variables);
   const dispatch = useAppDispatch();
   const t = useTranslations('VariablesList');
@@ -103,11 +103,4 @@ const VariablesListContent = () => {
   );
 };
 
-export default dynamic(() => Promise.resolve(VariablesListContent), {
-  loading: () => (
-    <div className="p-4 md:p-6 w-full max-w-4xl mx-auto">
-      Loading variables...
-    </div>
-  ),
-  ssr: false,
-});
+export default VariablesListContent;
