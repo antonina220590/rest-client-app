@@ -46,7 +46,7 @@ export default function Header() {
             text={t('signOut')}
             onClick={() => {
               signOut(auth);
-              deleteCookie('user');
+              deleteCookie('user', { path: '/' });
               router.push('/sign-in');
             }}
           />

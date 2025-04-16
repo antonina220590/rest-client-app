@@ -74,7 +74,7 @@ const Auth = ({ registration }: AuthProps) => {
           return;
         }
       }
-      setCookie('user', 'true', {
+      setCookie('user', {
         path: '/',
       });
 
