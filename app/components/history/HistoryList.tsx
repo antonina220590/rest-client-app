@@ -69,7 +69,7 @@ export default function HistoryList() {
           {t('emptyTitle')}
         </h2>
         <p className="mb-6 text-muted-foreground">{t('emptyDescription')}</p>
-        <Link href="/rest-client">
+        <Link href="/GET">
           <button className="btn-primary w-full md:w-auto text-sm md:text-base px-3 py-2 md:px-4 md:py-2">
             {t('goToClientButton')}
           </button>
