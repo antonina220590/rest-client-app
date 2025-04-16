@@ -1,5 +1,5 @@
 export const dynamic = 'force-dynamic';
-import ResizableContainer from '@/app/components/rest-client/ResizableContainer/ResizableContainer';
+import ResizableContainerLoader from '@/app/components/rest-client/ResizableContainer/ResizableContainerLoader';
 import { Toaster } from '@/components/ui/sonner';
 import {
   KeyValueItem,
@@ -70,7 +70,7 @@ export default async function RESTful({
         <div className="text-center">
           <div className="flex flex-col h-full mx-auto gap-2">
             <div className="flex h-[85dvh] w-full">
-              <ResizableContainer
+              <ResizableContainerLoader
                 initialMethod={initialMethod}
                 initialUrl={initialUrl}
                 initialBody={initialBody}
