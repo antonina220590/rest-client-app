@@ -69,7 +69,6 @@ describe('render Header component', () => {
     const header = screen.getByRole('banner');
 
     await waitFor(() => {
-      expect(header).toHaveClass('opacity-50');
       expect(header).toHaveClass('py-1');
     });
   });

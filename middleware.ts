@@ -20,6 +20,9 @@ export function middleware(req: NextRequest) {
   ];
   const regex =
     /^\/([a-zA-Z-]{2,3})?(\/(history|GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD))(\/.*)?$/;
+  if (userSession?.value && /\/(sign-in|sign-up)/.test(pathname)) {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
 
   if (!userSession && restrictedPaths.some((_path) => regex.test(pathname))) {
     return NextResponse.redirect(new URL('/', req.url));
