@@ -57,15 +57,6 @@ describe('useGeneratedCode Hook', () => {
       }
     );
     vi.mocked(useSelector).mockReturnValue([] as Variable[]);
-    Object.defineProperty(window, 'localStorage', {
-      value: {
-        setItem: vi.fn(),
-        getItem: vi.fn(),
-        removeItem: vi.fn(),
-        clear: vi.fn(),
-      },
-      writable: true,
-    });
   });
 
   afterEach(() => {
