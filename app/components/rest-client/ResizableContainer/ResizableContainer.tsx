@@ -9,9 +9,9 @@ import {
 } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
 import { useResizableLayout } from '@/app/hooks/useResizableLayout';
-import { RequestResponseArea } from './RequestResponseArea';
-import MethodSelector from './MethodSelector';
-import UrlInput from './UrlInput';
+import { RequestResponseArea } from '../RequestResponseArea/RequestResponseArea';
+import MethodSelector from '../MethodSelector/MethodSelector';
+import UrlInput from '../UrlInput/UrlInput';
 import {
   KeyValueItem,
   methods,
@@ -32,10 +32,9 @@ import {
   clearResponse,
   setQueryParams,
 } from '@/app/store/restClientSlice';
-import { decodeFromBase64Url } from './helpers/encoding';
+import { decodeFromBase64Url } from '../helpers/encoding';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
-import CodeContainer from './codeGenerator/CodeContainer';
+import CodeContainer from '../codeGenerator/CodeContainer';
 
 export default function ResizableContainer({
   initialMethod = 'GET',
@@ -52,7 +51,6 @@ export default function ResizableContainer({
     CLOSED_LAYOUT,
   } = useResizableLayout(false);
 
-  const t = useTranslations('RESTful');
   const dispatch: AppDispatch = useDispatch();
   const [isClient, setIsClient] = useState(false);
   const methodFromRedux = useSelector(
@@ -92,7 +90,7 @@ export default function ResizableContainer({
       try {
         currentUrl = decodeFromBase64Url(pathSegments[3]);
       } catch {
-        toast.error(t('Error of decoding of URL from path'));
+        toast.error('Error of decoding of URL from path');
       }
     }
 
@@ -100,7 +98,7 @@ export default function ResizableContainer({
       try {
         currentBody = decodeFromBase64Url(pathSegments[4]);
       } catch {
-        toast.error(t('Error of decoding Body from path'));
+        toast.error('Error of decoding Body from path');
       }
     }
 
@@ -135,15 +133,7 @@ export default function ResizableContainer({
     dispatch(setQueryParams(currentQueryParams));
     dispatch(clearResponse());
     setIsClient(true);
-  }, [
-    dispatch,
-    t,
-    initialMethod,
-    initialUrl,
-    initialBody,
-    initialHeaders,
-    historyItems,
-  ]);
+  }, [dispatch, initialBody, initialHeaders, initialMethod, initialUrl]);
 
   useRequestHistory(historyItems);
   useSyncUrlWithReduxState();
@@ -178,9 +168,9 @@ export default function ResizableContainer({
     try {
       await dispatch(sendRequest(payload));
     } catch {
-      toast.error(t('requestFailed'));
+      toast.error('requestFailed');
     }
-  }, [methodFromRedux, url, headers, queryParams, requestBody, dispatch, t]);
+  }, [methodFromRedux, url, headers, queryParams, requestBody, dispatch]);
 
   return (
     <div className="relative w-full h-full">

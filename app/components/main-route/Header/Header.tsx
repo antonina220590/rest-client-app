@@ -20,7 +20,7 @@ export default function Header() {
   const [scroll, setScroll] = useState<boolean>(false);
 
   useEffect(() => {
-    const handleScroll = () => setScroll(window.scrollY > 50);
+    const handleScroll = () => setScroll(window.scrollY !== 0);
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -30,7 +30,7 @@ export default function Header() {
 
   return (
     <header
-      className={`transition-all duration-300 ${scroll ? 'opacity-50 py-1' : 'opacity-100 py-4'}`}
+      className={`transition-all duration-300 ${scroll ? 'py-1' : 'py-4'}`}
     >
       <h1>
         <Link href="/" className="animate-text-change">
@@ -46,7 +46,7 @@ export default function Header() {
             text={t('signOut')}
             onClick={() => {
               signOut(auth);
-              deleteCookie('user');
+              deleteCookie('user', { path: '/' });
               router.push('/sign-in');
             }}
           />

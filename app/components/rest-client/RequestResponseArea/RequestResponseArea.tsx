@@ -1,26 +1,18 @@
 'use client';
 
-import React, {
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-  useEffect,
-} from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
-import { type ImperativePanelGroupHandle } from 'react-resizable-panels';
 import { Button } from '@/components/ui/button';
-import TabsComponent from './TabsComponent';
-import RequestBodyEditor from './BodyEditor';
+import TabsComponent from '../TabsComponent/TabsComponent';
+import RequestBodyEditor from '../BodyEditor/BodyEditor';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 import { BodyLanguage } from '@/app/interfaces';
-import Spinner from '../Spinner';
+import Spinner from '../../Spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch, RootState } from '@/app/store/store';
 import {
@@ -34,25 +26,33 @@ import {
   deleteHeader,
   setRequestBody,
   setBodyLanguage,
+  setActiveTab,
 } from '@/app/store/restClientSlice';
-
-const VERTICAL_COLLAPSED_SIZE = 2;
-const VERTICAL_OPEN_LAYOUT: number[] = [40, 60];
-const VERTICAL_COLLAPSED_LAYOUT: number[] = [
-  VERTICAL_COLLAPSED_SIZE,
-  100 - VERTICAL_COLLAPSED_SIZE,
-];
+import useFormattedResponse from '@/app/hooks/useFormattedResponse';
+import useCollapsiblePanel from '@/app/hooks/useCollapsiblePanel';
 
 export function RequestResponseArea() {
-  const [isRequestPanelCollapsed, setIsRequestPanelCollapsed] = useState(false);
-  const verticalLayoutGroupRef = useRef<ImperativePanelGroupHandle>(null);
   const [isMounted, setIsMounted] = useState(false);
   const dispatch: AppDispatch = useDispatch();
+
+  const {
+    isCollapsed: isRequestPanelCollapsed,
+    panelGroupRef: verticalLayoutGroupRef,
+    togglePanel: toggleRequestPanel,
+    openPanel: expandRequestPanel,
+    syncPanelState,
+    OPEN_LAYOUT: VERTICAL_OPEN_LAYOUT,
+    COLLAPSED_LAYOUT: VERTICAL_COLLAPSED_LAYOUT,
+    COLLAPSED_SIZE: VERTICAL_COLLAPSED_SIZE,
+  } = useCollapsiblePanel(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  const activeTab = useSelector(
+    (state: RootState) => state.restClient.activeTab
+  );
   const queryParams = useSelector(
     (state: RootState) => state.restClient.queryParams
   );
@@ -63,12 +63,6 @@ export function RequestResponseArea() {
   const bodyLanguage = useSelector(
     (state: RootState) => state.restClient.bodyLanguage
   );
-  const responseData = useSelector(
-    (state: RootState) => state.restClient.responseData
-  );
-  const responseContentType = useSelector(
-    (state: RootState) => state.restClient.responseContentType
-  );
   const responseStatus = useSelector(
     (state: RootState) => state.restClient.responseStatus
   );
@@ -76,89 +70,7 @@ export function RequestResponseArea() {
     (state: RootState) => state.restClient.isLoading
   );
 
-  const expandRequestPanel = useCallback(() => {
-    const panelGroup = verticalLayoutGroupRef.current;
-    if (panelGroup && isRequestPanelCollapsed) {
-      panelGroup.setLayout(VERTICAL_OPEN_LAYOUT);
-    }
-  }, [isRequestPanelCollapsed]);
-
-  const toggleRequestPanel = () => {
-    const panelGroup = verticalLayoutGroupRef.current;
-    if (panelGroup) {
-      if (isRequestPanelCollapsed) {
-        panelGroup.setLayout(VERTICAL_OPEN_LAYOUT);
-      } else {
-        panelGroup.setLayout(VERTICAL_COLLAPSED_LAYOUT);
-      }
-      setIsRequestPanelCollapsed(!isRequestPanelCollapsed);
-    }
-  };
-
-  const syncRequestPanelState = (isCollapsed: boolean) => {
-    if (isCollapsed !== isRequestPanelCollapsed) {
-      setIsRequestPanelCollapsed(isCollapsed);
-    }
-  };
-
-  const { displayValue, displayLanguage } = useMemo(() => {
-    if (isLoading) {
-      return { displayValue: '', displayLanguage: 'plaintext' as BodyLanguage };
-    }
-
-    if (responseData !== null && responseData !== undefined) {
-      const isErrorStatus = responseStatus !== null && responseStatus >= 400;
-
-      if (isErrorStatus) {
-        try {
-          const parsedError = JSON.parse(responseData);
-          if (
-            typeof parsedError === 'object' &&
-            parsedError !== null &&
-            typeof parsedError.error === 'string'
-          ) {
-            return {
-              displayValue: parsedError.error,
-              displayLanguage: 'plaintext' as BodyLanguage,
-            };
-          }
-        } catch {}
-
-        return {
-          displayValue: responseData,
-          displayLanguage: 'plaintext' as BodyLanguage,
-        };
-      }
-      const isJson = responseContentType
-        ?.toLowerCase()
-        .includes('application/json');
-      if (isJson) {
-        try {
-          const parsed = JSON.parse(responseData);
-          const pretty = JSON.stringify(parsed, null, 2);
-          return {
-            displayValue: pretty,
-            displayLanguage: 'json' as BodyLanguage,
-          };
-        } catch (e) {
-          toast.error(
-            `Response JSON parse error: ${e instanceof Error ? e.message : String(e)}`
-          );
-          return {
-            displayValue: responseData,
-            displayLanguage: 'plaintext' as BodyLanguage,
-          };
-        }
-      } else {
-        return {
-          displayValue: responseData,
-          displayLanguage: 'plaintext' as BodyLanguage,
-        };
-      }
-    }
-
-    return { displayValue: '', displayLanguage: 'plaintext' as BodyLanguage };
-  }, [responseData, responseContentType, responseStatus, isLoading]);
+  const { displayValue, displayLanguage } = useFormattedResponse();
 
   const handleAddQueryParam = useCallback(
     () => dispatch(addQueryParam()),
@@ -215,6 +127,16 @@ export function RequestResponseArea() {
     [dispatch]
   );
 
+  const handleTabChange = useCallback(
+    (newTabValue: string) => {
+      dispatch(setActiveTab(newTabValue));
+      if (isRequestPanelCollapsed) {
+        expandRequestPanel();
+      }
+    },
+    [dispatch, expandRequestPanel, isRequestPanelCollapsed]
+  );
+
   return (
     <ResizablePanelGroup
       ref={verticalLayoutGroupRef}
@@ -232,8 +154,8 @@ export function RequestResponseArea() {
         collapsible={true}
         collapsedSize={VERTICAL_COLLAPSED_SIZE}
         minSize={VERTICAL_COLLAPSED_SIZE}
-        onCollapse={() => syncRequestPanelState(true)}
-        onExpand={() => syncRequestPanelState(false)}
+        onCollapse={() => syncPanelState(true)}
+        onExpand={() => syncPanelState(false)}
         className={cn(
           `transition-all duration-300 ease-in-out rounded-md bg-cta-secondary w-[70%] mx-auto max-w-4xl min-h-[40px]`
         )}
@@ -258,25 +180,30 @@ export function RequestResponseArea() {
               isRequestPanelCollapsed && 'overflow-hidden'
             )}
           >
-            <TabsComponent
-              onTabChange={expandRequestPanel}
-              queryParams={queryParams}
-              onAddQueryParam={handleAddQueryParam}
-              onQueryParamKeyChange={handleQueryParamKeyChange}
-              onQueryParamValueChange={handleQueryParamValueChange}
-              onDeleteQueryParam={handleDeleteQueryParam}
-              headers={headers}
-              onAddHeader={handleAddHeader}
-              onHeaderKeyChange={handleHeaderKeyChange}
-              onHeaderValueChange={handleHeaderValueChange}
-              onDeleteHeader={handleDeleteHeader}
-              requestBody={requestBody}
-              onBodyChange={handleBodyChange}
-              bodyLanguage={bodyLanguage}
-              onBodyLanguageChange={handleBodyLanguageChange}
-              showPrettifyButton={true}
-              showLanguageSelector={true}
-            />
+            {isMounted ? (
+              <TabsComponent
+                value={activeTab}
+                onValueChange={handleTabChange}
+                queryParams={queryParams}
+                onAddQueryParam={handleAddQueryParam}
+                onQueryParamKeyChange={handleQueryParamKeyChange}
+                onQueryParamValueChange={handleQueryParamValueChange}
+                onDeleteQueryParam={handleDeleteQueryParam}
+                headers={headers}
+                onAddHeader={handleAddHeader}
+                onHeaderKeyChange={handleHeaderKeyChange}
+                onHeaderValueChange={handleHeaderValueChange}
+                onDeleteHeader={handleDeleteHeader}
+                requestBody={requestBody}
+                onBodyChange={handleBodyChange}
+                bodyLanguage={bodyLanguage}
+                onBodyLanguageChange={handleBodyLanguageChange}
+                showPrettifyButton={true}
+                showLanguageSelector={true}
+              />
+            ) : (
+              <div className="p-4">Loading tabs...</div>
+            )}
           </div>
         </div>
       </ResizablePanel>

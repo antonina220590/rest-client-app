@@ -13,7 +13,7 @@ const loadHistoryFromLocalStorage = (): HistoryItem[] => {
   }
 };
 
-const initialState: HistoryState = {
+export const initialState: HistoryState = {
   items: loadHistoryFromLocalStorage(),
 };
 

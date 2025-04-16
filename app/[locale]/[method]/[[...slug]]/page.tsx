@@ -1,5 +1,5 @@
 export const dynamic = 'force-dynamic';
-import ResizableContainer from '@/app/components/rest-client/ResizableContainer';
+import ResizableContainerLoader from '@/app/components/rest-client/ResizableContainer/ResizableContainerLoader';
 import { Toaster } from '@/components/ui/sonner';
 import {
   KeyValueItem,
@@ -8,7 +8,7 @@ import {
   RestClientParams,
   RestClientSearchParams,
 } from '@/app/interfaces';
-import { redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { decodeFromBase64Url } from '@/app/components/rest-client/helpers/encoding';
 import { ReduxProvider } from '@/app/store/providers';
 
@@ -22,7 +22,7 @@ export default async function RESTful({
   const requestedMethod = params.method.toUpperCase();
   const isValidMethod = methods.includes(requestedMethod);
   if (!isValidMethod) {
-    redirect(`/${params.locale}/GET`);
+    notFound();
   }
   const initialMethod = isValidMethod ? requestedMethod : 'GET';
 
@@ -70,7 +70,7 @@ export default async function RESTful({
         <div className="text-center">
           <div className="flex flex-col h-full mx-auto gap-2">
             <div className="flex h-[85dvh] w-full">
-              <ResizableContainer
+              <ResizableContainerLoader
                 initialMethod={initialMethod}
                 initialUrl={initialUrl}
                 initialBody={initialBody}
