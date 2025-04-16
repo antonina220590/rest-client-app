@@ -150,7 +150,7 @@
     font-size: 21px;
   }
   header {
-    @apply sticky top-0 left-0 w-full flex justify-between p-4 bg-accent;
+    @apply sticky top-0 left-0 w-full flex justify-between p-4 bg-accent z-1000;
   }
   footer {
     @apply flex justify-between mt-auto p-4 bg-bg-secondary text-white;
