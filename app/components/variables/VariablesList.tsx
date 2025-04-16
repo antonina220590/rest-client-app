@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   addVariable,
@@ -73,6 +73,10 @@ export const VariablesListContent = () => {
       toast.success(t('success.deleted', { key: variable.key }));
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem('variables', JSON.stringify(variables));
+  }, [variables]);
 
   const existingKeys = variables.map((variable) => variable.key);
 
