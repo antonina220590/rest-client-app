@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import type { RootState } from '@/app/interfaces';
+import { VariableItem } from './VariableItem';
 
 const messages = {
   VariablesList: {
@@ -58,6 +59,7 @@ describe('VariablesListContent', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useAppDispatch).mockReturnValue(mockDispatch);
+    vi.spyOn(Storage.prototype, 'setItem');
 
     Object.assign(navigator, {
       clipboard: {
@@ -159,6 +161,85 @@ describe('VariablesListContent', () => {
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'variables/deleteVariable',
       payload: '1',
+    });
+  });
+  describe('VariableItem', () => {
+    it('lets user edit value on click and calls onSave on blur', () => {
+      const mockOnEdit = vi.fn();
+      const mockOnSave = vi.fn();
+
+      render(
+        <IntlProvider locale="ru" messages={messages}>
+          <VariableItem
+            variable={{
+              id: '1',
+              key: 'apiKey',
+              value: '1234567890abcdef',
+            }}
+            onEdit={mockOnEdit}
+            onSave={mockOnSave}
+            onDelete={vi.fn()}
+            onCopy={vi.fn()}
+            copiedId=""
+            editingId="1"
+            editingField="value"
+          />
+        </IntlProvider>
+      );
+
+      const input = screen.getByDisplayValue('1234567890abcdef');
+      fireEvent.change(input, { target: { value: 'new-value' } });
+      fireEvent.blur(input);
+
+      expect(mockOnSave).toHaveBeenCalledWith({
+        id: '1',
+        key: 'apiKey',
+        value: 'new-value',
+      });
+    });
+
+    it('triggers onEdit when value cell is clicked', () => {
+      const mockOnEdit = vi.fn();
+
+      render(
+        <IntlProvider locale="ru" messages={messages}>
+          <VariableItem
+            variable={{
+              id: '1',
+              key: 'apiKey',
+              value: '1234567890abcdef',
+            }}
+            onEdit={mockOnEdit}
+            onSave={vi.fn()}
+            onDelete={vi.fn()}
+            onCopy={vi.fn()}
+            copiedId=""
+            editingId=""
+            editingField={null}
+          />
+        </IntlProvider>
+      );
+
+      const valueCell = screen.getByText('1234567890abcdef');
+      fireEvent.click(valueCell);
+
+      expect(mockOnEdit).toHaveBeenCalledWith(
+        {
+          id: '1',
+          key: 'apiKey',
+          value: '1234567890abcdef',
+        },
+        'value'
+      );
+    });
+  });
+  it('saves updated variables to localStorage', async () => {
+    renderWithIntl(<VariablesListContent />);
+    await waitFor(() => {
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'variables',
+        JSON.stringify(mockVariables)
+      );
     });
   });
 });

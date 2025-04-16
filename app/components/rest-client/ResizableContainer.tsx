@@ -19,7 +19,7 @@ import {
 } from '@/app/interfaces';
 import { useSyncUrlWithReduxState } from '@/app/hooks/useSyncUrlWithReduxState';
 import { useRequestNotifications } from '@/app/hooks/useRequestNotifications';
-import { useRequestHistory } from '@/app/store/hooks';
+import { useRequestHistory } from '@/app/hooks/historyHooks';
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch, RootState } from '@/app/store/store';
 import {

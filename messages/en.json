@@ -94,24 +94,24 @@
     "variablesError": "// Variable substitution error"
   },
   "VariablesList": {
-  "title": "Variables",
-  "keyLabel": "Key",
-  "valueLabel": "Value",
-  "keyPlaceholder": "Enter key",
-  "valuePlaceholder": "Enter value",
-  "addButton": "Add Variable",
-  "copyTooltip": "Click to copy",
-  "copiedText": "Copied!",
-  "deleteAriaLabel": "Delete variable",
-  "error": {
-    "keyExists": "Variable with key {key} already exists"
+    "title": "Variables",
+    "keyLabel": "Key",
+    "valueLabel": "Value",
+    "keyPlaceholder": "Enter key",
+    "valuePlaceholder": "Enter value",
+    "addButton": "Add Variable",
+    "copyTooltip": "Click to copy",
+    "copiedText": "Copied!",
+    "deleteAriaLabel": "Delete variable",
+    "error": {
+      "keyExists": "Variable with key {key} already exists"
+    },
+    "success": {
+      "added": "Variable {key} added",
+      "updated": "Variable {key} updated",
+      "deleted": "Variable {key} deleted"
+    }
   },
-  "success": {
-    "added": "Variable {key} added",
-    "updated": "Variable {key} updated",
-    "deleted": "Variable {key} deleted"
-  }
-},
 
   "HistoryList": {
     "title": "Request History",
@@ -131,7 +131,6 @@
     "success": {
       "cleared": "History cleared successfully",
       "deleted": "Item deleted"
-      
     }
   }
 }

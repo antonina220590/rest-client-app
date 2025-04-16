@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import History from './page';
+import History from '@/app/[locale]/history/page';
 import { IntlProvider } from 'next-intl';
 import { vi } from 'vitest';
 import React from 'react';
@@ -7,9 +7,9 @@ import {
   useHistoryItems,
   useClearHistory,
   useDeleteHistoryItem,
-} from '@/app/store/hooks';
+} from '@/app/hooks/historyHooks';
 
-vi.mock('@/app/store/hooks', () => ({
+vi.mock('@/app/hooks/historyHooks', () => ({
   useHistoryItems: vi.fn(),
   useClearHistory: vi.fn(),
   useDeleteHistoryItem: vi.fn(),
