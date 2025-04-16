@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Variable } from '@/app/interfaces';
 
-const initialState: Variable[] = [];
+export const initialState: Variable[] = [];
 
 export const variablesSlice = createSlice({
   name: 'variables',

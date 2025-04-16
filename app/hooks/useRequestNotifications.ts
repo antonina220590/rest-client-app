@@ -27,7 +27,9 @@ export function useRequestNotifications() {
       prevIsLoading.current &&
       !isLoading &&
       !error &&
-      responseStatus !== null
+      responseStatus !== null &&
+      responseStatus >= 200 &&
+      responseStatus < 300
     ) {
       toast.success(t('Request successful!'));
     }

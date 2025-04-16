@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { langs } from '@/app/interfaces';
 import { toast } from 'sonner';
 import { Copy } from 'lucide-react';
-import RequestBodyEditor from '../BodyEditor';
+import RequestBodyEditor from '../BodyEditor/BodyEditor';
 import { mapSelectedLangToCm } from '../helpers/langMapping';
 import { shallowEqual, useSelector } from 'react-redux';
 import { RootState } from '@/app/store/store';

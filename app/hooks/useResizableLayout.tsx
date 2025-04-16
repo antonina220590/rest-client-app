@@ -5,7 +5,7 @@ import { type ImperativePanelGroupHandle } from 'react-resizable-panels';
 
 const HORIZONTAL_OPEN_LAYOUT: number[] = [70, 30];
 const HORIZONTAL_CLOSED_LAYOUT: number[] = [100, 0];
-interface UseResizableLayoutReturn {
+export interface UseResizableLayoutReturn {
   isPanelOpen: boolean;
   layoutGroupRef: React.RefObject<ImperativePanelGroupHandle | null>;
   togglePanel: () => void;

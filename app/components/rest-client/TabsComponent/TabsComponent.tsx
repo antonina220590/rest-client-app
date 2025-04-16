@@ -1,13 +1,14 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import QueryParamsEditor from './QueryParamsEditor';
+import QueryParamsEditor from '../QueryParamsEditor/QueryParamsEditor';
 import { Card } from '@/components/ui/card';
-import RequestBodyEditor from './BodyEditor';
+import RequestBodyEditor from '../BodyEditor/BodyEditor';
 import { useTranslations } from 'next-intl';
 import { TabsComponentProps } from '@/app/interfaces';
 import VariablesListWrapper from '@/app/components/variables/VariablesListWrapper';
 
 export default function TabsComponent({
-  onTabChange,
+  value,
+  onValueChange,
   queryParams,
   onAddQueryParam,
   onQueryParamKeyChange,
@@ -28,33 +29,33 @@ export default function TabsComponent({
   const t = useTranslations('RESTful');
 
   return (
-    <Tabs defaultValue="query" className="w-[90%] gap-0 flex flex-col h-full">
+    <Tabs
+      value={value}
+      onValueChange={onValueChange}
+      className="w-[90%] gap-0 flex flex-col h-full"
+    >
       <TabsList className="grid w-full grid-cols-4 h-10 min-h-10 p-0 rounded-t-md rounded-b-none">
         <TabsTrigger
           value="query"
           className="bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
-          onClick={onTabChange}
         >
           {t('query')}
         </TabsTrigger>
         <TabsTrigger
           value="headers"
           className="bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
-          onClick={onTabChange}
         >
           {t('headers')}
         </TabsTrigger>
         <TabsTrigger
           value="body"
           className="bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
-          onClick={onTabChange}
         >
           {t('body')}
         </TabsTrigger>
         <TabsTrigger
           value="variables"
           className="bottom-0.5 border-cta-primary border-b-0 rounded-t-md cursor-pointer hover:bg-accent rounded-b-none data-[state=active]:bg-cta-primary data-[state=active]:text-slate-50 data-[state=active]:shadow-inner"
-          onClick={onTabChange}
         >
           {t('variables')}
         </TabsTrigger>

@@ -5,7 +5,9 @@ export interface KeyValueItem {
 }
 
 export interface TabsComponentProps {
-  onTabChange: () => void;
+  value: string;
+  onValueChange: (value: string) => void;
+  onTabChange?: () => void;
   queryParams: KeyValueItem[];
   onAddQueryParam: () => void;
   onQueryParamKeyChange: (id: string | number, newKey: string) => void;
@@ -140,6 +142,7 @@ export interface RestClientState {
   responseData: string | null;
   responseStatus: number | null;
   responseContentType: string | null;
+  activeTab: string;
 }
 export interface SendRequestPayload {
   method: string;

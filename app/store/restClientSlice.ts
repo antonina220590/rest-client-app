@@ -11,7 +11,7 @@ import { RootState } from './store';
 import { buildUrlWithParams } from '@/app/components/rest-client/helpers/urlBuilder';
 import { interpolateVariables } from '@/app/components/variables/helpers/interpolate';
 
-const initialState: RestClientState = {
+export const initialState: RestClientState = {
   method: 'GET',
   url: '',
   requestBody: '',
@@ -23,6 +23,7 @@ const initialState: RestClientState = {
   responseData: null,
   responseStatus: null,
   responseContentType: null,
+  activeTab: 'query',
 };
 
 const decodeTemplateVariables = (str: string): string => {
@@ -237,6 +238,9 @@ const restClientSlice = createSlice({
           : [{ id: crypto.randomUUID(), key: '', value: '' }];
       state.url = buildUrlWithParams(state.url, state.queryParams);
     },
+    setActiveTab(state, action: PayloadAction<string>) {
+      state.activeTab = action.payload;
+    },
     clearResponse: (state) => {
       state.isLoading = false;
       state.error = null;
@@ -293,6 +297,7 @@ export const {
   setQueryParams,
   clearResponse,
   clearAllRequestState,
+  setActiveTab,
 } = restClientSlice.actions;
 
 export default restClientSlice.reducer;
