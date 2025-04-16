@@ -45,8 +45,7 @@ function ResizableHandle({
       {...props}
     >
       {withHandle && (
-        <div className="z-10 flex h-8 w-1 items-center justify-center rounded-xs border bg-cta-primary">
-        </div>
+        <div className="z-10 flex h-8 w-1 items-center justify-center rounded-xs border bg-cta-primary"></div>
       )}
     </ResizablePrimitive.PanelResizeHandle>
   );

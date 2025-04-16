@@ -1,5 +1,5 @@
 import { describe, expect, vi } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Header from './Header';
 
@@ -48,5 +48,29 @@ describe('render Header component', () => {
       screen.getByRole('button', { name: /signOut/i })
     ).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+  });
+
+  it('should change header opacity and padding on scroll', async () => {
+    (useAuthState as ReturnType<typeof vi.fn>).mockImplementation(() => [
+      { uid: '123' },
+    ]);
+
+    await act(async () => {
+      render(<Header />);
+    });
+
+    Object.defineProperty(window, 'scrollY', {
+      value: 300,
+      writable: true,
+    });
+
+    window.dispatchEvent(new Event('scroll'));
+
+    const header = screen.getByRole('banner');
+
+    await waitFor(() => {
+      expect(header).toHaveClass('opacity-50');
+      expect(header).toHaveClass('py-1');
+    });
   });
 });

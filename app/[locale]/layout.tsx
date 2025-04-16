@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import Footer from '../components/main-route/Footer/Footer';
 import Header from '../components/main-route/Header/Header';
+import ErrorBoundary from '../components/error-boundary/ErrorBoundary';
 
 export const metadata: Metadata = {
   title: 'Rest Client App',
@@ -27,7 +28,7 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider>
           <Header />
-          {children}
+          <ErrorBoundary> {children}</ErrorBoundary>
           <Footer />
         </NextIntlClientProvider>
       </body>
