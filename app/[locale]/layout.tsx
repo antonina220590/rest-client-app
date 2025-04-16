@@ -29,7 +29,6 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <Header />
           <ErrorBoundary> {children}</ErrorBoundary>
-
           <Footer />
         </NextIntlClientProvider>
       </body>

@@ -101,6 +101,7 @@ const Auth = ({ registration }: AuthProps) => {
                 type="text"
                 placeholder={t('namePlaceholder')}
                 register={register('name')}
+                autocomplete="name"
               >
                 {'name' in errors && (
                   <p className="text-red-500 text-sm mb-3">
@@ -114,6 +115,7 @@ const Auth = ({ registration }: AuthProps) => {
             type="text"
             placeholder={t('emailPlaceholder')}
             register={register('email')}
+            autocomplete={registration ? 'email' : 'username'}
           >
             {' '}
             {errors.email && (
