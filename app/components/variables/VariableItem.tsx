@@ -1,6 +1,6 @@
 'use client';
 import { useRef, useEffect, useState } from 'react';
-import { VariableItemProps } from '@/app/store/types';
+import { VariableItemProps } from '@/app/interfaces';
 import { useTranslations } from 'next-intl';
 
 const DISPLAY_KEY_LENGTH = 30;

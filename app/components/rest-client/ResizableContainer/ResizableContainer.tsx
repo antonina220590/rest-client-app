@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { PanelLeftClose, PanelRightClose } from 'lucide-react';
 import {
   ResizableHandle,
@@ -8,7 +8,6 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
-
 import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from '../RequestResponseArea/RequestResponseArea';
 import MethodSelector from '../MethodSelector/MethodSelector';
@@ -20,7 +19,7 @@ import {
 } from '@/app/interfaces';
 import { useSyncUrlWithReduxState } from '@/app/hooks/useSyncUrlWithReduxState';
 import { useRequestNotifications } from '@/app/hooks/useRequestNotifications';
-
+import { useRequestHistory } from '@/app/store/hooks';
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch, RootState } from '@/app/store/store';
 import {
@@ -31,6 +30,7 @@ import {
   setHeaders,
   sendRequest,
   clearResponse,
+  setQueryParams,
 } from '@/app/store/restClientSlice';
 import { decodeFromBase64Url } from '../helpers/encoding';
 import { toast } from 'sonner';
@@ -38,6 +38,9 @@ import CodeContainer from '../codeGenerator/CodeContainer';
 
 export default function ResizableContainer({
   initialMethod = 'GET',
+  initialUrl = '',
+  initialBody = '',
+  initialHeaders = [],
 }: ResizableContainerProps) {
   const {
     isPanelOpen: isCodePanelOpen,
@@ -49,13 +52,10 @@ export default function ResizableContainer({
   } = useResizableLayout(false);
 
   const dispatch: AppDispatch = useDispatch();
-
   const [isClient, setIsClient] = useState(false);
-
   const methodFromRedux = useSelector(
     (state: RootState) => state.restClient.method
   );
-
   const url = useSelector((state: RootState) => state.restClient.url);
   const requestBody = useSelector(
     (state: RootState) => state.restClient.requestBody
@@ -65,14 +65,20 @@ export default function ResizableContainer({
     (state: RootState) => state.restClient.queryParams
   );
 
+  const historyItems = useRef(
+    useSelector((state: RootState) => state.history.items)
+  ).current;
+
   useEffect(() => {
     const pathSegments = window.location.pathname.split('/');
     const searchParams = new URLSearchParams(window.location.search);
 
-    let currentMethod = 'GET';
-    let currentUrl = '';
-    let currentBody = '';
-    const currentHeaders: KeyValueItem[] = [];
+    let currentMethod = initialMethod;
+    let currentUrl = initialUrl;
+    let currentBody = initialBody;
+    const currentHeaders: KeyValueItem[] = [...initialHeaders];
+    const currentQueryParams: KeyValueItem[] = [];
+
     if (pathSegments.length >= 3) {
       const methodFromUrl = pathSegments[2].toUpperCase();
       if (methods.includes(methodFromUrl)) {
@@ -87,32 +93,53 @@ export default function ResizableContainer({
         toast.error('Error of decoding of URL from path');
       }
     }
+
     if (pathSegments.length >= 5 && pathSegments[4]) {
       try {
         currentBody = decodeFromBase64Url(pathSegments[4]);
       } catch {
-        toast.error('Eror of decoding Body from path');
+        toast.error('Error of decoding Body from path');
       }
     }
+
     searchParams.forEach((value, key) => {
-      currentHeaders.push({ id: crypto.randomUUID(), key: key, value: value });
+      const alreadyExists = currentHeaders.some(
+        (h) => h.key === key && h.value === value
+      );
+      if (!alreadyExists) {
+        currentHeaders.push({ id: crypto.randomUUID(), key, value });
+      }
     });
-    if (currentHeaders.length === 0) {
-      currentHeaders.push({ id: crypto.randomUUID(), key: '', value: '' });
-    }
+
+    const qs = new URLSearchParams(currentUrl.split('?')[1] || '');
+    qs.forEach((value, key) => {
+      currentQueryParams.push({ id: crypto.randomUUID(), key, value });
+    });
+
     dispatch(setMethod(currentMethod));
     dispatch(setUrl(currentUrl));
     dispatch(setRequestBody(currentBody));
     dispatch(setBodyLanguage('json'));
-    dispatch(setHeaders(currentHeaders));
+    const filteredHeaders = currentHeaders.filter(
+      (h) => h.key.trim() !== '' || h.value.trim() !== ''
+    );
+    dispatch(
+      setHeaders(
+        filteredHeaders.length > 0
+          ? filteredHeaders
+          : [{ id: crypto.randomUUID(), key: '', value: '' }]
+      )
+    );
+    dispatch(setQueryParams(currentQueryParams));
     dispatch(clearResponse());
     setIsClient(true);
-  }, [dispatch]);
+  }, [dispatch, initialBody, initialHeaders, initialMethod, initialUrl]);
 
-  const method = !isClient ? initialMethod : methodFromRedux;
-
+  useRequestHistory(historyItems);
   useSyncUrlWithReduxState();
   useRequestNotifications();
+
+  const method = !isClient ? initialMethod : methodFromRedux;
 
   const handleMethodChange = useCallback(
     (newMethod: string) => {
@@ -133,11 +160,16 @@ export default function ResizableContainer({
     const payload = {
       method: methodFromRedux,
       targetUrl: url,
-      headers: headers,
-      queryParams: queryParams,
+      headers: headers.filter((h) => h.key),
+      queryParams: queryParams.filter((p) => p.key),
       body: requestBody,
     };
-    dispatch(sendRequest(payload));
+
+    try {
+      await dispatch(sendRequest(payload));
+    } catch {
+      toast.error('requestFailed');
+    }
   }, [methodFromRedux, url, headers, queryParams, requestBody, dispatch]);
 
   return (
@@ -150,7 +182,7 @@ export default function ResizableContainer({
         className="absolute top-2 right-2 z-10 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         {isCodePanelOpen ? (
-          <PanelRightClose className="h-6 w-6 " />
+          <PanelRightClose className="h-6 w-6" />
         ) : (
           <PanelLeftClose className="h-4 w-4" />
         )}

@@ -1,5 +1,3 @@
-import { Variable } from './store/types';
-
 export interface KeyValueItem {
   id: string;
   key: string;
@@ -195,4 +193,63 @@ export interface UseGeneratedCodeProps {
 export interface UseGeneratedCodeReturn {
   generatedCode: string;
   isLoading: boolean;
+}
+
+export interface Variable {
+  id: string;
+  key: string;
+  value: string;
+  createdAt?: number;
+  updatedAt?: number;
+}
+
+export interface RootState {
+  variables: Variable[];
+  restClient: RestClientState;
+  history: {
+    items: HistoryItem[];
+  };
+}
+
+export interface PreloadedState {
+  variables: Variable[];
+}
+
+export type VariableItemProps = {
+  variable: Variable;
+  onEdit: (variable: Variable, field: 'key' | 'value') => void;
+  onSave: (variable: Variable) => void;
+  onDelete: (id: string) => void;
+  onCopy: (text: string, id: string) => void;
+  copiedId: string | null;
+  editingId: string | null;
+  editingField: 'key' | 'value' | null;
+};
+
+export interface HistoryItem {
+  id: string;
+  timestamp: number;
+  method: string;
+  url: string;
+  headers: Array<{ key: string; value: string }>;
+  queryParams: Array<{ key: string; value: string }>;
+  body: string;
+  bodyLanguage: string;
+}
+
+export interface HistoryState {
+  items: HistoryItem[];
+}
+
+export interface HistoryItemProps {
+  item: HistoryItem;
+  onDelete: (id: string) => void;
+  callback: () => void;
+  translations: {
+    method: string;
+    url: string;
+    time: string;
+    bodyType: string;
+    copyTooltip: string;
+  };
 }
