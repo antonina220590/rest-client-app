@@ -94,24 +94,24 @@
     "variablesError": "// Ошибка подстановки переменных"
   },
   "VariablesList": {
-  "title": "Переменные",
-  "keyLabel": "Ключ",
-  "valueLabel": "Значение",
-  "keyPlaceholder": "Введите ключ",
-  "valuePlaceholder": "Введите значение",
-  "addButton": "Добавить переменную",
-  "copyTooltip": "Кликните для копирования",
-  "copiedText": "Скопировано!",
-  "deleteAriaLabel": "Удалить переменную",
-  "error": {
-    "keyExists": "Переменная с ключом {key} уже существует"
+    "title": "Переменные",
+    "keyLabel": "Ключ",
+    "valueLabel": "Значение",
+    "keyPlaceholder": "Введите ключ",
+    "valuePlaceholder": "Введите значение",
+    "addButton": "Добавить переменную",
+    "copyTooltip": "Кликните для копирования",
+    "copiedText": "Скопировано!",
+    "deleteAriaLabel": "Удалить переменную",
+    "error": {
+      "keyExists": "Переменная с ключом {key} уже существует"
+    },
+    "success": {
+      "added": "Переменная {key} добавлена",
+      "updated": "Переменная {key} обновлена",
+      "deleted": "Переменная {key} удалена"
+    }
   },
-  "success": {
-    "added": "Переменная {key} добавлена",
-    "updated": "Переменная {key} обновлена",
-    "deleted": "Переменная {key} удалена"
-  }
-},
   "HistoryList": {
     "title": "История запросов",
     "clearButton": "Очистить историю",
@@ -131,5 +131,9 @@
       "cleared": "История успешно очищена",
       "deleted": "Запрос удален"
     }
+  },
+  "NotFound": {
+    "title": "Страница не найдена",
+    "description": "Извините, страница, которую вы ищете, не существует."
   }
 }
