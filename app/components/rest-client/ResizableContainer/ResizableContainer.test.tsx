@@ -54,8 +54,9 @@ vi.doMock('@/app/hooks/useSyncUrlWithReduxState', () => ({
 vi.doMock('@/app/hooks/useRequestNotifications', () => ({
   useRequestNotifications: vi.fn(),
 }));
-vi.doMock('@/app/store/hooks', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/app/store/hooks')>();
+vi.doMock('@/app/hooks/historyHooks', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@/app/hooks/historyHooks')>();
   return {
     ...actual,
     useRequestHistory: mockUseRequestHistory,
