@@ -8,7 +8,7 @@ import {
   RestClientParams,
   RestClientSearchParams,
 } from '@/app/interfaces';
-import { redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { decodeFromBase64Url } from '@/app/components/rest-client/helpers/encoding';
 import { ReduxProvider } from '@/app/store/providers';
 
@@ -22,7 +22,7 @@ export default async function RESTful({
   const requestedMethod = params.method.toUpperCase();
   const isValidMethod = methods.includes(requestedMethod);
   if (!isValidMethod) {
-    redirect(`/${params.locale}/GET`);
+    notFound();
   }
   const initialMethod = isValidMethod ? requestedMethod : 'GET';
 

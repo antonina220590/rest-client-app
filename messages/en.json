@@ -132,5 +132,9 @@
       "cleared": "History cleared successfully",
       "deleted": "Item deleted"
     }
+  },
+  "NotFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you’re looking for doesn’t exist."
   }
 }
