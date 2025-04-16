@@ -8,9 +8,18 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const userSession = req.cookies.get('user');
-  const restrictedPaths = ['/history', '/GET', '/POST', '/variables'];
+  const restrictedPaths = [
+    'history',
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'PATCH',
+    'OPTIONS',
+    'HEAD',
+  ];
   const regex =
-    /^\/([a-zA-Z-]{2,3})?(\/(history|GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD|variables))(\/.*)?$/;
+    /^\/([a-zA-Z-]{2,3})?(\/(history|GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD))(\/.*)?$/;
 
   if (!userSession && restrictedPaths.some((_path) => regex.test(pathname))) {
     return NextResponse.redirect(new URL('/', req.url));
@@ -22,7 +31,6 @@ export function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     '/([a-zA-Z-]{2,3})?/history',
-    '/([a-zA-Z-]{2,3})?/variables',
     '/([a-zA-Z-]{2,3})?/GET/:path*',
     '/([a-zA-Z-]{2,3})?/POST/:path*',
     '/([a-zA-Z-]{2,3})?/PUT/:path*',
