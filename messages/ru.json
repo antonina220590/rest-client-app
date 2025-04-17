@@ -93,13 +93,14 @@
     "variables": "Переменные",
     "variablesError": "// Ошибка подстановки переменных"
   },
-  "VariablesList": {
+  "VariablesEditor": {
     "title": "Переменные",
     "keyLabel": "Ключ",
     "valueLabel": "Значение",
     "keyPlaceholder": "Введите ключ",
     "valuePlaceholder": "Введите значение",
     "addButton": "Добавить переменную",
+    "restClient": "REST Клиент",
     "copyTooltip": "Кликните для копирования",
     "copiedText": "Скопировано!",
     "deleteAriaLabel": "Удалить переменную",
@@ -112,6 +113,16 @@
       "deleted": "Переменная {key} удалена"
     }
   },
+
+  "VariablesList": {
+    "keyLabel": "Ключ",
+    "valueLabel": "Значение",
+    "addEditButton": "Добавить/Редактировать",
+    "copyTooltip": "Кликните для копирования",
+    "copiedText": "Скопировано!",
+    "noVariables": "Переменных пока нет"
+  },
+
   "HistoryList": {
     "title": "История запросов",
     "clearButton": "Очистить историю",

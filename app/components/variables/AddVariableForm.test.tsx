@@ -5,7 +5,6 @@ import React from 'react';
 import { IntlProvider } from 'next-intl';
 import { toast } from 'sonner';
 
-// Мокаем toast
 vi.mock('sonner', () => ({
   toast: {
     error: vi.fn(),
@@ -14,7 +13,7 @@ vi.mock('sonner', () => ({
 }));
 
 const messages = {
-  VariablesList: {
+  VariablesEditor: {
     keyPlaceholder: 'Key',
     valuePlaceholder: 'Value',
     addButton: 'Add',

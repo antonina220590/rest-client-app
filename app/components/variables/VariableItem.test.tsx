@@ -5,7 +5,7 @@ import { expect, vi } from 'vitest';
 import '@testing-library/jest-dom';
 
 const messages = {
-  VariablesList: {
+  VariablesEditor: {
     keyLabel: 'Key',
     valueLabel: 'Value',
     keyPlaceholder: 'Enter key',

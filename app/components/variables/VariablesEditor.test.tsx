@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { VariablesListContent } from './VariablesList';
+import { VariablesEditor } from './VariablesEditor';
 import { IntlProvider } from 'next-intl';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
@@ -8,7 +8,7 @@ import type { RootState } from '@/app/interfaces';
 import { VariableItem } from './VariableItem';
 
 const messages = {
-  VariablesList: {
+  VariablesEditor: {
     title: 'Variables',
     keyLabel: 'Key',
     valueLabel: 'Value',
@@ -53,7 +53,7 @@ const renderWithIntl = (ui: React.ReactElement) =>
     </IntlProvider>
   );
 
-describe('VariablesListContent', () => {
+describe('VariablesEditor', () => {
   const mockDispatch = vi.fn();
 
   beforeEach(() => {
@@ -82,6 +82,7 @@ describe('VariablesListContent', () => {
           responseData: null,
           responseStatus: null,
           responseContentType: null,
+          activeTab: '',
         },
         history: {
           items: [],
@@ -92,7 +93,7 @@ describe('VariablesListContent', () => {
   });
 
   it('renders list of variables', () => {
-    renderWithIntl(<VariablesListContent />);
+    renderWithIntl(<VariablesEditor />);
     expect(screen.getByText('token')).toBeInTheDocument();
     expect(screen.getByText('1234567890abcdef')).toBeInTheDocument();
     expect(screen.getByText('apiKey')).toBeInTheDocument();
@@ -103,14 +104,14 @@ describe('VariablesListContent', () => {
   });
 
   it('shows add variable button', () => {
-    renderWithIntl(<VariablesListContent />);
+    renderWithIntl(<VariablesEditor />);
     expect(
       screen.getByRole('button', { name: /add variable/i })
     ).toBeInTheDocument();
   });
 
   it('calls dispatch when adding new variable', async () => {
-    renderWithIntl(<VariablesListContent />);
+    renderWithIntl(<VariablesEditor />);
     const keyInput = screen.getByPlaceholderText(/enter key/i);
     const valueInput = screen.getByPlaceholderText(/enter value/i);
     const addButton = screen.getByRole('button', { name: /add variable/i });
@@ -139,7 +140,7 @@ describe('VariablesListContent', () => {
       },
     });
 
-    renderWithIntl(<VariablesListContent />);
+    renderWithIntl(<VariablesEditor />);
 
     const copyEls = screen.getAllByTitle('Click to copy');
     fireEvent.click(copyEls[0]);
@@ -152,7 +153,7 @@ describe('VariablesListContent', () => {
   });
 
   it('calls delete when delete button clicked', async () => {
-    renderWithIntl(<VariablesListContent />);
+    renderWithIntl(<VariablesEditor />);
     const deleteButtons = screen.getAllByRole('button', {
       name: /delete variable/i,
     });
@@ -234,7 +235,7 @@ describe('VariablesListContent', () => {
     });
   });
   it('saves updated variables to localStorage', async () => {
-    renderWithIntl(<VariablesListContent />);
+    renderWithIntl(<VariablesEditor />);
     await waitFor(() => {
       expect(localStorage.setItem).toHaveBeenCalledWith(
         'variables',

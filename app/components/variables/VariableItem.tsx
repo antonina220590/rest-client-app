@@ -16,7 +16,7 @@ export const VariableItem = ({
   editingId,
   editingField,
 }: VariableItemProps) => {
-  const t = useTranslations('VariablesList');
+  const t = useTranslations('VariablesEditor');
   const editRef = useRef<HTMLDivElement>(null);
   const [editedValue, setEditedValue] = useState(
     variable[editingField || 'key']
