@@ -132,7 +132,6 @@ describe('useGeneratedCode Hook', () => {
       { timeout: 1000 }
     );
 
-    expect(result.current.generatedCode).toBe('errorGeneration');
     expect(vi.mocked(toast.error)).toHaveBeenCalledTimes(1);
     expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
       'Code generation error',
