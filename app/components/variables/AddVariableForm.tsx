@@ -59,7 +59,7 @@ export const AddVariableForm = ({
       <button
         onClick={handleAdd}
         className={`
-          btn-primary w-full md:w-auto text-sm md:text-base px-3 py-2 md:px-4 md:py-2
+          btn-primary text-sm md:text-base px-3 py-2 md:px-4 md:py-2
           disabled:bg-cta-secondary disabled:hover:bg-cta-secondary **:disabled:text-cta-primary
         `}
         disabled={!newVar.key || !newVar.value}
@@ -67,7 +67,7 @@ export const AddVariableForm = ({
         {t('addButton')}
       </button>
       <Link href="/GET">
-        <button className="ml-3 btn-primary w-full md:w-auto text-sm md:text-base px-3 py-2 md:px-4 md:py-2">
+        <button className="ml-3 btn-primary text-sm md:text-base px-3 py-2 md:px-4 md:py-2">
           {t('restClient')}
         </button>
       </Link>

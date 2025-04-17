@@ -3,6 +3,7 @@ import { VariableItem } from './VariableItem';
 import { IntlProvider } from 'next-intl';
 import { expect, vi } from 'vitest';
 import '@testing-library/jest-dom';
+import * as textUtils from './helpers/textUtils';
 
 const messages = {
   VariablesEditor: {
@@ -30,6 +31,15 @@ const mockVariable = {
 };
 
 describe('VariableItem', () => {
+  beforeEach(() => {
+    vi.spyOn(textUtils, 'copyToClipboardText').mockImplementation(() => {});
+    vi.spyOn(textUtils, 'truncateText').mockImplementation((text) => text);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('renders key and value correctly', () => {
     renderWithIntl(
       <VariableItem
@@ -72,7 +82,7 @@ describe('VariableItem', () => {
     expect(onDelete).toHaveBeenCalledWith('1');
   });
 
-  it('calls onCopy when variable tag is clicked', () => {
+  it('calls onCopy and copyToClipboardText when variable tag is clicked', () => {
     const onCopy = vi.fn();
 
     renderWithIntl(
@@ -90,7 +100,9 @@ describe('VariableItem', () => {
 
     const tag = screen.getByText('{{token}}');
     fireEvent.click(tag);
-    expect(onCopy).toHaveBeenCalledWith('{{token}}', '1');
+
+    expect(onCopy).toHaveBeenCalledWith('token', '1');
+    expect(textUtils.copyToClipboardText).toHaveBeenCalledWith('{{token}}');
   });
 
   it('renders input for editing key and calls onSave on Enter', () => {

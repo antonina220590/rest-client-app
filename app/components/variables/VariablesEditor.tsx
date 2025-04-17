@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import {
   addVariable,
   deleteVariable,
@@ -12,6 +12,7 @@ import { AddVariableForm } from './AddVariableForm';
 import { Variable } from '@/app/interfaces';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import { copyToClipboardText } from './helpers/textUtils';
 
 export const VariablesEditor = () => {
   const variables = useAppSelector((state) => state.variables);
@@ -23,6 +24,12 @@ export const VariablesEditor = () => {
     null
   );
 
+  const existingKeys = variables.map((v) => v.key);
+
+  useEffect(() => {
+    localStorage.setItem('variables', JSON.stringify(variables));
+  }, [variables]);
+
   const handleAdd = (key: string, value: string) => {
     dispatch(addVariable({ key, value }));
     toast.success(t('success.added', { key }));
@@ -31,36 +38,37 @@ export const VariablesEditor = () => {
   const handleEditSave = (updatedVariable: Variable) => {
     if (!editingField) return;
 
-    const originalVariable = variables.find((v) => v.id === updatedVariable.id);
-
+    const original = variables.find((v) => v.id === updatedVariable.id);
     const hasChanged =
-      originalVariable?.[editingField] !== updatedVariable[editingField];
+      original?.[editingField] !== updatedVariable[editingField];
 
     if (!hasChanged) {
-      setEditingId(null);
-      setEditingField(null);
+      resetEditing();
       return;
     }
 
-    if (editingField === 'key') {
-      const keyExists = variables.some(
+    if (
+      editingField === 'key' &&
+      variables.some(
         (v) => v.id !== updatedVariable.id && v.key === updatedVariable.key
-      );
-
-      if (keyExists) {
-        toast.error(t('error.keyExists', { key: updatedVariable.key }));
-        return;
-      }
+      )
+    ) {
+      toast.error(t('error.keyExists', { key: updatedVariable.key }));
+      return;
     }
 
     dispatch(updateVariable(updatedVariable));
     toast.success(t('success.updated', { key: updatedVariable.key }));
+    resetEditing();
+  };
+
+  const resetEditing = () => {
     setEditingId(null);
     setEditingField(null);
   };
 
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = (text: string, id: string) => {
+    copyToClipboardText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
     toast.success(t('copiedText'));
@@ -73,12 +81,6 @@ export const VariablesEditor = () => {
       toast.success(t('success.deleted', { key: variable.key }));
     }
   };
-
-  useEffect(() => {
-    localStorage.setItem('variables', JSON.stringify(variables));
-  }, [variables]);
-
-  const existingKeys = variables.map((variable) => variable.key);
 
   return (
     <div
@@ -98,7 +100,7 @@ export const VariablesEditor = () => {
               }}
               onSave={handleEditSave}
               onDelete={handleDelete}
-              onCopy={copyToClipboard}
+              onCopy={handleCopy}
               copiedId={copiedId}
               editingId={editingId}
               editingField={editingField}

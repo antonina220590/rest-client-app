@@ -65,7 +65,7 @@
   },
   "RESTful": {
     "send": "Отправить",
-    "history": "History",
+    "history": "История",
     "query": "Параметры",
     "headers": "Заголовки",
     "body": "Тело",
