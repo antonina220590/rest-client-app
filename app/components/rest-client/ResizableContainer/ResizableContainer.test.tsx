@@ -382,7 +382,4 @@ describe('ResizableContainer', () => {
       expect(hoistedMockSendRequest).toHaveBeenCalledWith(expectedPayload);
     });
   });
-  // it('should dispatch sendRequest when Send button is clicked', async () => { ... });
-  // it('should call toggleCodePanel when toggle button is clicked', () => { ... });
-  // it('should render CodeContainer when isCodePanelOpen is true', () => { ... });
 });
