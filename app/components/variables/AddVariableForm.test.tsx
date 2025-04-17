@@ -16,6 +16,7 @@ const messages = {
   VariablesEditor: {
     keyPlaceholder: 'Key',
     valuePlaceholder: 'Value',
+    restClient: 'Rest Client',
     addButton: 'Add',
     error: {
       emptyFields: 'Fields cannot be empty',

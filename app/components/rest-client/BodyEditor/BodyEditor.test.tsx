@@ -80,11 +80,24 @@ vi.mock('@/components/ui/button', () => ({
 }));
 vi.mock('@/components/ui/toggle-group', () => ({
   ToggleGroup: vi.fn(
-    ({ children, 'aria-label': ariaLabel, value, ...props }) => (
-      <div role="group" aria-label={ariaLabel} {...props}>
-        {children}
-      </div>
-    )
+    ({
+      children,
+      'aria-label': ariaLabel,
+      value,
+      onValueChange = vi.fn(),
+      ...props
+    }) => {
+      return (
+        <div
+          role="group"
+          aria-label={ariaLabel}
+          onChange={onValueChange}
+          {...props}
+        >
+          {children}
+        </div>
+      );
+    }
   ),
   ToggleGroupItem: vi.fn(
     ({ children, 'aria-label': ariaLabel, value, ...props }) => (

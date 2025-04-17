@@ -17,6 +17,7 @@ const messages = {
     addButton: 'Add Variable',
     copyTooltip: 'Click to copy',
     copiedText: 'Copied!',
+    restClient: 'Rest Client',
     deleteAriaLabel: 'Delete variable',
     error: {
       keyExists: 'Variable with key {key} already exists',
