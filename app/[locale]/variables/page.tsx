@@ -8,7 +8,7 @@ const VariablesEditor = dynamic(
   () => import('@/app/components/variables/VariablesEditor'),
   {
     loading: () => (
-      <div className="p-3 flex justify-center items-center h-full">
+      <div className="p-3 flex justify-center items-center h-screen">
         <Spinner />
       </div>
     ),
