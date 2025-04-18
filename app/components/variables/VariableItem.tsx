@@ -2,9 +2,11 @@
 import { useRef, useEffect, useState } from 'react';
 import { VariableItemProps } from '@/app/interfaces';
 import { useTranslations } from 'next-intl';
-
-const DISPLAY_KEY_LENGTH = 30;
-const DISPLAY_VALUE_LENGTH = 50;
+import { truncateText, copyToClipboardText } from './helpers/textUtils';
+import {
+  DISPLAY_KEY_LENGTH,
+  DISPLAY_VALUE_LENGTH,
+} from './constants/textLimits';
 
 export const VariableItem = ({
   variable,
@@ -16,7 +18,7 @@ export const VariableItem = ({
   editingId,
   editingField,
 }: VariableItemProps) => {
-  const t = useTranslations('VariablesList');
+  const t = useTranslations('VariablesEditor');
   const editRef = useRef<HTMLDivElement>(null);
   const [editedValue, setEditedValue] = useState(
     variable[editingField || 'key']
@@ -33,12 +35,6 @@ export const VariableItem = ({
     }
   }, [editingId, variable.id]);
 
-  const truncateText = (text: string, maxLength: number) => {
-    return text.length > maxLength
-      ? `${text.substring(0, maxLength)}...`
-      : text;
-  };
-
   const handleSave = () => {
     onSave({
       ...variable,
@@ -50,7 +46,10 @@ export const VariableItem = ({
     <div className="bg-card p-4 rounded-xl shadow-md relative group transition-all hover:shadow-lg">
       <div className="flex items-center justify-between mb-2">
         <span
-          onClick={() => onCopy(`{{${variable.key}}}`, variable.id)}
+          onClick={() => {
+            copyToClipboardText(`{{${variable.key}}}`);
+            onCopy(variable.key, variable.id);
+          }}
           className="font-code text-xs md:text-sm bg-muted px-2 py-1 rounded cursor-pointer hover:bg-accent transition-colors text-card-foreground relative"
           title={t('copyTooltip')}
         >

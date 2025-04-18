@@ -1,5 +1,5 @@
 import { describe, expect, vi } from 'vitest';
-import { render, screen, act, waitFor } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Header from './Header';
 
@@ -55,21 +55,23 @@ describe('render Header component', () => {
       { uid: '123' },
     ]);
 
-    await act(async () => {
-      render(<Header />);
-    });
-
-    Object.defineProperty(window, 'scrollY', {
-      value: 300,
-      writable: true,
-    });
-
-    window.dispatchEvent(new Event('scroll'));
+    render(<Header />);
 
     const header = screen.getByRole('banner');
 
-    await waitFor(() => {
-      expect(header).toHaveClass('py-1');
+    expect(header).not.toHaveClass('py-1');
+
+    await act(async () => {
+      Object.defineProperty(window, 'scrollY', {
+        value: 300,
+        writable: true,
+      });
+
+      window.dispatchEvent(new Event('scroll'));
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
+
+    expect(header).toHaveClass('py-1');
   });
 });

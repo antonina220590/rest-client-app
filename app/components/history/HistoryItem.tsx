@@ -25,7 +25,9 @@ export default function HistoryItem({
   const createRestClientUrl = () => {
     const params = new URLSearchParams();
     item.headers.forEach((header) => {
-      params.set(header.key, header.value);
+      if (header.key) {
+        params.append(header.key, header.value || '');
+      }
     });
     const body = item.body ? `/${encodeToBase64Url(item.body)}` : '';
     const urlRestore = `/${item.method}/${encodeToBase64Url(item.url)}${body}?${params.toString()}`;

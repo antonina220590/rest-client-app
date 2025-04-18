@@ -8,6 +8,8 @@ import type {
   RestClientState,
   LangProps,
   RequestBodyEditorProps,
+  Variable,
+  HistoryState,
 } from '@/app/interfaces';
 import type { UseGeneratedCodeReturn } from '@/app/interfaces';
 
@@ -17,9 +19,12 @@ import restClientReducer, {
 import variablesReducer, {
   initialState as variablesInitialState,
 } from '@/app/store/variablesSlice';
+import historyReducer, {
+  initialState as historyInitialState,
+} from '@/app/store/historySlice';
 
 import CodeContainer from '@/app/components/rest-client/codeGenerator/CodeContainer';
-import { Variable } from '@/app/store/types';
+
 import { useGeneratedCode } from '@/app/hooks/useGeneratedCode';
 import userEvent from '@testing-library/user-event';
 
@@ -87,11 +92,16 @@ const wrappedVariablesReducer = (
   state: Variable[] | undefined,
   action: UnknownAction
 ): Variable[] => variablesReducer(state ?? variablesInitialState, action);
+const wrappedHistoryReducer = (
+  state: HistoryState | undefined,
+  action: UnknownAction
+): HistoryState => historyReducer(state ?? historyInitialState, action);
 const createTestStore = (preloadedState?: Partial<RootState>) =>
   configureStore({
     reducer: {
       restClient: wrappedRestClientReducer,
       variables: wrappedVariablesReducer,
+      history: wrappedHistoryReducer,
     },
     preloadedState: preloadedState,
   });

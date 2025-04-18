@@ -27,6 +27,7 @@ const messages = {
     timeLabel: 'Time',
     bodyTypeLabel: 'Body Type',
     copyLinkTooltip: 'Copy request link',
+    restClient: 'Rest Client',
     error: {
       clearFailed: 'Failed to clear history',
       deleteFailed: 'Failed to delete item',

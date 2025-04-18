@@ -45,7 +45,7 @@ vi.mock('../BodyEditor/BodyEditor', () => ({
   ),
 }));
 
-vi.mock('@/app/components/variables/VariablesListWrapper', () => ({
+vi.mock('@/app/components/variables/VariablesList', () => ({
   default: vi.fn(() => (
     <div data-testid="mock-variables-list-wrapper">Variables List Mock</div>
   )),

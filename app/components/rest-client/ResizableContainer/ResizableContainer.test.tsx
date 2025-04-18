@@ -54,8 +54,9 @@ vi.doMock('@/app/hooks/useSyncUrlWithReduxState', () => ({
 vi.doMock('@/app/hooks/useRequestNotifications', () => ({
   useRequestNotifications: vi.fn(),
 }));
-vi.doMock('@/app/store/hooks', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/app/store/hooks')>();
+vi.doMock('@/app/hooks/historyHooks', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@/app/hooks/historyHooks')>();
   return {
     ...actual,
     useRequestHistory: mockUseRequestHistory,
@@ -381,7 +382,4 @@ describe('ResizableContainer', () => {
       expect(hoistedMockSendRequest).toHaveBeenCalledWith(expectedPayload);
     });
   });
-  // it('should dispatch sendRequest when Send button is clicked', async () => { ... });
-  // it('should call toggleCodePanel when toggle button is clicked', () => { ... });
-  // it('should render CodeContainer when isCodePanelOpen is true', () => { ... });
 });

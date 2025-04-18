@@ -93,13 +93,14 @@
     "variables": "Variables",
     "variablesError": "// Variable substitution error"
   },
-  "VariablesList": {
+  "VariablesEditor": {
     "title": "Variables",
     "keyLabel": "Key",
     "valueLabel": "Value",
     "keyPlaceholder": "Enter key",
     "valuePlaceholder": "Enter value",
     "addButton": "Add Variable",
+    "restClient": "REST Client",
     "copyTooltip": "Click to copy",
     "copiedText": "Copied!",
     "deleteAriaLabel": "Delete variable",
@@ -111,6 +112,15 @@
       "updated": "Variable {key} updated",
       "deleted": "Variable {key} deleted"
     }
+  },
+
+  "VariablesList": {
+    "keyLabel": "Key",
+    "valueLabel": "Value",
+    "addEditButton": "Add/Edit",
+    "copyTooltip": "Click to copy",
+    "copiedText": "Copied!",
+    "noVariables": "There are no variables yet"
   },
 
   "HistoryList": {

@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import RequestBodyEditor from '../BodyEditor/BodyEditor';
 import { useTranslations } from 'next-intl';
 import { TabsComponentProps } from '@/app/interfaces';
-import VariablesListWrapper from '@/app/components/variables/VariablesListWrapper';
+import VariablesList from '@/app/components/variables/VariablesList';
 
 export default function TabsComponent({
   value,
@@ -27,6 +27,7 @@ export default function TabsComponent({
   onBodyLanguageChange,
 }: TabsComponentProps) {
   const t = useTranslations('RESTful');
+  // const router = useRouter();
 
   return (
     <Tabs
@@ -119,8 +120,8 @@ export default function TabsComponent({
         value="variables"
         className="w-[110%] p-2 overflow-y-auto min-h-0 flex overflow text-left"
       >
-        <Card className="border-0 p-2 h-fit min-h-[100%] w-[100vw]  bg-cta-secondary">
-          <VariablesListWrapper />
+        <Card className="border-0 p-2 h-fit min-h-[100%] w-[100%]  bg-cta-secondary">
+          <VariablesList />
         </Card>
       </TabsContent>
     </Tabs>

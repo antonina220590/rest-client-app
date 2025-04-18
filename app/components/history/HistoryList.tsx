@@ -3,7 +3,7 @@ import {
   useHistoryItems,
   useClearHistory,
   useDeleteHistoryItem,
-} from '@/app/store/hooks';
+} from '@/app/hooks/historyHooks';
 import Link from 'next/link';
 import HistoryItem from './HistoryItem';
 import { useTranslations } from 'next-intl';
