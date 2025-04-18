@@ -13,7 +13,10 @@ import restClientReducer, {
 } from '@/app/store/restClientSlice';
 import variablesReducer, {
   initialState as variablesInitialState,
-} from '../../../store/variablesSlice';
+} from '@/app/store/variablesSlice';
+import historyReducer, {
+  initialState as historyInitialState,
+} from '@/app/store/historySlice';
 import type { RootState } from '@/app/store/store';
 import { JSX } from 'react';
 
@@ -64,6 +67,7 @@ interface RenderWithProvidersOptions extends Omit<RenderOptions, 'queries'> {
 const defaultInitialRootState: RootState = {
   variables: variablesInitialState,
   restClient: restClientInitialState,
+  history: historyInitialState,
 };
 
 function renderWithProviders(
@@ -74,6 +78,7 @@ function renderWithProviders(
       reducer: {
         variables: variablesReducer,
         restClient: restClientReducer,
+        history: historyReducer,
       },
       preloadedState: { ...defaultInitialRootState, ...preloadedState },
     }),
