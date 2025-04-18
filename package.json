@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "vitest",
+    "test": "vitest --coverage",
     "coverage": "vitest run --coverage",
     "format:fix": "prettier --write .",
     "test:ui": "vitest --ui",
