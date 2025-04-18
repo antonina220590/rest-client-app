@@ -1,0 +1,150 @@
+{
+  "Header": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
+  },
+  "Welcome": {
+    "welcome": "Welcome!",
+    "welcomeBack": "Welcome back, {name}!",
+    "user": "User",
+    "restClient": "REST Client",
+    "history": "History",
+    "variables": "Variables"
+  },
+  "AboutRSS": {
+    "title": "Built as a final project for The Rolling Scopes School",
+    "description": "RS School is a free and community-based online education program conducted by The Rolling Scopes Community since 2013. Currently 500+ developers from different countries and companies are involved in the education process as mentors."
+  },
+  "AboutUs": {
+    "title": "Meet our team",
+    "description": "Get to know the faces behind the screen and their roles in this project.",
+    "team": {
+      "galya": {
+        "alt": "Halina",
+        "name": "Halina B.",
+        "role": "Frontend Developer",
+        "description": "The developer responsible for implementing Firebase authentication, Sign In/Sign Up functionality, and integrating multi-language support (i18n) ensured seamless user login, token management, and localization for a diverse user base."
+      },
+      "tonya": {
+        "alt": "Antonina",
+        "name": "Antonina T.",
+        "role": "Frontend Developer",
+        "description": "The developer responsible for the RESTful client implemented a functional editor for composing and prettifying API queries, handling request bodies, and encoding inputs."
+      },
+      "tatiana": {
+        "alt": "Tatiana",
+        "name": "Tatiana D.",
+        "role": "Frontend Developer",
+        "description": "The developer responsible for the History and Variables routes enabled users to view and restore previous requests, manage variables, and update local storage for a seamless RESTful client experience."
+      }
+    }
+  },
+  "Auth": {
+    "signUp": "Sign Up",
+    "signIn": "Sign In",
+    "namePlaceholder": "Name*",
+    "emailPlaceholder": "Email*",
+    "passwordPlaceholder": "Password*",
+    "submit": "Submit",
+    "errors": {
+      "emailAlreadyRegistered": "This email is already registered",
+      "invalidCredentials": "Invalid email or password",
+      "unknown": "An unknown error occurred during authentication",
+      "invalidEmailFormat": "Invalid email format",
+      "emailRequired": "Email is required",
+      "passwordMinLength": "At least 8 characters",
+      "passwordAtLeastOneNumber": "At least one number",
+      "passwordAtLeastOneUppercaseLetter": "At least one uppercase letter",
+      "passwordAtLeastOneLowercaseLetter": "At least one lowercase letter",
+      "passwordAtLeastOneSpecialCharacter": "At least one special character",
+      "passwordRequired": "Password is required",
+      "nameStartsWithUppercase": "Name should start with an uppercase letter",
+      "nameRequired": "Name is required"
+    }
+  },
+  "RESTful": {
+    "send": "Send",
+    "history": "History",
+    "query": "Query",
+    "headers": "Headers",
+    "body": "Body",
+    "add": "Add",
+    "text": "Plain Text",
+    "prettify": "Prettify",
+    "key": "key",
+    "value": "value",
+    "Invalid Syntax": "Invalid Syntax",
+    "JSON prettified successfully": "JSON prettified successfully",
+    "JSON is already prettified": "JSON is already prettified",
+    "Prettify is only available for JSON": "Prettify is only available for JSON",
+    "Request Failed": "Request Failed",
+    "Request successful!": "Request successful!",
+    "Error of decoding of URL from path": "Error of decoding of URL from path",
+    "Eror of decoding Body from path": "Eror of decoding Body from path",
+    "providingURL": "// Provide URL for code generation",
+    "generatingCodeFor": "// Code generation for",
+    "The API returned an empty code snippet": "The API returned an empty code snippet",
+    "Code generation error": "Code generation error",
+    "errorGeneration": "// Code generation error",
+    "Code copied!": "Code copied!",
+    "Error:": "Error:",
+    "Code Snippet": "Code Snippet",
+    "variables": "Variables",
+    "variablesError": "// Variable substitution error"
+  },
+  "VariablesEditor": {
+    "title": "Variables",
+    "keyLabel": "Key",
+    "valueLabel": "Value",
+    "keyPlaceholder": "Enter key",
+    "valuePlaceholder": "Enter value",
+    "addButton": "Add Variable",
+    "restClient": "REST Client",
+    "copyTooltip": "Click to copy",
+    "copiedText": "Copied!",
+    "deleteAriaLabel": "Delete variable",
+    "error": {
+      "keyExists": "Variable with key {key} already exists"
+    },
+    "success": {
+      "added": "Variable {key} added",
+      "updated": "Variable {key} updated",
+      "deleted": "Variable {key} deleted"
+    }
+  },
+
+  "VariablesList": {
+    "keyLabel": "Key",
+    "valueLabel": "Value",
+    "addEditButton": "Add/Edit",
+    "copyTooltip": "Click to copy",
+    "copiedText": "Copied!",
+    "noVariables": "There are no variables yet"
+  },
+
+  "HistoryList": {
+    "title": "Request History",
+    "clearButton": "Clear History",
+    "emptyTitle": "You haven't executed any requests yet",
+    "emptyDescription": "It's empty here. Try those options:",
+    "goToClientButton": "Go to REST Client",
+    "methodLabel": "Method",
+    "urlLabel": "URL",
+    "timeLabel": "Time",
+    "bodyTypeLabel": "Body Type",
+    "copyLinkTooltip": "Copy request link",
+    "error": {
+      "clearFailed": "Failed to clear history",
+      "deleteFailed": "Failed to delete item"
+    },
+    "success": {
+      "cleared": "History cleared successfully",
+      "deleted": "Item deleted"
+    }
+  },
+  "NotFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you’re looking for doesn’t exist."
+  }
+}

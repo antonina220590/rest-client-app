@@ -1,36 +1,174 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# REST Client
+
+## Project description
+
+This REST Client project aims to develop a light-weight versions of Postman.
+Key pages of the application include:
+
+- Login and Registration pages 🖥️
+- Main page 🏠
+- REST Client page 📋
+- Variables
+- History
+
+The project is being developed as the final task of the RS school's JS / React course. Its main goals are:
+
+- consolidation of the knowledges gained during this course and,
+- improvement of teamwork skills.
+
+Our team:
+
+- [antonina220590](https://github.com/antonina220590)
+- [gbogdanova](https://github.com/gbogdanova)
+- [tatidem](https://github.com/tatidem)
+
+### Technology stack
+
+#### Front-end:
+
+- HTML
+- TailwindCss
+- TypeScript
+- Webpack
+- React
+- Next JS
+- Vitest
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build the application:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+Compiles the application for production deployment. It optimizes the app for the best performance.
 
-To learn more about Next.js, take a look at the following resources:
+### Lint the project files
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run lint
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Runs ESLint to find and fix problems in your JavaScript and TypeScript files within the app/ directory.
 
-## Deploy on Vercel
+### Format the project files
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run prettier:fix
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Runs Prettier to format code.
+
+### Run Tests
+
+```bash
+npm run test
+```
+
+Executes the test suites of the application using Vitest.
+
+### Run Tests Coverage
+
+```bash
+npm run test:coverage
+```
+
+Executes the test coverage.
+
+## REST Requests Examples
+
+### GET
+
+```
+##### endpoint url:
+https://rickandmortyapi.com/api/character
+
+
+##### headers (optional)
+
+Content-Type: application/json
+
+##### queries (optional)
+
+key: name
+value: Rick
+
+```
+
+### POST
+
+```
+##### endpoint url:
+https://jsonplaceholder.typicode.com/posts
+
+##### body:
+
+{
+  "title": "foo",
+  "body": "bar",
+  "userId": 1
+}
+
+##### headers
+
+Content-Type: application/json
+
+```
+
+### PUT
+
+```
+
+##### endpoint url:
+
+ https://jsonplaceholder.typicode.com/posts/1
+
+##### body:
+
+{
+  "id": 1,
+  "title": "UPDATED Title Example",
+  "body": "This is the updated body content.",
+  "userId": 1
+}
+
+##### headers
+
+Content-Type: application/json
+
+```
+
+### GET with VARIBALES
+
+```
+
+##### endpoint url:
+
+URL: {{baseUrl}}/posts/{{postId}}
+
+
+##### Variables
+
+key: baseUr  value: https://jsonplaceholder.typicode.com
+key: postId  value: 2
+
+##### headers
+
+Content-Type: application/json
+
+```
