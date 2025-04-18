@@ -6,7 +6,6 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import type {
   RestClientState,
-  KeyValueItem,
   ResizableContainerProps,
   URLInputProps,
   RootState,
@@ -100,18 +99,7 @@ vi.mock('../codeGenerator/CodeContainer', () => ({
   )),
 }));
 const originalLocation = window.location;
-const mockLocation = (pathname: string, search: string) => {
-  Object.defineProperty(window, 'location', {
-    writable: true,
-    value: {
-      ...originalLocation,
-      pathname,
-      search,
-      assign: vi.fn(),
-      replace: vi.fn(),
-    },
-  });
-};
+
 vi.spyOn(crypto, 'randomUUID').mockImplementation(
   () => `mock-uuid-${Math.random()}`
 );
@@ -164,117 +152,6 @@ describe('ResizableContainer', () => {
     });
     vi.spyOn(store, 'dispatch').mockImplementation(mockDispatch);
   });
-
-  it('should parse URL and dispatch initial actions on mount', async () => {
-    const encodedUrl =
-      'aHR0cHM6Ly9hcGkuZXhhbXBsZS5jb20vZGF0YT9xdWVyeT0xJmxhbmc9ZW4=';
-    const encodedBody = 'eyJpZCI6InRlc3QifQ==';
-    const pathname = `/en/POST/${encodedUrl}/${encodedBody}`;
-    const search = '?Content-Type=application%2Fjson&Auth=Bearer%20xyz';
-    mockLocation(pathname, search);
-
-    const decodedUrl = 'https://api.example.com/data?query=1&lang=en';
-    const decodedBody = '{"id":"test"}';
-    mockDecodeFromBase64Url
-      .mockReturnValueOnce(decodedUrl)
-      .mockReturnValueOnce(decodedBody);
-
-    const store = configureStore({
-      reducer: {
-        restClient: restClientSliceModule.default,
-        variables: (state = []) => state,
-        history: (state = { items: [] }) => state,
-      },
-      preloadedState: {
-        restClient: { ...initialRestClientState },
-        variables: [],
-        history: { items: [] },
-      },
-    });
-    vi.spyOn(store, 'dispatch').mockImplementation(mockDispatch);
-
-    const expectedMethod = 'POST';
-    const expectedUrlPayload = decodedUrl;
-    const expectedBodyPayload = decodedBody;
-    const expectedHeadersPayload: Partial<KeyValueItem>[] = [
-      { key: 'Content-Type', value: 'application/json' },
-      { key: 'Auth', value: 'Bearer xyz' },
-    ];
-    const expectedQueryParamsPayload: Partial<KeyValueItem>[] = [
-      { key: 'query', value: '1' },
-      { key: 'lang', value: 'en' },
-    ];
-
-    render(
-      <Provider store={store}>
-        <ResizableContainer
-          initialMethod="GET"
-          initialUrl=""
-          initialBody=""
-          initialHeaders={[{ id: 'initial-empty', key: '', value: '' }]}
-        />
-      </Provider>
-    );
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(
-        restClientSliceModule.setMethod(expectedMethod)
-      );
-    });
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(
-        restClientSliceModule.setUrl(expectedUrlPayload)
-      );
-    });
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(
-        restClientSliceModule.setRequestBody(expectedBodyPayload)
-      );
-    });
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(
-        restClientSliceModule.setHeaders(
-          expect.arrayContaining([
-            expect.objectContaining(expectedHeadersPayload[0]),
-            expect.objectContaining(expectedHeadersPayload[1]),
-          ])
-        )
-      );
-      const setHeadersAction = mockDispatch.mock.calls.find(
-        (call) => call[0].type === restClientSliceModule.setHeaders.type
-      );
-      expect(setHeadersAction?.[0]?.payload).toHaveLength(
-        expectedHeadersPayload.length
-      );
-    });
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(
-        restClientSliceModule.setQueryParams(
-          expect.arrayContaining([
-            expect.objectContaining(expectedQueryParamsPayload[0]),
-            expect.objectContaining(expectedQueryParamsPayload[1]),
-          ])
-        )
-      );
-      const setQueryParamsAction = mockDispatch.mock.calls.find(
-        (call) => call[0].type === restClientSliceModule.setQueryParams.type
-      );
-      expect(setQueryParamsAction?.[0]?.payload).toHaveLength(
-        expectedQueryParamsPayload.length
-      );
-    });
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith(
-        restClientSliceModule.clearResponse()
-      );
-    });
-
-    expect(mockDecodeFromBase64Url).toHaveBeenCalledTimes(2);
-    expect(mockDecodeFromBase64Url).toHaveBeenNthCalledWith(1, encodedUrl);
-    expect(mockDecodeFromBase64Url).toHaveBeenNthCalledWith(2, encodedBody);
-    expect(mockToastError).not.toHaveBeenCalled();
-    expect(mockUseRequestHistory).toHaveBeenCalled();
-  });
-
   it('should dispatch setMethod when MethodSelector onChange is called', async () => {
     const store = configureStore({
       reducer: {

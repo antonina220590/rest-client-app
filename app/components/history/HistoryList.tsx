@@ -33,13 +33,11 @@ export default function HistoryList() {
     dispatch(setRequestBody(item.body));
     dispatch(
       setHeaders(
-        item.headers.length
-          ? []
-          : item.headers.map((header) => ({
-              id: crypto.randomUUID(),
-              key: header.key,
-              value: header.value,
-            }))
+        item.headers.map((header) => ({
+          id: crypto.randomUUID(),
+          key: header.key,
+          value: header.value,
+        }))
       )
     );
   };

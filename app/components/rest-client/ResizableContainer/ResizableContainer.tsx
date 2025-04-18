@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PanelLeftClose, PanelRightClose } from 'lucide-react';
 import {
   ResizableHandle,
@@ -12,35 +12,18 @@ import { useResizableLayout } from '@/app/hooks/useResizableLayout';
 import { RequestResponseArea } from '../RequestResponseArea/RequestResponseArea';
 import MethodSelector from '../MethodSelector/MethodSelector';
 import UrlInput from '../UrlInput/UrlInput';
-import {
-  KeyValueItem,
-  methods,
-  ResizableContainerProps,
-} from '@/app/interfaces';
+import { ResizableContainerProps } from '@/app/interfaces';
 import { useSyncUrlWithReduxState } from '@/app/hooks/useSyncUrlWithReduxState';
 import { useRequestNotifications } from '@/app/hooks/useRequestNotifications';
 import { useRequestHistory } from '@/app/hooks/historyHooks';
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch, RootState } from '@/app/store/store';
-import {
-  setMethod,
-  setUrl,
-  setRequestBody,
-  setBodyLanguage,
-  setHeaders,
-  sendRequest,
-  clearResponse,
-  setQueryParams,
-} from '@/app/store/restClientSlice';
-import { decodeFromBase64Url } from '../helpers/encoding';
+import { setMethod, setUrl, sendRequest } from '@/app/store/restClientSlice';
 import { toast } from 'sonner';
 import CodeContainer from '../codeGenerator/CodeContainer';
 
 export default function ResizableContainer({
   initialMethod = 'GET',
-  initialUrl = '',
-  initialBody = '',
-  initialHeaders = [],
 }: ResizableContainerProps) {
   const {
     isPanelOpen: isCodePanelOpen,
@@ -65,75 +48,11 @@ export default function ResizableContainer({
     (state: RootState) => state.restClient.queryParams
   );
 
-  const historyItems = useRef(
-    useSelector((state: RootState) => state.history.items)
-  ).current;
+  const historyItems = useSelector((state: RootState) => state.history.items);
 
   useEffect(() => {
-    const pathSegments = window.location.pathname.split('/');
-    const searchParams = new URLSearchParams(window.location.search);
-
-    let currentMethod = initialMethod;
-    let currentUrl = initialUrl;
-    let currentBody = initialBody;
-    const currentHeaders: KeyValueItem[] = [...initialHeaders];
-    const currentQueryParams: KeyValueItem[] = [];
-
-    if (pathSegments.length >= 3) {
-      const methodFromUrl = pathSegments[2].toUpperCase();
-      if (methods.includes(methodFromUrl)) {
-        currentMethod = methodFromUrl;
-      }
-    }
-
-    if (pathSegments.length >= 4 && pathSegments[3]) {
-      try {
-        currentUrl = decodeFromBase64Url(pathSegments[3]);
-      } catch {
-        toast.error('Error of decoding of URL from path');
-      }
-    }
-
-    if (pathSegments.length >= 5 && pathSegments[4]) {
-      try {
-        currentBody = decodeFromBase64Url(pathSegments[4]);
-      } catch {
-        toast.error('Error of decoding Body from path');
-      }
-    }
-
-    searchParams.forEach((value, key) => {
-      const alreadyExists = currentHeaders.some(
-        (h) => h.key === key && h.value === value
-      );
-      if (!alreadyExists) {
-        currentHeaders.push({ id: crypto.randomUUID(), key, value });
-      }
-    });
-
-    const qs = new URLSearchParams(currentUrl.split('?')[1] || '');
-    qs.forEach((value, key) => {
-      currentQueryParams.push({ id: crypto.randomUUID(), key, value });
-    });
-
-    dispatch(setMethod(currentMethod));
-    dispatch(setUrl(currentUrl));
-    dispatch(setRequestBody(currentBody));
-    dispatch(setBodyLanguage('json'));
-    const filteredHeaders = currentHeaders.filter(
-      (h) => h.key.trim() !== '' || h.value.trim() !== ''
-    );
-    dispatch(
-      setHeaders(
-        filteredHeaders.length > 0
-          ? filteredHeaders
-          : [{ id: crypto.randomUUID(), key: '', value: '' }]
-      )
-    );
-    dispatch(setQueryParams(currentQueryParams));
-    dispatch(clearResponse());
     setIsClient(true);
-  }, [dispatch, initialBody, initialHeaders, initialMethod, initialUrl]);
+  }, [dispatch]);
 
   useRequestHistory(historyItems);
   useSyncUrlWithReduxState();
