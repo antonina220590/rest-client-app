@@ -12,6 +12,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { AppDispatch } from '@/app/store/store';
 import { useDispatch } from 'react-redux';
 import {
+  clearResponse,
   setHeaders,
   setMethod,
   setRequestBody,
@@ -33,15 +34,14 @@ export default function HistoryList() {
     dispatch(setRequestBody(item.body));
     dispatch(
       setHeaders(
-        item.headers.length
-          ? []
-          : item.headers.map((header) => ({
-              id: crypto.randomUUID(),
-              key: header.key,
-              value: header.value,
-            }))
+        item.headers.map((header) => ({
+          id: crypto.randomUUID(),
+          key: header.key,
+          value: header.value,
+        }))
       )
     );
+    dispatch(clearResponse());
   };
 
   const handleClearHistory = () => {
