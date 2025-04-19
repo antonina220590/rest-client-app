@@ -12,6 +12,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { AppDispatch } from '@/app/store/store';
 import { useDispatch } from 'react-redux';
 import {
+  clearResponse,
   setHeaders,
   setMethod,
   setRequestBody,
@@ -40,6 +41,7 @@ export default function HistoryList() {
         }))
       )
     );
+    dispatch(clearResponse());
   };
 
   const handleClearHistory = () => {
