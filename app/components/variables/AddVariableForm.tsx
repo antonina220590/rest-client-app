@@ -41,7 +41,9 @@ export const AddVariableForm = ({
         <div>
           <input
             value={newVar.key}
-            onChange={(e) => setNewVar({ ...newVar, key: e.target.value })}
+            onChange={(e) =>
+              setNewVar({ ...newVar, key: e.target.value.trimStart() })
+            }
             className="bg-card w-full p-2 text-sm md:text-base border border-border rounded font-body focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder={t('keyPlaceholder')}
           />
@@ -49,7 +51,9 @@ export const AddVariableForm = ({
         <div>
           <input
             value={newVar.value}
-            onChange={(e) => setNewVar({ ...newVar, value: e.target.value })}
+            onChange={(e) =>
+              setNewVar({ ...newVar, value: e.target.value.trimStart() })
+            }
             className="bg-card w-full p-2 text-sm md:text-base border border-border rounded font-body focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder={t('valuePlaceholder')}
           />
@@ -58,11 +62,10 @@ export const AddVariableForm = ({
 
       <button
         onClick={handleAdd}
-        className={`
+        className="
           btn-primary text-sm md:text-base px-3 py-2 md:px-4 md:py-2
-          disabled:bg-cta-secondary disabled:hover:bg-cta-secondary **:disabled:text-cta-primary
-        `}
-        disabled={!newVar.key || !newVar.value}
+          disabled:bg-cta-secondary disabled:hover:bg-cta-secondary disabled:text-cta-primary"
+        disabled={!newVar.key.trim() || !newVar.value.trim()}
       >
         {t('addButton')}
       </button>

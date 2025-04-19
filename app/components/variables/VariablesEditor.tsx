@@ -68,7 +68,7 @@ export const VariablesEditor = () => {
   };
 
   const handleCopy = (text: string, id: string) => {
-    copyToClipboardText(text);
+    copyToClipboardText(text, { wrapInBraces: true });
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
     toast.success(t('copiedText'));

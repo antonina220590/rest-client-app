@@ -38,8 +38,13 @@ export const VariableItem = ({
   const handleSave = () => {
     onSave({
       ...variable,
-      [editingField as string]: editedValue,
+      [editingField as string]: editedValue.trim(),
     });
+  };
+
+  const handleEdit = (field: 'key' | 'value') => {
+    setEditedValue(variable[field]);
+    onEdit(variable, field);
   };
 
   return (
@@ -47,7 +52,7 @@ export const VariableItem = ({
       <div className="flex items-center justify-between mb-2">
         <span
           onClick={() => {
-            copyToClipboardText(`{{${variable.key}}}`);
+            copyToClipboardText(variable.key, { wrapInBraces: true });
             onCopy(variable.key, variable.id);
           }}
           className="font-code text-xs md:text-sm bg-muted px-2 py-1 rounded cursor-pointer hover:bg-accent transition-colors text-card-foreground relative"
@@ -95,7 +100,7 @@ export const VariableItem = ({
             <input
               ref={editRef as React.RefObject<HTMLInputElement>}
               value={editedValue}
-              onChange={(e) => setEditedValue(e.target.value)}
+              onChange={(e) => setEditedValue(e.target.value.trimStart())}
               className="font-body text-sm md:text-base text-card-foreground border-b border-border focus:outline-none w-full break-words pb-1"
               onBlur={handleSave}
               onKeyDown={(e) => e.key === 'Enter' && handleSave()}
@@ -104,8 +109,7 @@ export const VariableItem = ({
             <div
               className="w-full overflow-hidden cursor-pointer"
               onClick={() => {
-                setEditedValue(variable.key);
-                onEdit(variable, 'key');
+                handleEdit('key');
               }}
             >
               <span
@@ -135,8 +139,7 @@ export const VariableItem = ({
             <div
               className="w-full overflow-hidden cursor-pointer"
               onClick={() => {
-                setEditedValue(variable.value);
-                onEdit(variable, 'value');
+                handleEdit('value');
               }}
             >
               <span

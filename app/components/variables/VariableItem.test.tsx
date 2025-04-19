@@ -102,7 +102,9 @@ describe('VariableItem', () => {
     fireEvent.click(tag);
 
     expect(onCopy).toHaveBeenCalledWith('token', '1');
-    expect(textUtils.copyToClipboardText).toHaveBeenCalledWith('{{token}}');
+    expect(textUtils.copyToClipboardText).toHaveBeenCalledWith('token', {
+      wrapInBraces: true,
+    });
   });
 
   it('renders input for editing key and calls onSave on Enter', () => {
