@@ -11,7 +11,7 @@ export default function AboutUs() {
     <section>
       <h2>{t('title')}</h2>
       <p>{t('description')}</p>
-      <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 text-base mt-5 ">
+      <ul className="grid grid-cols-1 lg:grid-cols-3 gap-4 text-base mt-5 ">
         <MemberCard
           src={Galya}
           alt={t('team.galya.alt')}
