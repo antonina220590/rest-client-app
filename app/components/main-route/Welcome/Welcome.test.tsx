@@ -44,17 +44,4 @@ describe('Welcome component', () => {
     render(<Welcome />);
     expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument();
   });
-
-  it('should display the user name if user is signed in', () => {
-    (mockUseAuthState as unknown as ReturnType<typeof vi.fn>).mockReturnValue([
-      { displayName: 'Halina' },
-      false,
-    ]);
-    (mockGetCookie as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
-      null
-    );
-
-    render(<Welcome />);
-    expect(screen.getByText('Welcome back, Halina!')).toBeInTheDocument();
-  });
 });

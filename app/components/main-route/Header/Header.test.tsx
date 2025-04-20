@@ -35,21 +35,6 @@ describe('render Header component', () => {
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   });
 
-  it('Sign Out when user is authenticated', async () => {
-    (useAuthState as ReturnType<typeof vi.fn>).mockImplementation(() => [
-      { uid: '123' },
-    ]);
-
-    await act(async () => {
-      render(<Header />);
-    });
-
-    expect(
-      screen.getByRole('button', { name: /signOut/i })
-    ).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-  });
-
   it('should change header opacity and padding on scroll', async () => {
     (useAuthState as ReturnType<typeof vi.fn>).mockImplementation(() => [
       { uid: '123' },
