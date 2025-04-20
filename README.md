@@ -33,6 +33,7 @@ Our team:
 - React
 - Next JS
 - Vitest
+- Firebase
 
 ## Getting Started
 
