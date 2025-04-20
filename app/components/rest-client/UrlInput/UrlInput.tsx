@@ -24,13 +24,13 @@ export default function UrlInput({ value, onChange, onSend }: URLInputProps) {
         <button
           type="submit"
           onClick={onSend}
-          className="flex-none rounded-md min-w-[65px] border-1 border-cta-primary bg-cta-primary px-3.5 py-2.5 ml-2.5 text-sm font-semibold text-white shadow-xs hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-primary hover:text-cta-primary cursor-pointer"
+          className="flex-none rounded-md border-1 border-cta-primary bg-cta-primary px-2.5 py-1.5 md:px-3.5 md:py-2.5 ml-2.5 text-sm font-semibold text-white shadow-xs hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-primary hover:text-cta-primary cursor-pointer"
         >
           {t('send')}
         </button>
         <Link
           href="/history"
-          className="flex-none rounded-md min-w-[65px] border-1 border-cta-primary bg-cta-primary px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-primary hover:text-cta-primary cursor-pointer text-center"
+          className="flex-none rounded-md border-1 border-cta-primary bg-cta-primary px-2.5 py-1.5 md:px-3.5 md:py-2.5 text-sm flex items-center font-semibold text-white shadow-xs hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cta-primary hover:text-cta-primary cursor-pointer text-center"
         >
           {t('history')}
         </Link>

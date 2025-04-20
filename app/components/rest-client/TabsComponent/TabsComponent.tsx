@@ -27,7 +27,6 @@ export default function TabsComponent({
   onBodyLanguageChange,
 }: TabsComponentProps) {
   const t = useTranslations('RESTful');
-  // const router = useRouter();
 
   return (
     <Tabs

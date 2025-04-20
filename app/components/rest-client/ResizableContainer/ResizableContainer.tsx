@@ -119,8 +119,8 @@ export default function ResizableContainer({
           minSize={30}
           className="flex flex-col"
         >
-          <div className="flex flex-col h-full p-2 md:p-4">
-            <div className="flex w-[90%] max-w-4xl mx-auto mt-5 justify-center">
+          <div className="flex flex-col h-full p-2 md:p-1">
+            <div className="flex w-[90%] md:flex-row max-w-4xl mx-auto mt-2 justify-center">
               <MethodSelector value={method} onChange={handleMethodChange} />
               <UrlInput
                 value={url}

@@ -6,10 +6,7 @@ import MethodSelector from './MethodSelector';
 import { methods, MethodProps } from '@/app/interfaces';
 
 vi.mock('@heroicons/react/16/solid', () => ({
-  ChevronUpDownIcon: vi.fn(() => <div data-testid="icon-chevron" />),
-}));
-vi.mock('@heroicons/react/20/solid', () => ({
-  CheckIcon: vi.fn(() => <div data-testid="icon-check" />),
+  ChevronDownIcon: vi.fn(() => <div data-testid="icon-chevron" />),
 }));
 
 const MockResizeObserver = vi.fn(() => ({
