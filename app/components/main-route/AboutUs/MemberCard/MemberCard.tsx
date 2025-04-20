@@ -17,7 +17,7 @@ export default function MemberCard({
   description,
 }: MemberCardProps) {
   return (
-    <li className="flex flex-col items-center w-[370px] gap-2 bg-white p-4 rounded-xl">
+    <li className="flex flex-col items-center w-30% max-w-[370px] gap-2 bg-white p-4 rounded-xl">
       <div className="w-[150px] h-[150px] rounded-full overflow-hidden">
         <Image src={src} width={150} height={150} alt={alt} priority />
       </div>
