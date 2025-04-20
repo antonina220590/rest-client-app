@@ -58,6 +58,14 @@ npm run build
 
 Compiles the application for production deployment. It optimizes the app for the best performance.
 
+### Start the application in production mode
+
+```bash
+npm run start
+```
+
+Starts the server in production mode. Must be used after building the app.
+
 ### Lint the project files
 
 ```bash
