@@ -5,7 +5,7 @@
 This REST Client project aims to develop a light-weight versions of Postman.
 Key pages of the application include:
 
-- Login and Registration pages 🖥️
+- Authorization and Registration pages 🖥️
 - Main page 🏠
 - REST Client page 📋
 - Variables
