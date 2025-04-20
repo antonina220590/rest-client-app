@@ -14,10 +14,26 @@ import LanguageSwitcher from './LgSwitcher/LgSwitcher';
 export default function Header() {
   const t = useTranslations('Header');
 
-  const [user, loading] = useAuthState(auth);
-  const userSession = getCookie('user');
+  const [_user, loading] = useAuthState(auth);
+  const [userSession, setUserSession] = useState<boolean>(false);
   const router = useRouter();
   const [scroll, setScroll] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkUserCookie = () => {
+      const userCookie = getCookie('user');
+      if (userCookie) {
+        setUserSession(true);
+      } else {
+        setUserSession(false);
+      }
+    };
+
+    checkUserCookie();
+    const intervalId = setInterval(checkUserCookie, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScroll(window.scrollY !== 0);
@@ -40,7 +56,7 @@ export default function Header() {
 
       <nav>
         <LanguageSwitcher />
-        {user || userSession ? (
+        {userSession ? (
           <NavBtn
             href="/"
             text={t('signOut')}

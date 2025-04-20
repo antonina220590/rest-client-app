@@ -74,8 +74,10 @@ const Auth = ({ registration }: AuthProps) => {
           return;
         }
       }
-      setCookie('user', {
+      const { expirationTime } = await res.user.getIdTokenResult();
+      setCookie('user', true, {
         path: '/',
+        expires: new Date(expirationTime),
       });
 
       router.push('/');
