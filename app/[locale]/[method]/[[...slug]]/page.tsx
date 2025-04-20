@@ -69,7 +69,7 @@ export default async function RESTful({
       <ReduxProvider>
         <div className="text-center">
           <div className="flex flex-col h-full mx-auto gap-2">
-            <div className="flex h-[85dvh] w-full">
+            <div className="flex h-[77dvh] w-full">
               <ResizableContainerLoader
                 initialMethod={initialMethod}
                 initialUrl={initialUrl}

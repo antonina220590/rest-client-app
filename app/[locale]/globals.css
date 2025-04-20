@@ -233,3 +233,8 @@ section[aria-label^='Notifications'] {
 [data-sonner-toast] [data-description] {
   color: hsl(var(--foreground)) !important;
 }
+
+.ͼ1 .cm-scroller {
+  overflow-x: unset;
+  min-height: 100%;
+}
