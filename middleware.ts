@@ -33,16 +33,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/([a-zA-Z-]{2,3})?/history',
-    '/([a-zA-Z-]{2,3})?/variables',
-    '/([a-zA-Z-]{2,3})?/GET/:path*',
-    '/([a-zA-Z-]{2,3})?/POST/:path*',
-    '/([a-zA-Z-]{2,3})?/PUT/:path*',
-    '/([a-zA-Z-]{2,3})?/DELETE/:path*',
-    '/([a-zA-Z-]{2,3})?/PATCH/:path*',
-    '/([a-zA-Z-]{2,3})?/OPTIONS/:path*',
-    '/([a-zA-Z-]{2,3})?/HEAD/:path*',
-    '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
-  ],
+  matcher: ['/((?!api|trpc|_next|_vercel|.*\\..*).*)'],
 };

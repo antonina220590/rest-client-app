@@ -11,7 +11,7 @@ export default function NotFound() {
       <p>{t('description')}</p>
       <div className="mt-6">
         <Link href="/" className="text-cta-primary hover:underline">
-          Go back to Home
+          Go Home
         </Link>
       </div>
     </main>
