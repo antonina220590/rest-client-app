@@ -17,7 +17,7 @@ vi.mock('next-intl', () => ({
 }));
 
 describe('NotFound Page', () => {
-  it('renders translated text and the "Go back to Home" link', () => {
+  it('renders translated text and the "Go Home" link', () => {
     render(<NotFound />);
 
     expect(screen.getByText('Page Not Found')).toBeInTheDocument();
